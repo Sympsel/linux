@@ -1,4 +1,5 @@
-.vscode/
+.vscode
 
-**/bin/
-
+# CPH files
+.cph
+bin

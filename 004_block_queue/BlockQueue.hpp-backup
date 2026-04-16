@@ -1,0 +1,72 @@
+# ifndef BLOCK_QUEUE_HPP
+# define BLOCK_QUEUE_HPP
+
+#include <queue>
+#include <pthread.h>
+
+static const int gdefaultcap = 5;
+
+template<typename T>
+class BlockQueue {
+private:
+    std::queue<T> _queue;
+    size_t _cap;
+    pthread_mutex_t _mutex;
+    // two condition variables, one for producer and one for consumer
+    pthread_cond_t _cond_prod;
+    pthread_cond_t _cond_cons;
+
+    int _prod_waiting_cnt = 0;
+    int _cons_waiting_cnt = 0;
+    /*
+        we can set two water marks to avoid too much context switch, which will cause performance degradation
+    */
+    size_t _low_water_mark;
+    size_t _high_water_mark;
+
+public:
+    BlockQueue(size_t cap = gdefaultcap) : _cap(cap), _low_water_mark(cap / 4), _high_water_mark(cap / 4 * 3) {}
+    
+    ~BlockQueue() {
+        pthread_mutex_destroy(&_mutex);
+        pthread_cond_destroy(&_cond_prod);
+        pthread_cond_destroy(&_cond_cons);
+    }
+
+    void Push(const T& item) {
+        pthread_mutex_lock(&_mutex);
+        // the judgment is also critical section
+        while (_queue.size() >= _cap) {
+            // on waiting, the thread will release the mutex and block until it is notified
+            ++_prod_waiting_cnt;
+            pthread_cond_wait(&_cond_prod, &_mutex);
+            --_prod_waiting_cnt;
+        }
+        _queue.push(item);
+        /*
+            we can notify thread before or after unlocking the mutex
+            but we suggest to notify inside the critical section
+        */
+        if (_queue.size() > _high_water_mark && _cons_waiting_cnt > 0)
+            pthread_cond_signal(&_cond_cons);
+        pthread_mutex_unlock(&_mutex);
+    }
+
+    void Pop(T *out) {
+        pthread_mutex_lock(&_mutex);
+        while (_queue.empty()) {
+            // on waiting, the thread will release the mutex and block until it is notified, the same as above
+            ++_cons_waiting_cnt;
+            pthread_cond_wait(&_cond_cons, &_mutex);
+            --_cons_waiting_cnt;
+        }
+        *out = _queue.front();
+        _queue.pop();
+        /* the same to push */
+        if (_queue.size() < _low_water_mark && _prod_waiting_cnt > 0)
+            pthread_cond_signal(&_cond_prod);
+        pthread_mutex_unlock(&_mutex);
+    }
+};
+
+#endif // BLOCK_QUEUE_HPP
