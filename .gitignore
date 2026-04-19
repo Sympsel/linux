@@ -2,4 +2,7 @@
 
 # CPH files
 .cph
+.cache
 bin
+
+compile_commands.json
