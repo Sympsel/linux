@@ -4,5 +4,7 @@
 .cph
 .cache
 bin
+log
+build
 
 compile_commands.json

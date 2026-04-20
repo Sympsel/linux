@@ -1,12 +1,12 @@
 define LINUX
 endef
 
-OS := LINUX
 CXX := g++
-CXXFLAGS := -std=c++20 -Wall -Wextra -Iinclude -Isrc -O2 -pthread
+CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude -Isrc -O2 -pthread
 MAIN := main.cpp
 EXEC := test
 
+OS := LINUX
 ifdef WIN
 	OS := WIN
 endif
