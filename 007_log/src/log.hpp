@@ -153,9 +153,8 @@ class file_log_strategy : public log_strategy_vir {
     bool is_color_enabled() const override {
         return false;
     }
-    
-   private:
-    std::string remove_color_codes(const std::string& msg) {
+
+    static std::string remove_color_codes(const std::string& msg) {
         std::string result;
         bool in_escape = false;
         for (char c : msg) {
@@ -173,6 +172,9 @@ class file_log_strategy : public log_strategy_vir {
         }
         return result;
     }
+
+   private:
+
     
     std::string _logdir;
     std::string _logfilename;
@@ -267,6 +269,9 @@ class logger {
 // __FILE__ filename without path
 logger log;
 #define LOG(level) log(level, __FILE__, __LINE__)
+
+#define USE_CONSOLE_LOG_STRATEGY() log.use_console_log_strategy()
+#define USE_FILE_LOG_STRATEGY() log.use_file_log_strategy()
 
 }  // namespace sym
 
