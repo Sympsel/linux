@@ -29,7 +29,7 @@ int main() {
     auto producer_cb = [&ringqueue]() {
         task_t data = Task;
         while (true) {
-            ringqueue->Enqueue(data);
+            ringqueue->Push(data);
             std::cout << "product a task" << std::endl;
             sleep(1);
         }

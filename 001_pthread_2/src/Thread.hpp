@@ -30,37 +30,38 @@ private:
         t->get_proc_id();
         t->setlwp();
         t->_func();
+        t->_status = THREAD_STOPPED;
         return nullptr;
     }
    public:
     Thread(func_t f) : _func(f), _joinable(true) {
         _name = "Thread-" + std::to_string(_tid);
-        _state = THREAD_NEW;
+        _status = THREAD_NEW;
     }
 
     void start() {
-        if (_state == THREAD_NEW) {
+        if (_status == THREAD_NEW) {
             pthread_create(&_tid, nullptr, routine, this);
-            _state = THREAD_RUNNING;
+            _status = THREAD_RUNNING;
             std::cout << "Thread " << _name << " is started." << std::endl;
         }
     }
 
     void stop() {
         pthread_cancel(_tid);
-        _state = THREAD_STOPPED;
+        _status = THREAD_STOPPED;
         std::cout << "Thread " << _name << " is stopped." << std::endl;
     }
 
     void detach() {
-        if (_joinable && _state == THREAD_RUNNING) {
+        if (_joinable && _status == THREAD_RUNNING) {
             _joinable = false;
             pthread_detach(_tid);
         }
     }
 
     void join() {
-        if (_joinable && _state == THREAD_RUNNING) {
+        if (_joinable && _status == THREAD_RUNNING) {
             pthread_join(_tid, nullptr);
             _joinable = false;
         }
@@ -74,7 +75,7 @@ private:
     pid_t _lwpid; // Light Weight Process ID
     std::string _name;
     bool _joinable;
-    ThreadState _state;
+    ThreadState _status;
 
     func_t _func;
 };

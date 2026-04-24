@@ -124,8 +124,10 @@ class console_log_strategy : public log_strategy_vir {
     bool _color_enabled;
 };
 
-static std::string glogdir = "./log/";
-static std::string glogfilename = "log.txt";
+namespace {
+    std::string glogdir = "./log/";
+    std::string glogfilename = "log.txt";
+}
 
 class file_log_strategy : public log_strategy_vir {
    public:

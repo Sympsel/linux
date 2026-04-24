@@ -29,7 +29,7 @@ class RingQueue {
         _space_sem.release();
     }
 
-    void Enqueue(const T& in) {
+    void Push(const T& in) {
         _space_sem.acquire(); // P
         {
             std::lock_guard<std::mutex> lock(_prod_mutex);

@@ -11,7 +11,7 @@ public:
     }
 
     void Wait(Mutex& mutex) {
-        pthread_cond_wait(&_cond, mutex.orgin());
+        pthread_cond_wait(&_cond, mutex.origin());
     }
 
     void NotifyOne() {
