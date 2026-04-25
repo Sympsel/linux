@@ -27,20 +27,6 @@ class Mutex {
         pthread_mutex_t _lock;
 };
 
-// class LockGuard {
-//     private:
-//         Mutex& _lock;
-//     public:
-//         LockGuard(Mutex& lock) : _lock(lock) {
-//             _lock.Lock();
-//         }
-
-//         ~LockGuard() {
-//             _lock.Unlock();
-//         }
-// };
-
-
 class LockGuard {
    private:
     Mutex& _lock;
