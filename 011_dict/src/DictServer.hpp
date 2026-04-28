@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
+
 using namespace sym;
 using std::string;
 
@@ -24,7 +25,6 @@ class DictServer {
 
     void Load() {
         std::ifstream ifs{_dictFile};
-        std::cout << _dictFile << std::endl;
         if (ifs.fail()) {
             LOG(log_level_t::FATAL) << "no such dictfile";
             exit(1);
@@ -53,7 +53,7 @@ class DictServer {
         }
         if (result.empty()) {
             LOG(log_level_t::WARNING) << "Unknown word. "
-                                      << "We notice it and may update dictionary library! "
+                                      << "We may update dictionary library! "
                                       << "Now we handle it with origin word.";
             return word;
         }

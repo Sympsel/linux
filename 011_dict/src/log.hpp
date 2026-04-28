@@ -223,8 +223,7 @@ class logger {
                << loglevel2str(_level) << " | "
             //    << '[' << _pid << ']'
                "file: " << _filename << " | "
-               "line: " << _line << " | "
-               << "] ";
+               "line: " << _line << "] ";
             
             _loginfo = ss.str();
         }
