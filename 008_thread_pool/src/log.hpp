@@ -1,5 +1,4 @@
-#ifndef __LOG_HPP
-#define __LOG_HPP
+#pragma once
 
 #include <time.h>
 #include <unistd.h>
@@ -11,7 +10,6 @@
 #include <string>
 
 namespace sym {
-
 // ANSI color codes
 namespace Color {
     const std::string RESET   = "\033[0m";
@@ -221,12 +219,11 @@ class logger {
                 ss << get_color_for_level(_level);
             }
             
-            ss << '[' << _curr_time << ']'
-               << '[' << loglevel2str(_level) << ']'
-               << '[' << _pid << ']'
-               << '[' << _filename << ']'
-               << '[' << _line << ']'
-               << "- ";
+            ss << '[' << _curr_time << " | "
+               << loglevel2str(_level) << " | "
+            //    << '[' << _pid << ']'
+               "file: " << _filename << " | "
+               "line: " << _line << "] ";
             
             _loginfo = ss.str();
         }
@@ -276,5 +273,3 @@ logger log;
 #define USE_FILE_LOG_STRATEGY() log.use_file_log_strategy()
 
 }  // namespace sym
-
-#endif  // __LOG_HPP

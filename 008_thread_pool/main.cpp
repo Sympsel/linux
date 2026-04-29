@@ -20,6 +20,7 @@ int main() {
         }
         sleep(1);
     }
+    tp->Stop();
     tp->Wait();
     return 0;
 }
