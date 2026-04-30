@@ -3,8 +3,8 @@ endef
 
 CXX := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude -Isrc -O2 -pthread
-MAIN := main.cpp
-EXEC := test
+MAIN := UdpEchoServer.cpp
+EXEC := server
 
 OS := LINUX
 ifdef WIN

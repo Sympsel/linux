@@ -8,3 +8,7 @@ log
 build
 
 compile_commands.json
+
+zzz_spdlog
+
+000_tmp
