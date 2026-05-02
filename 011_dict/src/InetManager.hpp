@@ -39,7 +39,7 @@ class InetManager {
     void Bind(int sockfd) {
         int n = bind(sockfd, (struct sockaddr*)&_addr, Len());
         if (n < 0) {
-            LOG(log_level_t::FATAL) << "bind socket error: " << strerror(errno);
+            LOG(log_level_t::FATAL) << "bind socket error: ";
             exit(1);
         }
         LOG(log_level_t::INFO) << "bind success! Info[" << _ip << ":" << _port << "]";
@@ -56,7 +56,7 @@ class InetManager {
     void SendTo(int sockfd, const std::string& buffer) {
         ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0, (struct sockaddr*)&_addr, Len());
         if (n < 0) {
-            LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
+            LOG(log_level_t::ERROR) << "sendto error: ";
         }
     }
 
@@ -66,7 +66,7 @@ class InetManager {
         // len是输入/输出参数,需要传入缓冲区大小,输出实际大小
         ssize_t n = recvfrom(sockfd, buffer, sizeof buffer - 1, 0, (struct sockaddr*)&_addr, &len);
         if (n < 0) {
-            LOG(log_level_t::ERROR) << "recvfrom error: " << strerror(errno);
+            LOG(log_level_t::ERROR) << "recvfrom error: ";
             return "";
         }
         buffer[n] = '\0';
