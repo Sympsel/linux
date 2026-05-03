@@ -56,13 +56,31 @@ class ThreadPool {
         }
     }
 
-   public:
-    ThreadPool(int num = gnum) : _num(num), _status(STOP), _sleeper_cnt() {
+    ThreadPool(int num) : _num(num), _status(STOP), _sleeper_cnt() {
         for (int i = 0; i < _num; ++i) {
             _threads.emplace_back([this]() {
                 this->ThreadRoutine();
             });
         }
+    }
+
+    ThreadPool(const ThreadPool&) = delete;
+
+    ThreadPool& operator=(const ThreadPool&) = delete;
+
+    ThreadPool(ThreadPool&&) = delete;
+    ThreadPool& operator=(ThreadPool&&) = delete;
+
+   public:
+    static ThreadPool<T>* GetInstance(int num = gnum) {
+        if (_instance == nullptr) {
+            LockGuard lockguard(_singleton_lock);
+            if (_instance == nullptr) {
+                LOG(log_level_t::INFO) << "Threadpool Instantiated.";
+                _instance = new ThreadPool<T>(num);
+            }
+        }
+        return _instance;
     }
 
     ~ThreadPool() {
@@ -127,7 +145,6 @@ class ThreadPool {
    private:
     std::vector<Thread> _threads;
     int _num;
-    // bool _isRunning;
     int _status;
 
     std::queue<T> _q;
@@ -135,4 +152,13 @@ class ThreadPool {
     Cond _cond;
 
     int _sleeper_cnt;
+
+    static ThreadPool<T>* _instance;
+    static Mutex _singleton_lock;
 };
+
+template<class T>
+ThreadPool<T>* ThreadPool<T>::_instance = nullptr;
+
+template<class T>
+Mutex ThreadPool<T>::_singleton_lock;
