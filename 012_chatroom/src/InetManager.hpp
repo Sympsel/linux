@@ -1,23 +1,24 @@
 #pragma once
 
+#include <cstring>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
 #include <string>
 
-#include "log.hpp"
+#include "Log.hpp"
 using namespace sym;
 
 class InetManager {
    private:
-    std::string IpToString(const struct in_addr& sin_addr) {
+    static std::string IpToString(const in_addr& sin_addr) {
         char buffer[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &sin_addr, buffer, sizeof buffer);
         return buffer;
     }
    public:
-    InetManager() {}
+    InetManager() = default;
     InetManager(in_port_t port, const std::string& ip = "0.0.0.0") : _port(port), _ip(ip) {
         _addr.sin_family = AF_INET;
         _addr.sin_addr.s_addr = inet_addr(_ip.c_str());
@@ -45,17 +46,16 @@ class InetManager {
         LOG(log_level_t::INFO) << "bind success! Info[" << _ip << ":" << _port << "]";
     }
 
-    struct sockaddr_in InetAddr() {
+    sockaddr_in InetAddr() const {
         return _addr;
     }
 
-    socklen_t Len() {
+    socklen_t Len() const {
         return sizeof _addr;
     }
 
     void SendTo(int sockfd, const std::string& buffer) {
-        ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0, (struct sockaddr*)&_addr, Len());
-        if (n < 0) {
+        if (const ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0, (struct sockaddr*)&_addr, Len()); n < 0) {
             LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
         }
     }
@@ -77,7 +77,11 @@ class InetManager {
         return buffer;
     }
 
-    ~InetManager() {}
+    bool operator==(const InetManager& o) const {
+        return _port == o._port && _ip == o._ip;
+    }
+
+    ~InetManager() = default;
 
    private:
     in_port_t _port;

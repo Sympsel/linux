@@ -3,6 +3,7 @@
 # CPH files
 .cph
 .cache
+.idea
 bin
 log
 build

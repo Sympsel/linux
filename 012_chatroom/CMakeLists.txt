@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 4.2)
+project(012_chatroom)
+
+set(CMAKE_CXX_STANDARD 17)
+
+include_directories(src)
+
+add_executable(server
+        src/InetManager.hpp
+        src/Log.hpp
+        chatServer.cpp
+        src/Route.hpp
+        src/UdpServer.hpp
+        src/User.hpp
+        src/Cond.hpp
+        src/Thread.hpp
+        src/ThreadPool.hpp)
+
+add_executable(client
+        chatClient.cpp
+        src/InetManager.hpp
+        src/Log.hpp
+)
