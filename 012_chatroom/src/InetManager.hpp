@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 
 #include <string>
+#include <utility>
 
 #include "Log.hpp"
 using namespace sym;
@@ -19,31 +20,41 @@ class InetManager {
     }
    public:
     InetManager() = default;
-    InetManager(in_port_t port, const std::string& ip = "0.0.0.0") : _port(port), _ip(ip) {
+    InetManager(InetManager&&) noexcept = default;
+    InetManager(const in_port_t& port, std::string ip = "0.0.0.0") : _port(port), _ip(std::move(ip)) {
         _addr.sin_family = AF_INET;
         _addr.sin_addr.s_addr = inet_addr(_ip.c_str());
         _addr.sin_port = htons(_port);
     }
-    InetManager(const struct sockaddr_in& addr) : _addr(addr) {
+
+    InetManager(const sockaddr_in& addr) : _addr(addr) {
         _port = ntohs(_addr.sin_port);
         _ip = IpToString(_addr.sin_addr);
     }
 
-    std::string Ip() {
+    InetManager(const InetManager&) = default;
+    InetManager& operator=(const InetManager&) = default;
+    InetManager& operator=(InetManager&&) = default;
+
+    [[nodiscard]] std::string GetIp() const {
         return _ip;
     }
 
-    in_port_t Port() {
+    [[nodiscard]] in_port_t GetPort() const {
         return _port;
     }
 
-    void Bind(int sockfd) {
-        int n = bind(sockfd, (struct sockaddr*)&_addr, Len());
-        if (n < 0) {
-            LOG(log_level_t::FATAL) << "bind socket error: " << strerror(errno);
+    // enable_log: we wish client won't receive log
+    void Bind(int sockfd, bool enable_log = true) {
+        if (const int n = bind(sockfd, (struct sockaddr*)&_addr, Len()); n < 0) {
+            if (enable_log) {
+                LOG(log_level_t::FATAL) << "bind socket error: " << strerror(errno);
+            }
             exit(1);
         }
-        LOG(log_level_t::INFO) << "bind success! Info[" << _ip << ":" << _port << "]";
+        if (enable_log) {
+            LOG(log_level_t::INFO) << "bind socket success";
+        }
     }
 
     sockaddr_in InetAddr() const {
@@ -71,7 +82,6 @@ class InetManager {
         }
         buffer[n] = '\0';
 
-        // 当接收完数据后,需要更新类内的_port, _ip
         _port = ntohs(_addr.sin_port);
         _ip = IpToString(_addr.sin_addr);
         return buffer;
@@ -87,5 +97,5 @@ class InetManager {
     in_port_t _port;
     std::string _ip;
 
-    struct sockaddr_in _addr;
+    sockaddr_in _addr;
 };

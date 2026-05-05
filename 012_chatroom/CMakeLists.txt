@@ -20,4 +20,5 @@ add_executable(client
         chatClient.cpp
         src/InetManager.hpp
         src/Log.hpp
+        src/ChatClient.hpp
 )

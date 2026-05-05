@@ -9,7 +9,7 @@
 using func_t = std::function<void()>;
 
 namespace {
-int gcnt;
+int gcnt = 0;
 }
 
 class Thread {
@@ -51,8 +51,8 @@ class Thread {
     }
 
     void stop() {
-        if (_status == ThreadState::RUNNING) {
-            // we should ensure it was running, because we cant't cancel it twice
+        if (_status == RUNNING) {
+            // we should ensure it was running, because we can't cancel it twice
             pthread_cancel(_tid);
             _status = STOPPED;
         }
@@ -73,13 +73,13 @@ class Thread {
         }
     }
 
-    ~Thread() {}
+    ~Thread() = default;
 
    private:
     func_t _func;
     pthread_t _tid;
     pid_t _pid;
-    pid_t _lwpid;  // Light Weight Process ID
+    pid_t _lwpid;  // Lightweight Process ID
     std::string _name;
     bool _joinable;
     ThreadState _status;

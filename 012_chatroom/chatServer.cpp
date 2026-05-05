@@ -20,11 +20,10 @@ int main(int argc, char* argv[]) {
 
     in_port_t server_port = std::stoi(argv[1]);
 
-    auto& r = Route::GetInstance();
     std::unique_ptr<UdpServer> usvr = std::make_unique<UdpServer>(
-        [&r](const std::string& message, const InetManager& who, int sockfd) {
-            ThreadPool<task_t>::GetInstance().Enqueue([&r, &message, &who, &sockfd]() -> void {
-                r.RouteMessage(message, who, sockfd);
+        [](const std::string& message, const InetManager& who, int sockfd) {
+            ThreadPool<task_t>::GetInstance().Enqueue([message, who, sockfd]() -> void {
+                Route::GetInstance().RouteMessage(message, {who}, sockfd);
             });
         }, server_port);
     usvr->Init();

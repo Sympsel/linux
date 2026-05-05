@@ -8,12 +8,12 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <utility>
 
 #include "InetManager.hpp"
 #include "Log.hpp"
 #include "User.hpp"
 
-// using callback_t = std::function<std::string(const std::string &)>;
 using callback_t = std::function<void(const std::string &, const InetManager&, int sockfd)>;
 
 using namespace sym;
@@ -25,8 +25,8 @@ namespace {
 
 class UdpServer {
 public:
-    UdpServer(callback_t cb, in_port_t port)
-        : _sockfd(-1), _cb(cb), _port(port) {
+    UdpServer(callback_t cb, const in_port_t& port)
+        : _sockfd(-1), _cb(std::move(cb)), _port(port) {
     }
 
     ~UdpServer() {
@@ -57,7 +57,7 @@ public:
             std::string inbuffer = peer.Recvfrom(_sockfd);
             // 构造响应消息
             if (_cb) {
-                _cb(inbuffer, peer.InetAddr(), _sockfd);
+                _cb(inbuffer, peer, _sockfd);
             }
         }
     }

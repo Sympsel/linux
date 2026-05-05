@@ -71,12 +71,7 @@ class ThreadPool {
 
     static ThreadPool<T>& GetInstance(int num = gnum) {
         static ThreadPool<T> instance(num);
-        if (instance._status != RUNNING) {
-            auto lockguard = LockGuard(_singleton_lock);
-            if (instance._status != RUNNING) {
-                instance.Start();
-            }
-        }
+        instance.Start();
         return instance;
     }
 
@@ -90,7 +85,6 @@ class ThreadPool {
     }
 
     void Start() {
-        LockGuard lockguard(_lock);
         if (_status == RUNNING) return;
         for (auto& thread : _threads) {
             thread.start();
@@ -148,9 +142,4 @@ class ThreadPool {
     Cond _cond;
 
     int _sleeper_cnt;
-
-    static Mutex _singleton_lock;
 };
-
-template<class T>
-Mutex ThreadPool<T>::_singleton_lock;

@@ -4,37 +4,13 @@
 
 #include <iostream>
 
-#include "InetManager.hpp"
-#include "Log.hpp"
-#include "Thread.hpp"
+#include "ChatClient.hpp"
 using namespace sym;
 
 namespace {
     int sockfd;
     std::string server_ip;
     in_port_t server_port;
-}
-
-void RecvMsg() {
-    while (true) {
-        InetManager peer;
-        if (const std::string receive = peer.Recvfrom(sockfd); !receive.empty()) {
-            std::cout << "Translated=> " << receive << std::endl;
-        }
-    }
-}
-
-void SendMsg() {
-    InetManager server_addr{server_port, server_ip};
-    std::string inbuffer;
-    while (true) {
-        InetManager tmp;
-        std::cout << "Send a Word# ";
-        std::getline(std::cin, inbuffer);
-        if (!inbuffer.empty()) {
-            server_addr.SendTo(sockfd, inbuffer);
-        }
-    }
 }
 
 inline void Usage(const std::string& name) {
@@ -50,18 +26,12 @@ int main(int argc, char* argv[]) {
     server_ip = argv[1];
     server_port = std::stoi(argv[2]);
 
-    // 1. 创建Udp socket
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
-        LOG(log_level_t::FATAL) << "socket error";
-        exit(1);
-    }
+    ChatClient client{InetManager{server_port, server_ip}, "aaa"};
 
-    Thread recver(RecvMsg);
-    Thread sender(SendMsg);
-    recver.start();
-    sender.start();
-    recver.join();
-    sender.join();
+    // 1. 创建Udp socket
+    InetManager local_addr(0);
+    local_addr.Bind(sockfd, false);
+    InetManager server_addr{server_port, server_ip};
+    server_addr.SendTo(sockfd, "[SYSTEM] User joined");
     return 0;
 }

@@ -4,13 +4,14 @@
 #include <vector>
 
 #include "User.hpp"
+#include "ThreadPool.hpp"
 
 class Route {
 private:
-    bool IsOnline(const User& who) {
+    bool IsOnline(const InetManager& addr) {
         LockGuard lockguard(_lock);
         for (auto& user : _online_list) {
-            if (user.GetUserAddr() == who.GetUserAddr()) {
+            if (user.GetUserAddr() == addr) {
                 return true;
             }
         }
@@ -33,15 +34,18 @@ public:
         return instance;
     }
 
-    void RouteMessage(const std::string& message, const User& who, int sockfd) {
-        LockGuard lockguard(_lock);
-        if (!IsOnline(who)) {
+    void RouteMessage(const std::string& message, const User& who, const int sockfd) {
+        if (!IsOnline(who.GetUserAddr())) {
             LockGuard lockguard(_lock);
             AddUser(who);
         }
 
+        LockGuard lockguard(_lock);
+        std::string formated_msg = who.GetUsername();
+        formated_msg += ": ";
+        formated_msg += message;
         for (auto& user : _online_list) {
-            user.GetUserAddr().SendTo(sockfd, message);
+            user.GetUserAddr().SendTo(sockfd, formated_msg);
         }
     }
 
