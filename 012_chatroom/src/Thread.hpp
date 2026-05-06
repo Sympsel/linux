@@ -7,15 +7,11 @@
 #include <iostream>
 #include <utility>
 
-#include "IniParse.hpp"
+#include "Config.hpp"
 
 using func_t = std::function<void()>;
 
-bool ENABLE_LOG = false;
-
-namespace {
-    int default_cnt = 0;
-}
+static int default_cnt = 0;
 
 class Thread {
 private:
@@ -30,7 +26,7 @@ private:
     }
 
     void setlwp() {
-        _lwpid = syscall(SYS_gettid);
+        _lwpid = static_cast<pid_t>(syscall(SYS_gettid));
     }
 
     static void *routine(void *args) {
@@ -51,7 +47,7 @@ public:
         if (_status == NEW) {
             pthread_create(&_tid, nullptr, routine, this);
             _status = RUNNING;
-            if (ENABLE_LOG) {
+            if (Conf::enable_log_debug) {
                 std::cout << "Thread " << _name << " is started." << std::endl;
             }
         }
@@ -63,7 +59,7 @@ public:
             pthread_cancel(_tid);
             _status = STOPPED;
         }
-        if (ENABLE_LOG) {
+        if (Conf::enable_log_debug) {
             std::cout << "Thread " << _name << " is stopped." << std::endl;
         }
     }

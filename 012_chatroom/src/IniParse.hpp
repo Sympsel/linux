@@ -1,15 +1,11 @@
 #pragma once
 #include <unordered_map>
 #include <string>
-#include <algorithm>
 #include <fstream>
 #include <filesystem>
 #include "Log.hpp"
 
-namespace {
-    std::string default_config_file;
-}
-
+static std::string default_config_file;
 
 /**
  * @brief you may handle the path of config file by yourself on it won't work
@@ -17,27 +13,31 @@ namespace {
 class IniParser {
 private:
     static void trim(std::string &str) {
-        std::copy_if(str.begin(), str.end(), std::back_inserter(str),
-                     [](const char c) {
-                         return !std::isspace(c);
-                     });
+        std::string tmp;
+        for (const auto& c : str) {
+            if (!std::isspace(c)) {
+                tmp.push_back(c);
+            }
+        }
+        str = tmp;
     }
 
     explicit IniParser(const std::string & file) {
         default_config_file = std::filesystem::canonical(
-            std::filesystem::current_path() / ".." / "config-server.ini"
+            std::filesystem::current_path() / ".." / "config.ini"
         );
         if (std::filesystem::exists(file)) {
             _file = file;
         } else {
             _file = default_config_file;
         }
+        LOG_DEBUG() << "Load config file: " << _file;
         load();
     }
 
     bool load() {
         if (!std::filesystem::exists(_file)) {
-            LOG_FATAL() << "Config file not exists: " << _file;
+            LOG_WARN() << "Config file not exists: " << _file;
             return false;
         }
         std::ifstream config{_file};
@@ -45,7 +45,6 @@ private:
         while (std::getline(config, line)) {
             trim(line);
             if (line.empty() || line[0] == ';' || line[0] == '#') continue;
-            // todo
             if (line[0] == '[') {
                 current_section = line.substr(1, line.size() - 2);
                 trim(current_section);

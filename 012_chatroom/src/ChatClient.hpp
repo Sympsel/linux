@@ -6,13 +6,13 @@
 #include "InetManager.hpp"
 #include "User.hpp"
 #include "Thread.hpp"
-
-inline std::string default_username = "unnamed";
+#include "Config.hpp"
 
 class ChatClient {
 private:
     void RecvMsg() const {
         InetManager peer;
+        // ReSharper disable once CppDFAEndlessLoop
         while (true) {
             if (const std::string receive = peer.Recvfrom(_sockfd); !receive.empty()) {
                 std::cout << receive << std::endl;
@@ -22,6 +22,7 @@ private:
 
     void SendMsg() {
         std::string inbuffer;
+        // ReSharper disable once CppDFAEndlessLoop
         while (true) {
             std::getline(std::cin, inbuffer);
             if (!inbuffer.empty()) {
@@ -31,13 +32,15 @@ private:
     }
 
 public:
-    explicit ChatClient(InetManager server_addr, const std::string &username = default_username) : _sockfd(-1),
+    explicit ChatClient(InetManager server_addr, const std::string &username = Conf::default_username) : _sockfd(-1),
         server_addr(std::move(server_addr)),
         _recv_thread([this] {
             RecvMsg();
         }), _send_thread([this] {
             SendMsg();
         }) {
+        InitConf();
+
         _sockfd = socket(AF_INET, SOCK_DGRAM, 0);
         if (_sockfd < 0) {
             std::cerr << "socket error" << std::endl;
@@ -52,7 +55,8 @@ public:
 
 
     void Start() {
-        const std::string join_msg = "[SYSTEM]$ User " + _user.GetUsername() + " joined";
+        const std::string join_msg = "[" + Conf::system_name + "]" + Conf::system_msg_sign + " User " + _user.
+                                     GetUsername() + " joined";
         server_addr.SendTo(_sockfd, join_msg);
         _recv_thread.start();
         _send_thread.start();

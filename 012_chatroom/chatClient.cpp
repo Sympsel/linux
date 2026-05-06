@@ -21,7 +21,7 @@ int main(const int argc, char* argv[]) {
 
     std::string username;
     if (argc == 3) {
-        username = default_username;
+        username = Conf::default_username;
     } else {
         username = argv[3];
     }

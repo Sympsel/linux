@@ -5,17 +5,26 @@
 // #define DEBUG_MODE
 
 #include "InetManager.hpp"
+#include "Config.hpp"
 
 class User {
 public:
-    User() = default;
-    User(const InetManager& addr_info, const std::string& username = "unnamed") : _username(username), _addr_info(addr_info) {
+    User() {
+        InitConf();
+    }
+
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    User(const InetManager& addr_info, const std::string& username = "") : _username(username), _addr_info(addr_info) {
+        InitConf();
+        _username = Conf::default_username;
     }
 
     User(InetManager&& addr_info, std::string&& username) : _username(std::move(username)), _addr_info(std::move(addr_info)) {
+        InitConf();
     }
 
-    User(InetManager &&addr_info) : _addr_info(std::move(addr_info)) {
+    explicit User(InetManager &&addr_info) : _addr_info(std::move(addr_info)) {
+        InitConf();
     }
 
     [[nodiscard]] const InetManager& GetUserAddr() const {

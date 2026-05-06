@@ -9,9 +9,7 @@
 #include "Log.hpp"
 using namespace sym;
 
-namespace {
-const int gnum = 5;
-}
+static int gnum = 5;
 
 template <class T>
 class ThreadPool {
@@ -40,17 +38,17 @@ class ThreadPool {
                 LockGuard lockguard(_lock);
                 while (IsTaskQueueEmpty() && _status == RUNNING) {
                     ++_sleeper_cnt;
-                    if (ENABLE_LOG) {
+                    if (Conf::enable_log_debug) {
                         LOG_DEBUG() << "No task, Thread" << name << " sleep";
                     }
                     _cond.Wait(_lock);
-                    if (ENABLE_LOG) {
+                    if (Conf::enable_log_debug) {
                         LOG_DEBUG() << "Get a task, Thread" << name << " notified";
                     }
                     --_sleeper_cnt;
                 }
                 if (IsTaskQueueEmpty() && _status != RUNNING) {
-                    if (ENABLE_LOG) {
+                    if (Conf::enable_log_debug) {
                         LOG(log_level_t::INFO) << "Thread " << name << " exit.";
                     }
                     break;
@@ -61,7 +59,7 @@ class ThreadPool {
         }
     }
 
-    ThreadPool(int num) : _num(num), _status(STOP), _sleeper_cnt() {
+    explicit ThreadPool(const int num) : _num(num), _status(STOP), _sleeper_cnt() {
         for (int i = 0; i < _num; ++i) {
             _threads.emplace_back([this]() {
                 this->ThreadRoutine();

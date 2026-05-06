@@ -6,13 +6,13 @@
 
 #include <cstring>
 #include <functional>
-#include <iostream>
 #include <string>
 #include <utility>
 
 #include "InetManager.hpp"
 #include "Log.hpp"
 #include "User.hpp"
+#include "Config.hpp"
 
 using callback_t = std::function<void(const std::string &, const User&, int sockfd)>;
 
@@ -22,6 +22,7 @@ class UdpServer {
 public:
     UdpServer(callback_t cb, const in_port_t& port)
         : _sockfd(-1), _cb(std::move(cb)), _port(port) {
+        InitConf();
     }
 
     ~UdpServer() {
@@ -50,9 +51,10 @@ public:
 
             // 接收客户端消息(包括获取客户端地址及端口号)
             std::string inbuffer = peer.Recvfrom(_sockfd);
+            std::string username = Conf::default_username;
             // 构造响应消息
             if (_cb) {
-                _cb(inbuffer, peer, _sockfd);
+                _cb(inbuffer, {peer, username}, _sockfd);
             }
         }
     }

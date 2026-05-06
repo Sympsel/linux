@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "Config.hpp"
 #include "Log.hpp"
 using namespace sym;
 
@@ -19,15 +20,16 @@ class InetManager {
         return buffer;
     }
    public:
-    InetManager() = default;
+    InetManager() : _port{}, _addr{} {}
     InetManager(InetManager&&) noexcept = default;
-    InetManager(const in_port_t& port, std::string ip = "0.0.0.0") : _port(port), _ip(std::move(ip)) {
+
+    explicit InetManager(const in_port_t& port, std::string ip = "0.0.0.0") : _port{port}, _ip{std::move(ip)}, _addr{} {
         _addr.sin_family = AF_INET;
         _addr.sin_addr.s_addr = inet_addr(_ip.c_str());
         _addr.sin_port = htons(_port);
     }
 
-    InetManager(const sockaddr_in& addr) : _addr(addr) {
+    explicit InetManager(const sockaddr_in& addr) : _port{}, _addr(addr) {
         _port = ntohs(_addr.sin_port);
         _ip = IpToString(_addr.sin_addr);
     }
@@ -46,7 +48,7 @@ class InetManager {
 
     // enable_log: we wish client won't receive log
     void Bind(const int sockfd, const bool enable_log = true) {
-        if (const int n = bind(sockfd, (struct sockaddr*)&_addr, Len()); n < 0) {
+        if (const int n = bind(sockfd, reinterpret_cast<sockaddr *>(&_addr), Len()); n < 0) {
             if (enable_log) {
                 LOG(log_level_t::FATAL) << "bind socket error: " << strerror(errno);
             }
@@ -66,14 +68,14 @@ class InetManager {
     }
 
     void SendTo(const int sockfd, const std::string& buffer) {
-        if (const ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0, (struct sockaddr*)&_addr, Len()); n < 0) {
+        if (const ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0, reinterpret_cast<sockaddr *>(&_addr), Len()); n < 0) {
             LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
         }
     }
 
     void SendWithUsername(const int sockfd, const std::string& buffer, const std::string &username) {
-        const std::string send_buffer = "[" +  username + "]# " + buffer;
-        if (const ssize_t n = sendto(sockfd, send_buffer.c_str(), send_buffer.size(), 0, (struct sockaddr*)&_addr, Len()); n < 0) {
+        const std::string send_buffer = "[" +  username + "]" + Conf::normal_msg_sign + " " + buffer;
+        if (const ssize_t n = sendto(sockfd, send_buffer.c_str(), send_buffer.size(), 0, reinterpret_cast<sockaddr *>(&_addr), Len()); n < 0) {
             LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
         }
     }
@@ -82,10 +84,10 @@ class InetManager {
         char buffer[1024];
         socklen_t len = Len();
         // len是输入/输出参数,需要传入缓冲区大小,输出实际大小
-        ssize_t n = recvfrom(sockfd, buffer, sizeof buffer - 1, 0, (struct sockaddr*)&_addr, &len);
+        const ssize_t n = recvfrom(sockfd, buffer, sizeof buffer - 1, 0, reinterpret_cast<sockaddr *>(&_addr), &len);
         if (n < 0) {
             LOG(log_level_t::ERROR) << "recvfrom error: " << strerror(errno);
-            return "";
+            return {};
         }
         buffer[n] = '\0';
 

@@ -1,12 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
 
 #include "User.hpp"
 #include "ThreadPool.hpp"
-
-#include "IniParse.hpp"
 
 /**
  * @brief handle the message distribute

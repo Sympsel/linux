@@ -2,18 +2,12 @@
 #include "User.hpp"
 #include "ThreadPool.hpp"
 #include "RouteServer.hpp"
-#include "Config.hpp"
 
 using task_t = std::function<void()>;
 
 static void Usage(const std::string& name) {
     std::cerr << "Usage: " << name << " <port>" << std::endl;
 }
-
-
-// static void initConf() {
-//      Conf::conf_instance.Get("style", "system_name", "SYSTEM")
-// }
 
 int main(const int argc, char* argv[]) {
     if (argc != 2) {
@@ -22,7 +16,6 @@ int main(const int argc, char* argv[]) {
     }
 
     USE_CONSOLE_LOG();
-    // initConf();
 
     in_port_t server_port = std::stoi(argv[1]);
 
