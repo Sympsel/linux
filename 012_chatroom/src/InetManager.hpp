@@ -45,7 +45,7 @@ class InetManager {
     }
 
     // enable_log: we wish client won't receive log
-    void Bind(int sockfd, bool enable_log = true) {
+    void Bind(const int sockfd, const bool enable_log = true) {
         if (const int n = bind(sockfd, (struct sockaddr*)&_addr, Len()); n < 0) {
             if (enable_log) {
                 LOG(log_level_t::FATAL) << "bind socket error: " << strerror(errno);
@@ -57,21 +57,28 @@ class InetManager {
         }
     }
 
-    sockaddr_in InetAddr() const {
+    [[nodiscard]] sockaddr_in InetAddr() const {
         return _addr;
     }
 
-    socklen_t Len() const {
+    [[nodiscard]] socklen_t Len() const {
         return sizeof _addr;
     }
 
-    void SendTo(int sockfd, const std::string& buffer) {
+    void SendTo(const int sockfd, const std::string& buffer) {
         if (const ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0, (struct sockaddr*)&_addr, Len()); n < 0) {
             LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
         }
     }
 
-    std::string Recvfrom(int sockfd) {
+    void SendWithUsername(const int sockfd, const std::string& buffer, const std::string &username) {
+        const std::string send_buffer = "[" +  username + "]# " + buffer;
+        if (const ssize_t n = sendto(sockfd, send_buffer.c_str(), send_buffer.size(), 0, (struct sockaddr*)&_addr, Len()); n < 0) {
+            LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
+        }
+    }
+
+    std::string Recvfrom(const int sockfd) {
         char buffer[1024];
         socklen_t len = Len();
         // len是输入/输出参数,需要传入缓冲区大小,输出实际大小

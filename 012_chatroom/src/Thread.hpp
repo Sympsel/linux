@@ -5,15 +5,20 @@
 
 #include <functional>
 #include <iostream>
+#include <utility>
+
+#include "IniParse.hpp"
 
 using func_t = std::function<void()>;
 
+bool ENABLE_LOG = false;
+
 namespace {
-int gcnt = 0;
+    int default_cnt = 0;
 }
 
 class Thread {
-   private:
+private:
     enum ThreadState {
         NEW,
         RUNNING,
@@ -28,8 +33,8 @@ class Thread {
         _lwpid = syscall(SYS_gettid);
     }
 
-    static void* routine(void* args) {
-        Thread* t = static_cast<Thread*>(args);
+    static void *routine(void *args) {
+        auto *t = static_cast<Thread *>(args);
         t->get_proc_id();
         t->setlwp();
         t->_func();
@@ -37,16 +42,18 @@ class Thread {
         return nullptr;
     }
 
-   public:
-    Thread(func_t f) : _func(f), _joinable(true), _status(NEW) {
-        _name = "Thread-" + std::to_string(++gcnt);
+public:
+    explicit Thread(func_t f) : _func(std::move(f)), _tid(0), _pid(0), _lwpid(0), _joinable(true), _status(NEW) {
+        _name = "Thread-" + std::to_string(++default_cnt);
     }
 
     void start() {
         if (_status == NEW) {
             pthread_create(&_tid, nullptr, routine, this);
             _status = RUNNING;
-            std::cout << "Thread " << _name << " is started." << std::endl;
+            if (ENABLE_LOG) {
+                std::cout << "Thread " << _name << " is started." << std::endl;
+            }
         }
     }
 
@@ -56,7 +63,9 @@ class Thread {
             pthread_cancel(_tid);
             _status = STOPPED;
         }
-        std::cout << "Thread " << _name << " is stopped." << std::endl;
+        if (ENABLE_LOG) {
+            std::cout << "Thread " << _name << " is stopped." << std::endl;
+        }
     }
 
     void detach() {
@@ -75,11 +84,11 @@ class Thread {
 
     ~Thread() = default;
 
-   private:
+private:
     func_t _func;
     pthread_t _tid;
     pid_t _pid;
-    pid_t _lwpid;  // Lightweight Process ID
+    pid_t _lwpid; // Lightweight Process ID
     std::string _name;
     bool _joinable;
     ThreadState _status;

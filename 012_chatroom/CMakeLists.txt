@@ -9,16 +9,20 @@ add_executable(server
         src/InetManager.hpp
         src/Log.hpp
         chatServer.cpp
-        src/Route.hpp
+        src/RouteServer.hpp
         src/UdpServer.hpp
         src/User.hpp
         src/Cond.hpp
         src/Thread.hpp
-        src/ThreadPool.hpp)
+        src/ThreadPool.hpp
+        src/IniParse.hpp
+        src/Config.hpp)
 
 add_executable(client
         chatClient.cpp
         src/InetManager.hpp
         src/Log.hpp
         src/ChatClient.hpp
+        src/IniParse.hpp
+        src/Config.hpp
 )

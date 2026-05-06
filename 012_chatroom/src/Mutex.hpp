@@ -32,7 +32,7 @@ class LockGuard {
     Mutex& _lock;
 
    public:
-    LockGuard(Mutex& lock) : _lock(lock) {
+    explicit LockGuard(Mutex& lock) : _lock(lock) {
         _lock.Lock();
     }
 

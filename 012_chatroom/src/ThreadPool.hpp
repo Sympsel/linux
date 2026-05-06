@@ -40,13 +40,19 @@ class ThreadPool {
                 LockGuard lockguard(_lock);
                 while (IsTaskQueueEmpty() && _status == RUNNING) {
                     ++_sleeper_cnt;
-                    LOG(log_level_t::INFO) << "No task, Thread" << name << " sleep";
+                    if (ENABLE_LOG) {
+                        LOG_DEBUG() << "No task, Thread" << name << " sleep";
+                    }
                     _cond.Wait(_lock);
-                    LOG(log_level_t::INFO) << "Get a task, Thread" << name << " notified";
+                    if (ENABLE_LOG) {
+                        LOG_DEBUG() << "Get a task, Thread" << name << " notified";
+                    }
                     --_sleeper_cnt;
                 }
                 if (IsTaskQueueEmpty() && _status != RUNNING) {
-                    LOG(log_level_t::INFO) << "Thread " << name << " exit.";
+                    if (ENABLE_LOG) {
+                        LOG(log_level_t::INFO) << "Thread " << name << " exit.";
+                    }
                     break;
                 }
                 task = PopHelper();

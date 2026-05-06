@@ -14,14 +14,9 @@
 #include "Log.hpp"
 #include "User.hpp"
 
-using callback_t = std::function<void(const std::string &, const InetManager&, int sockfd)>;
+using callback_t = std::function<void(const std::string &, const User&, int sockfd)>;
 
 using namespace sym;
-
-// ReSharper disable once CppUnnamedNamespaceInHeaderFile
-namespace {
-    char op = '$';
-};
 
 class UdpServer {
 public:

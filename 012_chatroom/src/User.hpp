@@ -2,12 +2,13 @@
 
 #include <utility>
 
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 #include "InetManager.hpp"
 
 class User {
 public:
+    User() = default;
     User(const InetManager& addr_info, const std::string& username = "unnamed") : _username(username), _addr_info(addr_info) {
     }
 
@@ -32,6 +33,16 @@ public:
         return _username;
 #endif
     }
+
+    void SetUsername(const std::string& username) {
+        _username = username;
+    }
+
+    void SetInetManager(const InetManager& addr_info) {
+        _addr_info = addr_info;
+    }
+
+    ~User() = default;
 
 private:
     std::string _username;
