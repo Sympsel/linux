@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "User.hpp"
 #include "ThreadPool.hpp"
@@ -10,14 +11,11 @@
  */
 class RouteServer {
 private:
-    bool IsOnline(const InetManager &addr) {
+    bool IsOnline(const UdpSocket &addr) {
         LockGuard lockguard(_lock);
-        for (auto &user: _online_list) {
-            if (user.GetUserAddr() == addr) {
-                return true;
-            }
-        }
-        return false;
+        return std::any_of(_online_list.begin(), _online_list.end(), [&addr] (const User& user) {
+            return user.GetUserAddr().GetInetAddr() == addr.GetInetAddr();
+        });
     }
 
     void AddUser(const User &who) {
@@ -45,7 +43,6 @@ public:
             return;
         }
         if (!IsOnline(who.GetUserAddr())) {
-            LockGuard lockguard(_lock);
             AddUser(who);
         }
 

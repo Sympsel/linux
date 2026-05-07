@@ -4,7 +4,7 @@
 
 // #define DEBUG_MODE
 
-#include "InetManager.hpp"
+#include "UdpSocket.hpp"
 #include "Config.hpp"
 
 class User {
@@ -14,24 +14,24 @@ public:
     }
 
     // ReSharper disable once CppNonExplicitConvertingConstructor
-    User(const InetManager& addr_info, const std::string& username = "") : _username(username), _addr_info(addr_info) {
+    User(const UdpSocket& addr_info, const std::string& username = "") : _username(username), _addr_info(addr_info) {
         InitConf();
         _username = Conf::default_username;
     }
 
-    User(InetManager&& addr_info, std::string&& username) : _username(std::move(username)), _addr_info(std::move(addr_info)) {
+    User(UdpSocket&& addr_info, std::string&& username) : _username(std::move(username)), _addr_info(std::move(addr_info)) {
         InitConf();
     }
 
-    explicit User(InetManager &&addr_info) : _addr_info(std::move(addr_info)) {
+    explicit User(UdpSocket &&addr_info) : _addr_info(std::move(addr_info)) {
         InitConf();
     }
 
-    [[nodiscard]] const InetManager& GetUserAddr() const {
+    [[nodiscard]] const UdpSocket& GetUserAddr() const {
         return _addr_info;
     }
 
-    InetManager GetUserAddr() {
+    UdpSocket GetUserAddr() {
         return _addr_info;
     }
 
@@ -47,7 +47,7 @@ public:
         _username = username;
     }
 
-    void SetInetManager(const InetManager& addr_info) {
+    void SetInetManager(const UdpSocket& addr_info) {
         _addr_info = addr_info;
     }
 
@@ -55,5 +55,5 @@ public:
 
 private:
     std::string _username;
-    InetManager _addr_info;
+    UdpSocket _addr_info;
 };

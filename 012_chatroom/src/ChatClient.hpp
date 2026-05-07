@@ -3,7 +3,7 @@
 #include <iostream>
 #include <utility>
 
-#include "InetManager.hpp"
+#include "UdpSocket.hpp"
 #include "User.hpp"
 #include "Thread.hpp"
 #include "Config.hpp"
@@ -11,7 +11,7 @@
 class ChatClient {
 private:
     void RecvMsg() const {
-        InetManager peer;
+        UdpSocket peer;
         // ReSharper disable once CppDFAEndlessLoop
         while (true) {
             if (const std::string receive = peer.Recvfrom(_sockfd); !receive.empty()) {
@@ -32,7 +32,7 @@ private:
     }
 
 public:
-    explicit ChatClient(InetManager server_addr, const std::string &username = Conf::default_username) : _sockfd(-1),
+    explicit ChatClient(UdpSocket server_addr, const std::string &username = Conf::default_username) : _sockfd(-1),
         server_addr(std::move(server_addr)),
         _recv_thread([this] {
             RecvMsg();
@@ -47,7 +47,7 @@ public:
             exit(1);
         }
         // auto bind port and ip
-        InetManager local(0);
+        UdpSocket local(0);
         local.Bind(_sockfd, false);
         _user.SetUsername(username);
         _user.SetInetManager(local);
@@ -73,7 +73,7 @@ public:
 private:
     int _sockfd;
     User _user;
-    InetManager server_addr;
+    UdpSocket server_addr;
     Thread _recv_thread;
     Thread _send_thread;
 };

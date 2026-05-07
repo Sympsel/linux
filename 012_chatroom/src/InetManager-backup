@@ -74,7 +74,7 @@ class InetManager {
     }
 
     void SendWithUsername(const int sockfd, const std::string& buffer, const std::string &username) {
-        const std::string send_buffer = "[" +  username + "]" + Conf::normal_msg_sign + " " + buffer;
+        const std::string send_buffer = "[" +  username + "]" + Conf::normal_msg_sign + buffer;
         if (const ssize_t n = sendto(sockfd, send_buffer.c_str(), send_buffer.size(), 0, reinterpret_cast<sockaddr *>(&_addr), Len()); n < 0) {
             LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
         }
@@ -107,4 +107,4 @@ class InetManager {
     std::string _ip;
 
     sockaddr_in _addr;
-};
+}

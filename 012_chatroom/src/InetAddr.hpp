@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -13,7 +14,7 @@ public:
     InetAddr() : _port(), _addr() {
     }
 
-    explicit InetAddr(const sockaddr_in& addr) : _port(), _addr(addr) {
+    InetAddr(const sockaddr_in& addr) : _port(), _addr(addr) {
         _port = ntohs(_addr.sin_port);
         char buffer[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &_addr.sin_addr, buffer, sizeof buffer);
@@ -34,7 +35,11 @@ public:
         return _ip;
     }
 
-    [[nodiscard]] sockaddr_in GetAddr() const {
+    [[nodiscard]] sockaddr_in GetAddr() {
+        return _addr;
+    }
+
+    [[nodiscard]] const sockaddr_in& GetAddr() const {
         return _addr;
     }
 

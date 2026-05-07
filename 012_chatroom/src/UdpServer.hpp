@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "InetManager.hpp"
+#include "UdpSocket.hpp"
 #include "Log.hpp"
 #include "User.hpp"
 #include "Config.hpp"
@@ -40,14 +40,14 @@ public:
         }
         LOG(log_level_t::INFO) << "socket create successfully! Info[fd: " << _sockfd << "]";
 
-        InetManager local{_port};
+        UdpSocket local{_port};
         local.Bind(_sockfd);
     }
 
     void Start() const {
         // ReSharper disable once CppDFAEndlessLoop
         while (true) {
-            InetManager peer;
+            UdpSocket peer;
 
             // 接收客户端消息(包括获取客户端地址及端口号)
             std::string inbuffer = peer.Recvfrom(_sockfd);

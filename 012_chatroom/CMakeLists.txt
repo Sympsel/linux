@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(src)
 
 add_executable(server
-        src/InetManager.hpp
+        src/UdpSocket.hpp
         src/Log.hpp
         chatServer.cpp
         src/RouteServer.hpp
@@ -16,13 +16,15 @@ add_executable(server
         src/Thread.hpp
         src/ThreadPool.hpp
         src/IniParse.hpp
-        src/Config.hpp)
+        src/Config.hpp
+        src/InetAddr.hpp)
 
 add_executable(client
         chatClient.cpp
-        src/InetManager.hpp
+        src/UdpSocket.hpp
         src/Log.hpp
         src/ChatClient.hpp
         src/IniParse.hpp
         src/Config.hpp
+        src/InetAddr.hpp
 )

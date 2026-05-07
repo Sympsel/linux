@@ -29,7 +29,7 @@ int main(const int argc, char* argv[]) {
     server_ip = argv[1];
     server_port = std::stoi(argv[2]);
 
-    ChatClient client{InetManager{server_port, server_ip}, username};
+    ChatClient client{UdpSocket{server_port, server_ip}, username};
     client.Start();
     return 0;
 }

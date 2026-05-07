@@ -37,7 +37,7 @@ public:
         return sockfd;
     }
 
-    void Bind(const int sockfd) {
+    void Bind(const int sockfd) const {
         sockaddr_in temp{_addr_helper.GetAddr()};
         if (const int ret = bind(sockfd, reinterpret_cast<sockaddr*>(&temp), sizeof(temp)); ret < 0) {
             LOG_FATAL() << "bind error";
