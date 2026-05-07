@@ -21,18 +21,6 @@ private:
         return buffer;
     }
 
-public:
-    UdpSocket() = default;
-    UdpSocket(UdpSocket &&) noexcept = default;
-    explicit UdpSocket(const in_port_t &port, std::string ip = "0.0.0.0") : _addr_helper{port, std::move(ip)} {
-    }
-    explicit UdpSocket(const sockaddr_in &addr) : _addr_helper(addr) {
-    }
-    UdpSocket(const UdpSocket &) = default;
-    UdpSocket &operator=(const UdpSocket &) = default;
-    UdpSocket &operator=(UdpSocket &&) = default;
-
-
     static int Socket() {
         const int sockfd = socket(AF_INET, SOCK_DGRAM, 0); // IPPROTO_UDP
         if (sockfd < 0) {
@@ -42,9 +30,44 @@ public:
         return sockfd;
     }
 
-    // enable_log: we wish client won't receive log
-    void Bind(const int sockfd, const bool enable_log = true) const {
-        if (const int n = bind(sockfd, reinterpret_cast<const sockaddr *>(&_addr_helper.GetAddr()),
+public:
+    UdpSocket() : _sockfd(Socket()) {
+    }
+
+    explicit UdpSocket(const in_port_t &port, std::string ip = "0.0.0.0") : _sockfd(Socket()),
+                                                                   _addr_helper{port, std::move(ip)} {
+    }
+
+    explicit UdpSocket(const sockaddr_in &addr) : _sockfd(Socket()), _addr_helper(addr) {
+    }
+
+    explicit UdpSocket(InetAddr addr_helper) : _sockfd(Socket()), _addr_helper(std::move(addr_helper)) {
+    }
+
+    UdpSocket(const UdpSocket &) = default;
+
+    UdpSocket(UdpSocket &&other) noexcept : _sockfd(other._sockfd), _addr_helper(std::move(other._addr_helper)) {
+        // make original socket invalid to ensure socket is hold by only one object
+        other._sockfd = -1;
+    }
+
+    UdpSocket &operator=(const UdpSocket &) = default;
+
+    UdpSocket &operator=(UdpSocket &&other) noexcept {
+        // we should release the resource before assigning
+        if (this != &other) {
+            if (_sockfd >= 0) {
+                close(_sockfd);
+            }
+            _sockfd = other._sockfd;
+            _addr_helper = std::move(other._addr_helper);
+            other._sockfd = -1;
+        }
+        return *this;
+    }
+
+    void Bind(const bool enable_log = true) const {
+        if (const int n = bind(_sockfd, reinterpret_cast<const sockaddr *>(&_addr_helper.GetAddr()),
                                _addr_helper.GetAddrLen()); n < 0) {
             if (enable_log) {
                 LOG(log_level_t::FATAL) << "bind socket error: " << strerror(errno);
@@ -56,31 +79,53 @@ public:
         }
     }
 
-    [[nodiscard]] const InetAddr& GetInetAddr() const {
+    [[nodiscard]] const InetAddr &GetInetAddr() const {
         return _addr_helper;
     }
 
-    void SendTo(const int sockfd, const std::string &buffer) const {
-        if (const ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0,
+    [[nodiscard]] const int &GetSockfd() const {
+        return _sockfd;
+    }
+
+    void SendTo(const std::string &buffer) const {
+        if (const ssize_t n = sendto(_sockfd, buffer.c_str(), buffer.size(), 0,
                                      reinterpret_cast<const sockaddr *>(&_addr_helper.GetAddr()),
                                      _addr_helper.GetAddrLen()); n < 0) {
             LOG_ERROR() << "sendto error: " << strerror(errno);
         }
     }
 
-    void SendWithUsername(const int sockfd, const std::string &buffer, const std::string &username) const {
+    void SendWithUsernameTo(const std::string &buffer, const std::string &username) const {
         const std::string send_buffer = "[" + username + "]" + Conf::normal_msg_sign + " " + buffer;
-        if (const ssize_t n = sendto(sockfd, send_buffer.c_str(), send_buffer.size(), 0,
+        if (const ssize_t n = sendto(_sockfd, send_buffer.c_str(), send_buffer.size(), 0,
                                      reinterpret_cast<const sockaddr *>(&_addr_helper.GetAddr()),
                                      _addr_helper.GetAddrLen()); n < 0) {
             LOG_ERROR() << "sendto error: " << strerror(errno);
         }
     }
 
-    /**
-     * @return key: username, value: InetAddr
-     */
-    std::string Recvfrom(const int sockfd) {
+    void SendToAddr(const std::string &buffer, const InetAddr& addr) const {
+        if (const ssize_t n = sendto(_sockfd, buffer.c_str(), buffer.size(), 0,
+                                     reinterpret_cast<const sockaddr *>(&addr.GetAddr()),
+                                     addr.GetAddrLen()); n < 0) {
+            LOG_ERROR() << "sendto error: " << strerror(errno);
+                                     }
+    }
+
+    void SendWithUsername(const std::string &buffer, const std::string &username, const InetAddr& addr) const {
+        const std::string send_buffer = "[" + username + "]" + Conf::normal_msg_sign + " " + buffer;
+        if (const ssize_t n = sendto(_sockfd, send_buffer.c_str(), send_buffer.size(), 0,
+                                     reinterpret_cast<const sockaddr *>(&addr.GetAddr()),
+                                     addr.GetAddrLen()); n < 0) {
+            LOG_ERROR() << "sendto error: " << strerror(errno);
+                                     }
+    }
+
+    std::string Recvfrom() {
+        return RecvfromSockfd(_sockfd);
+    }
+
+    std::string RecvfromSockfd(const int sockfd) {
         char buffer[1024];
         sockaddr_in temp{};
         // len是输入/输出参数,需要传入缓冲区大小,输出实际大小
@@ -95,8 +140,13 @@ public:
         return buffer;
     }
 
-    ~UdpSocket() = default;
+    ~UdpSocket() {
+        if (_sockfd >= 0) {
+            close(_sockfd);
+        }
+    }
 
 private:
+    int _sockfd;
     InetAddr _addr_helper;
 };

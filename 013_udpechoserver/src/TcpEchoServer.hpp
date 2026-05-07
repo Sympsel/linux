@@ -8,18 +8,21 @@ static in_port_t default_port = 8080;
 static int default_x = 32;
 
 class TcpEchoServer {
+private:
+    // void Server(int sockfd, TcpSocket) {
+        // todo
+    // }
 public:
-    TcpEchoServer(const in_port_t port = default_port) : _listen_sockfd(-1), _port(port) {
+    explicit TcpEchoServer(const in_port_t port = default_port) : _listen_sockfd(-1), _port(port) {
     }
 
     void Init() {
         // create socket
-        _listen_sockfd = TcpSocket::GetSockfd();
+        TcpSocket listen_socket(_port);
         // bind
-        TcpSocket local_addr(_port);
-        local_addr.Bind(_listen_sockfd);
+        listen_socket.Bind();
         // listen
-        TcpSocket::Listen(_listen_sockfd, default_x);
+        TcpSocket::Listen(listen_socket.GetSockfd(), default_x);
 
         // accept
     }
@@ -28,7 +31,7 @@ public:
         // ReSharper disable once CppDFAEndlessLoop
         while (true) {
             TcpSocket client{};
-            int conn_sockfd = client.Accept(_listen_sockfd);
+            int conn_sockfd = client.Accept();
             if (conn_sockfd < 0) continue;
             LOG_INFO() << "get a new link: [" << client.GetAddr().GetIp() << ":" << client.GetAddr().GetPort() << ", "
                     << "conn_sockfd: " << conn_sockfd << "]";

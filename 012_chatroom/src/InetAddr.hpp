@@ -14,7 +14,7 @@ public:
     InetAddr() : _port(), _addr() {
     }
 
-    InetAddr(const sockaddr_in& addr) : _port(), _addr(addr) {
+    explicit InetAddr(const sockaddr_in& addr) : _port(), _addr(addr) {
         _port = ntohs(_addr.sin_port);
         char buffer[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &_addr.sin_addr, buffer, sizeof buffer);
@@ -26,6 +26,11 @@ public:
         _addr.sin_port = htons(_port);
         _addr.sin_family = AF_INET;
     }
+
+    InetAddr(InetAddr&&) = default;
+    InetAddr(const InetAddr&) = default;
+    InetAddr& operator=(InetAddr&&) = default;
+    InetAddr& operator=(const InetAddr&) = default;
 
     [[nodiscard]] in_port_t GetPort() const {
         return _port;

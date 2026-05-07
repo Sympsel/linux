@@ -1,9 +1,7 @@
 #pragma once
 
-#include <arpa/inet.h>
 #include <netinet/in.h>
 
-#include <cstring>
 #include <functional>
 #include <string>
 #include <utility>
@@ -13,53 +11,40 @@
 #include "User.hpp"
 #include "Config.hpp"
 
-using callback_t = std::function<void(const std::string &, const User&, int sockfd)>;
+using callback_t = std::function<void(const std::string &, const User &, const UdpSocket&)>;
 
 using namespace sym;
 
 class UdpServer {
 public:
-    UdpServer(callback_t cb, const in_port_t& port)
-        : _sockfd(-1), _cb(std::move(cb)), _port(port) {
+    UdpServer(callback_t cb, const in_port_t &port)
+        : _cb(std::move(cb)), _port(port) {
         InitConf();
     }
 
-    ~UdpServer() {
-        if (_sockfd >= 0) {
-            close(_sockfd);
-        }
-    }
+    ~UdpServer() = default;
 
     void Init() {
         // 1. 创建 socket
-        _sockfd = UdpSocket::Socket();
-        if (_sockfd < 0) {
-            LOG(log_level_t::FATAL) << "socket create error: " << strerror(errno);
-            exit(1);
-        }
-        LOG(log_level_t::INFO) << "socket create successfully! Info[fd: " << _sockfd << "]";
-
-        const UdpSocket local{_port};
-        local.Bind(_sockfd);
+        _server_sock = UdpSocket{_port};
+        _server_sock.Bind();
     }
 
     void Start() const {
         // ReSharper disable once CppDFAEndlessLoop
         while (true) {
             UdpSocket peer;
-
-            // 接收客户端消息(包括获取客户端地址及端口号)
-            std::string inbuffer = peer.Recvfrom(_sockfd);
-            std::string username = Conf::default_username;
-            // 构造响应消息
+            // receive message (port and ip are included)
+            std::string inbuffer = peer.RecvfromSockfd(_server_sock.GetSockfd());
+            // build response message
             if (_cb) {
-                _cb(inbuffer, {peer, username}, _sockfd);
+                _cb(inbuffer, {peer.GetInetAddr(), Conf::default_username}, _server_sock);
             }
         }
     }
 
 private:
-    int _sockfd;
+    UdpSocket _server_sock;
     std::string _ip;
 
     callback_t _cb;

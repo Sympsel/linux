@@ -11,10 +11,10 @@
  */
 class RouteServer {
 private:
-    bool IsOnline(const UdpSocket &addr) {
+    bool IsOnline(const InetAddr &addr) {
         LockGuard lockguard(_lock);
         return std::any_of(_online_list.begin(), _online_list.end(), [&addr] (const User& user) {
-            return user.GetUserAddr().GetInetAddr() == addr.GetInetAddr();
+            return user.GetUserInetAddr() == addr;
         });
     }
 
@@ -38,18 +38,18 @@ public:
         return instance;
     }
 
-    void RouteMessage(const std::string &message, const User &who, const int sockfd) {
+    void RouteMessage(const std::string &message, const User &who, const UdpSocket &server_socket) {
         if (message.empty()) {
             return;
         }
-        if (!IsOnline(who.GetUserAddr())) {
+        if (!IsOnline(who.GetUserInetAddr())) {
             AddUser(who);
         }
 
         LockGuard lockguard(_lock);
         const std::string &formated_msg = message;
         for (auto &user: _online_list) {
-            user.GetUserAddr().SendTo(sockfd, formated_msg);
+            server_socket.SendToAddr(formated_msg, user.GetUserInetAddr());
         }
     }
 

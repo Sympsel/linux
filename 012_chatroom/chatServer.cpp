@@ -24,9 +24,9 @@ int main(const int argc, char* argv[]) {
        or clients won't receive message until itself send a message to server
     */
     const auto udpServer = std::make_unique<UdpServer>(
-        [](const std::string& message, const User& who, int sockfd) {
-            ThreadPool<task_t>::GetInstance().Enqueue([message, who, sockfd]() -> void {
-                RouteServer::GetInstance().RouteMessage(message, who, sockfd);
+        [](const std::string& message, const User& who, const UdpSocket& server_socket) {
+            ThreadPool<task_t>::GetInstance().Enqueue([message, who, &server_socket]() -> void {
+                RouteServer::GetInstance().RouteMessage(message, who, server_socket);
             });
         }, server_port);
     udpServer->Init();
