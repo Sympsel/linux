@@ -56,7 +56,7 @@ public:
         }
     }
 
-    [[nodiscard]] InetAddr GetInetAddr() const {
+    [[nodiscard]] const InetAddr& GetInetAddr() const {
         return _addr_helper;
     }
 
@@ -64,7 +64,7 @@ public:
         if (const ssize_t n = sendto(sockfd, buffer.c_str(), buffer.size(), 0,
                                      reinterpret_cast<const sockaddr *>(&_addr_helper.GetAddr()),
                                      _addr_helper.GetAddrLen()); n < 0) {
-            LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
+            LOG_ERROR() << "sendto error: " << strerror(errno);
         }
     }
 
@@ -73,7 +73,7 @@ public:
         if (const ssize_t n = sendto(sockfd, send_buffer.c_str(), send_buffer.size(), 0,
                                      reinterpret_cast<const sockaddr *>(&_addr_helper.GetAddr()),
                                      _addr_helper.GetAddrLen()); n < 0) {
-            LOG(log_level_t::ERROR) << "sendto error: " << strerror(errno);
+            LOG_ERROR() << "sendto error: " << strerror(errno);
         }
     }
 

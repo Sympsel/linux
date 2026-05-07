@@ -41,7 +41,7 @@ public:
         }) {
         InitConf();
 
-        _sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        _sockfd = UdpSocket::Socket();
         if (_sockfd < 0) {
             std::cerr << "socket error" << std::endl;
             exit(1);

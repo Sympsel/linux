@@ -1,7 +1,5 @@
 #pragma once
 
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <netinet/in.h>
 #include "Log.hpp"
 #include "TcpSocket.hpp"
@@ -26,13 +24,12 @@ public:
         // accept
     }
 
-    void Start() {
+    void Start() const {
         // ReSharper disable once CppDFAEndlessLoop
         while (true) {
-            InetAddr temp;
-            int conn_sockfd = TcpSocket::Accept(_listen_sockfd, temp);
+            TcpSocket client{};
+            int conn_sockfd = client.Accept(_listen_sockfd);
             if (conn_sockfd < 0) continue;
-            TcpSocket client{temp};
             LOG_INFO() << "get a new link: [" << client.GetAddr().GetIp() << ":" << client.GetAddr().GetPort() << ", "
                     << "conn_sockfd: " << conn_sockfd << "]";
         }

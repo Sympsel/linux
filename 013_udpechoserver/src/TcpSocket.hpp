@@ -1,5 +1,5 @@
 #include <iostream>
-#include <arpa/inet.h>
+#include <cstring>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
@@ -17,10 +17,10 @@ public:
      * @param port port
      * @param ip default: 0.0.0.0 to bind any client ip
      */
-    explicit TcpSocket(const in_port_t& port, const std::string &ip = "0.0.0.0") : _addr_helper{port, ip} {
+    explicit TcpSocket(const in_port_t &port, const std::string &ip = "0.0.0.0") : _addr_helper{port, ip} {
     }
 
-    explicit TcpSocket(const sockaddr_in& addr) {
+    explicit TcpSocket(const sockaddr_in &addr) {
         _addr_helper.SetAddr(addr);
     }
 
@@ -39,25 +39,34 @@ public:
 
     void Bind(const int sockfd) const {
         sockaddr_in temp{_addr_helper.GetAddr()};
-        if (const int ret = bind(sockfd, reinterpret_cast<sockaddr*>(&temp), sizeof(temp)); ret < 0) {
+        if (const int ret = bind(sockfd, reinterpret_cast<sockaddr *>(&temp), sizeof(temp)); ret < 0) {
             LOG_FATAL() << "bind error";
             exit(1);
         }
         LOG_INFO() << "bind success. [fd: " << sockfd << "]";
     }
 
-    static void Listen(const int sockfd, const int backlog = 32) {
+    static bool Listen(const int sockfd, const int backlog = 32) {
         if (const int ret = listen(sockfd, backlog); ret < 0) {
-            LOG_FATAL() << "listen error";
-            exit(1);
+            LOG_ERROR() << "listen error";
+            return false;
         }
+        return true;
+    }
+    /**
+     * @warning this will overwrite _addr_helper with client address.
+     *          if you need to preserve local address, use static Accept(sockfd, client_addr) instead.
+     */
+    int Accept(const int sockfd) {
+        return Accept(sockfd, _addr_helper);
     }
 
-    static int Accept(const int sockfd, InetAddr& client_addr) {
+    [[nodiscard]]
+    static int Accept(const int sockfd, InetAddr &client_addr) {
         sockaddr_in temp{};
-        socklen_t addrlen = sizeof(temp);
+        socklen_t addrlen = sizeof temp;
 
-        const int conn_sockfd = accept(sockfd, reinterpret_cast<sockaddr*>(&temp), &addrlen);
+        const int conn_sockfd = accept(sockfd, reinterpret_cast<sockaddr *>(&temp), &addrlen);
         if (conn_sockfd < 0) {
             LOG_WARN() << "accept error";
             return -1;
@@ -67,11 +76,21 @@ public:
         return conn_sockfd;
     }
 
-    [[nodiscard]] InetAddr GetAddr() const {
+    static bool Connect(const int sockfd, const InetAddr& peer) {
+        sockaddr_in temp = peer.GetAddr();
+        if (connect(sockfd, reinterpret_cast<sockaddr*>(&temp), sizeof(temp)) < 0) {
+            LOG_ERROR() << "connect error: " << strerror(errno);
+            return false;
+        }
+        return true;
+    }
+
+    [[nodiscard]] const InetAddr &GetAddr() const {
         return _addr_helper;
     }
 
     ~TcpSocket() = default;
+
 private:
     InetAddr _addr_helper;
 };
