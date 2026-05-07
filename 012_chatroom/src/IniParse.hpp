@@ -31,7 +31,6 @@ private:
         } else {
             _file = default_config_file;
         }
-        // LOG_DEBUG() << "Load config file: " << _file;
         load();
     }
 

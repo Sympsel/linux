@@ -32,6 +32,16 @@ public:
     UdpSocket &operator=(const UdpSocket &) = default;
     UdpSocket &operator=(UdpSocket &&) = default;
 
+
+    static int Socket() {
+        const int sockfd = socket(AF_INET, SOCK_DGRAM, 0); // IPPROTO_UDP
+        if (sockfd < 0) {
+            LOG_ERROR() << "socket error: " << strerror(errno);
+            return -1;
+        }
+        return sockfd;
+    }
+
     // enable_log: we wish client won't receive log
     void Bind(const int sockfd, const bool enable_log = true) const {
         if (const int n = bind(sockfd, reinterpret_cast<const sockaddr *>(&_addr_helper.GetAddr()),
@@ -67,6 +77,9 @@ public:
         }
     }
 
+    /**
+     * @return key: username, value: InetAddr
+     */
     std::string Recvfrom(const int sockfd) {
         char buffer[1024];
         sockaddr_in temp{};

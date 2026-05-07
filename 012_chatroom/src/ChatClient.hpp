@@ -20,7 +20,7 @@ private:
         }
     }
 
-    void SendMsg() {
+    void SendMsg() const {
         std::string inbuffer;
         // ReSharper disable once CppDFAEndlessLoop
         while (true) {

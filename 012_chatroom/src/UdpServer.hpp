@@ -2,7 +2,6 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/socket.h>
 
 #include <cstring>
 #include <functional>
@@ -33,14 +32,14 @@ public:
 
     void Init() {
         // 1. 创建 socket
-        _sockfd = socket(AF_INET, SOCK_DGRAM, 0); // IPPROTO_UDP
+        _sockfd = UdpSocket::Socket();
         if (_sockfd < 0) {
             LOG(log_level_t::FATAL) << "socket create error: " << strerror(errno);
             exit(1);
         }
         LOG(log_level_t::INFO) << "socket create successfully! Info[fd: " << _sockfd << "]";
 
-        UdpSocket local{_port};
+        const UdpSocket local{_port};
         local.Bind(_sockfd);
     }
 

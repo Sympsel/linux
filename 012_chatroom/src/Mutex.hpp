@@ -3,7 +3,7 @@
 
 class Mutex {
     public:
-        Mutex() {
+        Mutex() : _lock() {
             pthread_mutex_init(&_lock, nullptr);
         }
 
