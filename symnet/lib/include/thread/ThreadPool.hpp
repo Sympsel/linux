@@ -13,24 +13,46 @@ using namespace sym;
 static int gnum = 5;
 static bool enable_log = false;
 
+/**
+ * @brief Template class implementing a thread pool pattern.
+ *
+ * Manages a fixed number of worker threads that execute tasks from a shared queue.
+ * Implements the singleton pattern for easy access and resource management.
+ *
+ * @tparam T Task type (should be callable, e.g., std::function<void()>)
+ */
 template <class T>
 class ThreadPool {
    private:
     enum {
-        RUNNING,
-        STOP,
-        QUIT
+        RUNNING,    ///< Pool is actively processing tasks
+        STOP,       ///< Pool is stopped but not destroyed
+        QUIT        ///< Pool is shutting down
     };
+
+    /**
+     * @brief Checks if the task queue is empty.
+     * @return true if no tasks are queued, false otherwise
+     */
     bool IsTaskQueueEmpty() {
         return _q.empty();
     }
 
+    /**
+     * @brief Removes and returns the front task from the queue.
+     * @return The next task to execute
+     */
     T PopHelper() {
         T t = _q.front();
         _q.pop();
         return t;
     }
 
+    /**
+     * @brief Main loop executed by each worker thread.
+     *
+     * Continuously waits for tasks, executes them, and handles shutdown signals.
+     */
     void ThreadRoutine() {
         char name[64];
         pthread_getname_np(pthread_self(), name, sizeof name);
@@ -61,6 +83,10 @@ class ThreadPool {
         }
     }
 
+    /**
+     * @brief Private constructor that initializes the thread pool.
+     * @param num Number of worker threads to create
+     */
     explicit ThreadPool(const int num) : _num(num), _status(STOP), _sleeper_cnt() {
         for (int i = 0; i < _num; ++i) {
             _threads.emplace_back([this]() {
@@ -70,11 +96,17 @@ class ThreadPool {
     }
 
    public:
+    // Disable copying and moving
     ThreadPool(const ThreadPool&) = delete;
     ThreadPool& operator=(const ThreadPool&) = delete;
     ThreadPool(ThreadPool&&) = delete;
     ThreadPool& operator=(ThreadPool&&) = delete;
 
+    /**
+     * @brief Gets the singleton instance of the thread pool.
+     * @param num Number of threads (used only on first call, default: gnum)
+     * @return Reference to the singleton thread pool instance
+     */
     static ThreadPool<T>& GetInstance(int num = gnum) {
         static ThreadPool<T> instance(num);
         instance.Start();
@@ -83,6 +115,10 @@ class ThreadPool {
 
     ~ThreadPool() = default;
 
+    /**
+     * @brief Adds a task to the thread pool queue (thread-safe).
+     * @param task Task to be executed by a worker thread
+     */
     void Push(const T& task) {
         LockGuard lockguard(_lock);
         _q.emplace(task);
@@ -90,6 +126,10 @@ class ThreadPool {
             _cond.NotifyAll();
     }
 
+    /**
+     * @brief Starts all worker threads in the pool.
+     * @note Has no effect if the pool is already running.
+     */
     void Start() {
         if (_status == RUNNING) return;
         for (auto& thread : _threads) {
@@ -98,6 +138,12 @@ class ThreadPool {
         _status = RUNNING;
     }
 
+    /**
+     * @brief Stops all worker threads.
+     *
+     * Signals threads to stop and wakes up any sleeping threads.
+     * Threads will exit after completing their current tasks.
+     */
     void Stop() {
         if (_status == RUNNING) {
             for (auto& thread : _threads) {
@@ -111,12 +157,21 @@ class ThreadPool {
         }
     }
 
+    /**
+     * @brief Waits for all worker threads to complete.
+     * @note Should be called after Stop() to ensure clean shutdown.
+     */
     void Wait() {
         for (auto& thread : _threads) {
             thread.join();
         }
     }
 
+    /**
+     * @brief Adds a task to the queue with shutdown protection.
+     * @param task Task to enqueue
+     * @note Warns and rejects tasks if the pool is quitting.
+     */
     void Enqueue(const T& task) {
         LockGuard lockguard(_lock);
         if (_status == QUIT) {
@@ -129,6 +184,12 @@ class ThreadPool {
         }
     }
 
+    /**
+     * @brief Initiates graceful shutdown of the thread pool.
+     *
+     * Sets the status to QUIT and notifies all threads to exit.
+     * New tasks will be rejected.
+     */
     void Quit() {
         if (_status == QUIT) {
             LOG_INFO() << "Threadpool is going to exit.";
@@ -139,13 +200,13 @@ class ThreadPool {
     }
 
    private:
-    std::vector<Thread> _threads;
-    int _num;
-    int _status;
+    std::vector<Thread> _threads;   ///< Worker threads
+    int _num;                        ///< Number of threads
+    int _status;                     ///< Current pool status
 
-    std::queue<T> _q;
-    Mutex _lock;
-    Cond _cond;
+    std::queue<T> _q;               ///< Task queue
+    Mutex _lock;                     ///< Mutex for thread-safe queue access
+    Cond _cond;                      ///< Condition variable for task notification
 
-    int _sleeper_cnt;
+    int _sleeper_cnt;               ///< Count of threads currently waiting for tasks
 };

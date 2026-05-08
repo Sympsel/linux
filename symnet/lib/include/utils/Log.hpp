@@ -36,7 +36,10 @@ namespace sym {
         const std::string BOLD_WHITE = "\033[37;1m";
     }
 
-    // 获取当前时间字符串
+    /**
+     * @brief Gets the current time as a formatted string.
+     * @return Time string in format "YYYY-MM-DD HH:MM:SS"
+     */
     inline std::string GetCurrTime() {
         const time_t stamp = time(nullptr);
         tm date_time{};
@@ -53,7 +56,10 @@ namespace sym {
         return ss.str();
     }
 
-    // 获取当前日期字符串（用于日志文件名）
+    /**
+     * @brief Gets the current date as a compact string (for log filenames).
+     * @return Date string in format "YYYYMMDD"
+     */
     inline std::string GetCurrDate() {
         const time_t stamp = time(nullptr);
         tm date_time{};
@@ -67,14 +73,22 @@ namespace sym {
         return ss.str();
     }
 
+    /**
+     * @brief Enumeration of log severity levels.
+     */
     enum class log_level_t {
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR,
-        FATAL
+        DEBUG,      ///< Debug-level messages for development
+        INFO,       ///< Informational messages about normal operation
+        WARNING,    ///< Warning messages about potential issues
+        ERROR,      ///< Error messages about failures
+        FATAL       ///< Fatal error messages before termination
     };
 
+    /**
+     * @brief Converts a log level enum to its string representation.
+     * @param level Log level to convert
+     * @return String representation of the log level
+     */
     inline std::string loglevel2str(const log_level_t &level) {
         switch (level) {
             case log_level_t::DEBUG: return "DEBUG";
@@ -86,6 +100,11 @@ namespace sym {
         }
     }
 
+    /**
+     * @brief Gets the ANSI color code for a given log level.
+     * @param level Log level
+     * @return ANSI color code string
+     */
     inline std::string GetColorForLevel(const log_level_t &level) {
         switch (level) {
             case log_level_t::DEBUG: return Color::BOLD_CYAN;
@@ -97,7 +116,12 @@ namespace sym {
         }
     }
 
-    // 日志策略接口
+    /**
+     * @brief Interface for log output strategies.
+     *
+     * Defines the contract for different logging destinations
+     * (console, file, combined, etc.).
+     */
     class LogStrategyVirtual {
     public:
         virtual ~LogStrategyVirtual() = default;
@@ -113,7 +137,11 @@ namespace sym {
         }
     };
 
-    // 控制台日志策略
+    /**
+     * @brief Console logging strategy with optional color support.
+     *
+     * Outputs log messages to stdout with thread-safe access.
+     */
     class ConsoleLogStrategy : public LogStrategyVirtual {
     public:
         explicit ConsoleLogStrategy(const bool color_enabled = true)
@@ -146,10 +174,15 @@ namespace sym {
         bool _color_enabled;
     };
 
-    // 文件日志策略
-    class file_log_strategy : public LogStrategyVirtual {
+    /**
+     * @brief File-based logging strategy with daily rotation support.
+     *
+     * Writes log messages to files with automatic directory creation
+     * and optional daily file rotation. Strips ANSI color codes for file output.
+     */
+    class FileLogStrategy : public LogStrategyVirtual {
     public:
-        explicit file_log_strategy(
+        explicit FileLogStrategy(
             std::string logdir = "./log/",
             std::string log_filename = "",
             bool daily_file = true)
@@ -167,22 +200,23 @@ namespace sym {
                             << e.what() << std::endl;
                 }
             }
-
-            // 打开日志文件
             OpenLogFile();
         }
 
-        ~file_log_strategy() override {
+        ~FileLogStrategy() override {
             std::lock_guard locker(_lock);
             if (_ofs.is_open()) {
                 _ofs.close();
             }
         }
 
+        /**
+         * @brief Synchronously writes a log message to the file.
+         * @param log_msg Formatted log message (color codes will be stripped)
+         */
         void SyncLog(const std::string &log_msg) override {
             std::lock_guard locker(_lock);
 
-            // 检查是否需要切换日志文件（按天）
             if (_daily_file) {
                 if (const std::string today = GetCurrDate(); today != _current_date) {
                     _current_date = today;
@@ -190,8 +224,7 @@ namespace sym {
                 }
             }
 
-            // 移除颜色代码并写入文件
-            const std::string clean_log_msg = remove_color_codes(log_msg);
+            const std::string clean_log_msg = RemoveColorCodes(log_msg);
 
             if (_ofs.is_open()) {
                 _ofs << clean_log_msg << std::endl;
@@ -199,9 +232,12 @@ namespace sym {
         }
 
         bool IsColorEnabled() const override {
-            return false; // 文件日志不需要颜色
+            return false;
         }
 
+        /**
+         * @brief Flushes the file buffer to disk.
+         */
         void Flush() override {
             std::lock_guard locker(_lock);
             if (_ofs.is_open()) {
@@ -209,15 +245,23 @@ namespace sym {
             }
         }
 
-        // 获取当前日志文件完整路径
-        std::string get_current_logfile() const {
+        /**
+         * @brief Gets the full path of the current log file.
+         * @return Complete file path including directory and filename
+         */
+        std::string GetCurrentLogfile() const {
             std::lock_guard locker(_lock);
-            return _logdir + _get_filename();
+            return _logdir + GetFilenameHelper();
         }
 
-        static std::string remove_color_codes(const std::string &msg) {
+        /**
+         * @brief Removes ANSI color codes from a log message.
+         * @param msg Message potentially containing color codes
+         * @return Clean message without color codes
+         */
+        static std::string RemoveColorCodes(const std::string &msg) {
             std::string result;
-            result.reserve(msg.size()); // 预分配内存
+            result.reserve(msg.size());
             bool in_escape = false;
             for (const char c: msg) {
                 if (c == '\033') {
@@ -236,12 +280,12 @@ namespace sym {
         }
 
     private:
-        std::string _get_filename() const {
+        std::string GetFilenameHelper() const {
             if (_daily_file) {
                 if (_base_filename.empty()) {
                     return "log_" + _current_date + ".txt";
                 }
-                // 在基础文件名前加日期
+
                 if (const size_t dot_pos = _base_filename.find_last_of('.'); dot_pos != std::string::npos) {
                     return _base_filename.substr(0, dot_pos) + "_" + _current_date
                            + _base_filename.substr(dot_pos);
@@ -255,7 +299,7 @@ namespace sym {
             if (_ofs.is_open()) {
                 _ofs.close();
             }
-            const std::string filepath = _logdir + _get_filename();
+            const std::string filepath = _logdir + GetFilenameHelper();
             _ofs.open(filepath, std::ios::app);
             if (!_ofs.is_open()) {
                 std::cerr << "[Logger Error] Failed to open log file: " << filepath << std::endl;
@@ -270,7 +314,12 @@ namespace sym {
         std::ofstream _ofs;
     };
 
-    // 组合日志策略（同时输出到控制台和文件）
+    /**
+     * @brief Combined logging strategy that outputs to both console and file.
+     *
+     * Delegates log messages to both ConsoleLogStrategy and file_log_strategy
+     * instances, providing dual output capability.
+     */
     class CombinedLogStrategy : public LogStrategyVirtual {
     public:
         explicit CombinedLogStrategy(
@@ -279,7 +328,7 @@ namespace sym {
             bool color_enabled = true,
             bool daily_file = true)
             : _console(std::make_unique<ConsoleLogStrategy>(color_enabled)),
-              _file(std::make_unique<file_log_strategy>(logdir, log_filename, daily_file)) {
+              _file(std::make_unique<FileLogStrategy>(logdir, log_filename, daily_file)) {
         }
 
         ~CombinedLogStrategy() override = default;
@@ -304,10 +353,16 @@ namespace sym {
 
     private:
         std::unique_ptr<ConsoleLogStrategy> _console;
-        std::unique_ptr<file_log_strategy> _file;
+        std::unique_ptr<FileLogStrategy> _file;
     };
 
-    // 日志器主类
+    /**
+     * @brief Main logger class providing flexible logging capabilities.
+     *
+     * Singleton class that manages log strategies and provides a unified
+     * interface for logging. Supports runtime strategy switching between
+     * console, file, and combined logging modes.
+     */
     class logger {
     public:
         logger() {
@@ -316,28 +371,41 @@ namespace sym {
 
         ~logger() = default;
 
-        // 禁用拷贝和移动
         logger(const logger &) = delete;
-
         logger &operator=(const logger &) = delete;
-
         logger(logger &&) = delete;
-
         logger &operator=(logger &&) = delete;
 
+        /**
+         * @brief Configures the logger to use console output.
+         * @param color_enabled Enable/disable colored output (default: true)
+         */
         void UseConsoleLog(bool color_enabled = true) {
             std::lock_guard locker(_strategy_lock);
             _strategy = std::make_unique<ConsoleLogStrategy>(color_enabled);
         }
 
+        /**
+         * @brief Configures the logger to use file output.
+         * @param logdir Directory for log files (default: "./log/")
+         * @param log_filename Custom filename (default: auto-generated with date)
+         * @param daily_file Enable daily file rotation (default: true)
+         */
         void UseFileLogStrategy(
             const std::string &logdir = "./log/",
             const std::string &log_filename = "",
             bool daily_file = true) {
             std::lock_guard locker(_strategy_lock);
-            _strategy = std::make_unique<file_log_strategy>(logdir, log_filename, daily_file);
+            _strategy = std::make_unique<FileLogStrategy>(logdir, log_filename, daily_file);
         }
 
+        /**
+         * @brief Configures the logger to use combined console and file output.
+         * @param log_dir Directory for log files
+         * @param log_filename Custom filename
+         * @param color_enabled Enable/disable colored console output
+         * @param daily_file Enable daily file rotation
+         */
         void UseCombinedLogStrategy(
             const std::string &log_dir = "./log/",
             const std::string &log_filename = "",
@@ -347,6 +415,10 @@ namespace sym {
             _strategy = std::make_unique<CombinedLogStrategy>(log_dir, log_filename, color_enabled, daily_file);
         }
 
+        /**
+         * @brief Enables or disables colored console output.
+         * @param enabled true to enable colors, false to disable
+         */
         void SetColorEnabled(const bool enabled) const {
             std::lock_guard locker(_strategy_lock);
             if (_strategy) {
@@ -354,11 +426,18 @@ namespace sym {
             }
         }
 
+        /**
+         * @brief Checks if colored output is enabled.
+         * @return true if colors are enabled, false otherwise
+         */
         bool IsColorEnabled() const {
             std::lock_guard locker(_strategy_lock);
             return _strategy ? _strategy->IsColorEnabled() : false;
         }
 
+        /**
+         * @brief Flushes all log output buffers.
+         */
         void Flush() const {
             std::lock_guard locker(_strategy_lock);
             if (_strategy) {
@@ -366,9 +445,21 @@ namespace sym {
             }
         }
 
-        // 日志消息类（RAII 风格）
+        /**
+         * @brief RAII class for building and outputting log messages.
+         *
+         * Captures log context (timestamp, PID, file, line) on construction
+         * and outputs the complete message on destruction.
+         */
         class LogMsg {
         public:
+            /**
+             * @brief Constructs a log message with context information.
+             * @param level Severity level
+             * @param filename Source file name
+             * @param line Line number in source file
+             * @param self Reference to the logger instance
+             */
             LogMsg(const log_level_t level,
                    std::string filename,
                    const int line,
@@ -381,7 +472,6 @@ namespace sym {
                   _self(self) {
                 std::stringstream ss;
 
-                // 添加颜色（如果启用）
                 if (_self.IsColorEnabled()) {
                     ss << GetColorForLevel(_level);
                 }
@@ -394,17 +484,22 @@ namespace sym {
                 _log_info = ss.str();
             }
 
+            /**
+             * @brief Destructor that finalizes and outputs the log message.
+             */
             ~LogMsg() {
-                // 重置颜色
                 if (_self.IsColorEnabled()) {
                     _log_info += Color::RESET;
                 }
 
-                // 输出日志
                 _self.SyncLog(_log_info);
             }
 
-            // 支持各种类型输入
+            /**
+             * @brief Appends data to the log message.
+             * @param info Any streamable data to append
+             * @return Reference to self for chaining
+             */
             template<class T>
             LogMsg &operator<<(const T &info) {
                 std::stringstream ss;
@@ -413,7 +508,11 @@ namespace sym {
                 return *this;
             }
 
-            // 支持流操控符（如 std::endl）
+            /**
+             * @brief Appends stream manipulators (e.g., std::endl).
+             * @param manip Stream manipulator function
+             * @return Reference to self for chaining
+             */
             LogMsg &operator<<(std::ostream & (*manip)(std::ostream &)) {
                 std::stringstream ss;
                 ss << manip;
@@ -431,6 +530,13 @@ namespace sym {
             logger &_self;
         };
 
+        /**
+         * @brief Creates a new log message with the specified level and location.
+         * @param level Severity level
+         * @param filename Source file name (typically __FILE__)
+         * @param line Line number (typically __LINE__)
+         * @return LogMsg object for streaming log content
+         */
         LogMsg operator()(const log_level_t level,
                           const std::string &filename,
                           const int line) {
@@ -449,13 +555,16 @@ namespace sym {
         std::unique_ptr<LogStrategyVirtual> _strategy;
     };
 
-    // 全局日志实例
+    /**
+     * @brief Gets the global logger singleton instance.
+     * @return Reference to the singleton logger
+     */
     inline logger &get_logger() {
         static logger instance;
         return instance;
     }
 
-    // 便捷宏定义
+// Convenience macros for logging
 #define LOG(level) sym::get_logger()(level, __FILE__, __LINE__)
 #define LOG_DEBUG() LOG(sym::log_level_t::DEBUG)
 #define LOG_INFO()  LOG(sym::log_level_t::INFO)
