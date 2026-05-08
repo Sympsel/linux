@@ -1,17 +1,26 @@
 #pragma once
 
 #include <netinet/in.h>
+
+#include <csignal>
+#include <functional>
+
+#include "ThreadPool.hpp"
 #include "Log.hpp"
 #include "TcpSocket.hpp"
-
-#include "csignal"
 
 static in_port_t default_port = 8080;
 static int default_x = 32;
 
+using task_t = std::function<void()>;
+
 class TcpEchoServer {
 private:
     void Server(const TcpSocket &client_socket) const {
+        char name[128];
+        pthread_getname_np(pthread_self(), name, sizeof name);
+
+
         while (true) {
             char inbuffer[1024];
             ssize_t n = read(client_socket.GetSockfd(), inbuffer, sizeof inbuffer);
@@ -57,22 +66,16 @@ public:
 
     void Start() const {
         // ignore child
-        signal(SIGCHLD, SIG_IGN);
-        // ReSharper disable once CppDFAEndlessLoop
         while (true) {
             TcpSocket client_socket{};
             int conn_sockfd = client_socket.Accept();
             if (conn_sockfd < -1) continue;
             LOG_INFO() << "get a new link: [" << client_socket.GetAddr().GetIp() << ":" << client_socket.GetAddr().
                     GetPort() << ", " << "conn_sockfd: " << conn_sockfd << "]";
-            if (const pid_t pid = fork(); pid < 0) {
-                LOG_FATAL() << "fork error";
-                exit(-1);
-            } else if (pid == 0) {
+
+            ThreadPool<task_t>::GetInstance().Enqueue([client_socket, this] {
                 Server(client_socket);
-                exit(0);
-            } else {
-            }
+            });
         }
     }
 

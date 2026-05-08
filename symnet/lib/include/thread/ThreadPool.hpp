@@ -6,7 +6,7 @@
 #include "Mutex.hpp"
 #include "Cond.hpp"
 #include "Thread.hpp"
-#include "Log.hpp"
+#include "../utils/Log.hpp"
 
 using namespace sym;
 
