@@ -3,9 +3,7 @@
 #include <cstring>
 
 #include "../utils/InetAddr.hpp"
-
-constexpr int DEFAULT_BACKLOG = 32;
-static constexpr int default_buffer_length = 1024;
+#include "../utils/Conf.hpp"
 
 /**
  * @brief Utility class providing static methods for socket operations.
@@ -90,7 +88,7 @@ public:
      * @return Received data as string, or empty string on error/connection close
      */
     static std::string Read(const int sockfd) {
-        char inbuffer[DEFAULT_BACKLOG];
+        char inbuffer[Conf::network_buffer_length];
         const ssize_t n = read(sockfd, inbuffer, sizeof inbuffer - 1);
         if (n <= 0) {
             return {};
@@ -153,7 +151,7 @@ public:
      * @return true if reception succeeds, false on error
      */
     static bool RecvFrom(const int sockfd, std::string& str_to_fill, InetAddr &sender_to_fill) {
-        char inbuffer[default_buffer_length];
+        char inbuffer[Conf::network_buffer_length];
         sockaddr_in temp{};
         socklen_t len = sizeof temp;
         if (const ssize_t n = recvfrom(sockfd, inbuffer, sizeof inbuffer - 1, 0,
@@ -175,7 +173,7 @@ public:
      * @return true if reception succeeds, false on error
      */
     static bool RecvFrom(const int sockfd, std::string& str_to_fill) {
-        char inbuffer[default_buffer_length];
+        char inbuffer[Conf::network_buffer_length];
         if (const ssize_t n = recvfrom(sockfd, inbuffer, sizeof inbuffer, 0,
                                        nullptr, nullptr); n < 0) {
             LOG_ERROR() << "recv error: " << strerror(errno);

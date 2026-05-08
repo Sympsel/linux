@@ -3,6 +3,7 @@
 #include "SocketUtils.hpp"
 #include "../utils/InetAddr.hpp"
 #include "../utils/Log.hpp"
+#include "../utils/Conf.hpp"
 
 #define CREATE_SOCKET (SocketUtils::CreateSocket(AF_INET, SOCK_DGRAM))
 
@@ -39,7 +40,7 @@ public:
      * @param port Port number to bind to
      * @param ip IP address to bind to (default: "0.0.0.0" for any interface)
      */
-    explicit UdpSocket(const in_port_t &port, std::string ip = "0.0.0.0") : _sockfd(CREATE_SOCKET) {
+    explicit UdpSocket(const in_port_t &port, std::string ip = Conf::network_default_bind_ip) : _sockfd(CREATE_SOCKET) {
         _local_addr = InetAddr(port, std::move(ip));
         (void)CheckSockfd();
         (void)Bind(_local_addr);

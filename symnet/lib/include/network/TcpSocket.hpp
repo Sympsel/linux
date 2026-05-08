@@ -6,6 +6,7 @@
 #include <cstring>
 
 #include "SocketUtils.hpp"
+#include "../utils/Conf.hpp"
 
 /**
  * @brief Base TCP socket class providing core TCP functionality.

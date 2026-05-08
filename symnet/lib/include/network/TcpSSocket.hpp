@@ -16,7 +16,8 @@ public:
     * @param port Port number to bind to
     * @param ip IP address to bind to (default: "0.0.0.0" for any interface)
     */
-    explicit TcpSSocket(const in_port_t &port, const std::string &ip = "0.0.0.0") : _addr_helper{port, ip} {
+    explicit TcpSSocket(const in_port_t &port, const std::string &ip = Conf::network_default_bind_ip)
+        : _addr_helper{port, ip} {
     }
 
     /**
@@ -63,7 +64,7 @@ public:
      * @param backlog Maximum number of pending connections in the queue
      * @return true if listening starts successfully, false otherwise
      */
-    [[nodiscard]] bool Listen(const int backlog) const {
+    [[nodiscard]] bool Listen(const int backlog = Conf::network_backlog) const {
         return TcpSocket::Listen(_socket.GetSockfd(), backlog);
     }
 

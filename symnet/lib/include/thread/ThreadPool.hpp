@@ -10,9 +10,6 @@
 
 using namespace sym;
 
-static int gnum = 5;
-static bool enable_log = false;
-
 /**
  * @brief Template class implementing a thread pool pattern.
  *
@@ -59,20 +56,20 @@ class ThreadPool {
         while (true) {
             T task;
             {
-                LockGuard lockguard(_lock);
+                LockGuard lock_guard(_lock);
                 while (IsTaskQueueEmpty() && _status == RUNNING) {
                     ++_sleeper_cnt;
-                    if (enable_log) {
+                    if (Conf::threadpool_enable_log) {
                         LOG_DEBUG() << "No task, Thread" << name << " sleep";
                     }
                     _cond.Wait(_lock);
-                    if (enable_log) {
+                    if (Conf::threadpool_enable_log) {
                         LOG_DEBUG() << "Get a task, Thread" << name << " notified";
                     }
                     --_sleeper_cnt;
                 }
                 if (IsTaskQueueEmpty() && _status != RUNNING) {
-                    if (enable_log) {
+                    if (Conf::threadpool_enable_log) {
                         LOG(log_level_t::INFO) << "Thread " << name << " exit.";
                     }
                     break;
@@ -107,7 +104,7 @@ class ThreadPool {
      * @param num Number of threads (used only on first call, default: gnum)
      * @return Reference to the singleton thread pool instance
      */
-    static ThreadPool<T>& GetInstance(int num = gnum) {
+    static ThreadPool<T>& GetInstance(int num = Conf::threadpool_default_size) {
         static ThreadPool<T> instance(num);
         instance.Start();
         return instance;

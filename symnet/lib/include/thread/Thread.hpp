@@ -7,11 +7,9 @@
 #include <iostream>
 #include <utility>
 
+#include "../utils/Conf.hpp"
+
 using func_t = std::function<void()>;
-
-static int default_cnt = 0;
-
-static constexpr bool enable_thread_log = false;
 
 /**
  * @brief Thread wrapper class for simplified thread management.
@@ -22,9 +20,9 @@ static constexpr bool enable_thread_log = false;
 class Thread {
 private:
     enum ThreadState {
-        NEW,        ///< Thread created but not started
-        RUNNING,    ///< Thread is currently executing
-        STOPPED     ///< Thread has finished or been stopped
+        NEW, ///< Thread created but not started
+        RUNNING, ///< Thread is currently executing
+        STOPPED ///< Thread has finished or been stopped
     };
 
     /**
@@ -61,7 +59,8 @@ public:
      * @param f Function object to be executed in the new thread
      */
     explicit Thread(func_t f) : _func(std::move(f)), _tid(0), _pid(0), _lwpid(0), _joinable(true), _status(NEW) {
-        _name = "Thread-" + std::to_string(++default_cnt);
+        static int thread_counter = Conf::thread_name_counter_start;
+        _name = "Thread-" + std::to_string(++thread_counter);
     }
 
     /**
@@ -72,7 +71,7 @@ public:
         if (_status == NEW) {
             pthread_create(&_tid, nullptr, routine, this);
             _status = RUNNING;
-            if (enable_thread_log) {
+            if (Conf::thread_enable_log) {
                 std::cout << "Thread " << _name << " is started." << std::endl;
             }
         }
@@ -88,7 +87,7 @@ public:
             pthread_cancel(_tid);
             _status = STOPPED;
         }
-        if (enable_thread_log) {
+        if (Conf::thread_enable_log) {
             std::cout << "Thread " << _name << " is stopped." << std::endl;
         }
     }
@@ -118,11 +117,11 @@ public:
     ~Thread() = default;
 
 private:
-    func_t _func;              ///< Function to execute in the thread
-    pthread_t _tid;            ///< Thread identifier
-    pid_t _pid;                ///< Process ID
-    pid_t _lwpid;              ///< Lightweight Process ID (system thread ID)
-    std::string _name;         ///< Human-readable thread name
-    bool _joinable;            ///< Whether the thread can be joined
-    ThreadState _status;       ///< Current thread state
+    func_t _func; ///< Function to execute in the thread
+    pthread_t _tid; ///< Thread identifier
+    pid_t _pid; ///< Process ID
+    pid_t _lwpid; ///< Lightweight Process ID (system thread ID)
+    std::string _name; ///< Human-readable thread name
+    bool _joinable; ///< Whether the thread can be joined
+    ThreadState _status; ///< Current thread state
 };
