@@ -2,8 +2,6 @@
 
 #include <utility>
 
-// #define DEBUG_MODE
-
 #include "UdpSocket.hpp"
 #include "Config.hpp"
 

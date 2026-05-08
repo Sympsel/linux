@@ -8,16 +8,14 @@
 
 #include "UdpSocket.hpp"
 #include "Log.hpp"
-#include "User.hpp"
 #include "Config.hpp"
-
-using callback_t = std::function<void(const std::string &, const User &, const UdpSocket&)>;
+#include "CallbackTypes.hpp"
 
 using namespace sym;
 
 class UdpServer {
 public:
-    UdpServer(callback_t cb, const in_port_t &port)
+    UdpServer(UdpMsgCallback cb, const in_port_t &port)
         : _cb(std::move(cb)), _port(port) {
         InitConf();
     }
@@ -38,6 +36,7 @@ public:
             std::string inbuffer = peer.RecvfromSockfd(_server_sock.GetSockfd());
             // build response message
             if (_cb) {
+                User user;
                 _cb(inbuffer, {peer.GetInetAddr(), Conf::default_username}, _server_sock);
             }
         }
@@ -47,6 +46,6 @@ private:
     UdpSocket _server_sock;
     std::string _ip;
 
-    callback_t _cb;
+    UdpMsgCallback _cb;
     in_port_t _port;
 };

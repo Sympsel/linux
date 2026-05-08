@@ -17,7 +17,8 @@ add_executable(server
         src/ThreadPool.hpp
         src/IniParse.hpp
         src/Config.hpp
-        src/InetAddr.hpp)
+        src/InetAddr.hpp
+        src/CallbackTypes.hpp)
 
 add_executable(client
         chatClient.cpp
@@ -27,4 +28,5 @@ add_executable(client
         src/IniParse.hpp
         src/Config.hpp
         src/InetAddr.hpp
+        src/CallbackTypes.hpp
 )
