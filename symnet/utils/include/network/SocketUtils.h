@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstring>
-
 #include "../utils/InetAddr.hpp"
 #include "../utils/Conf.hpp"
 
@@ -23,13 +21,7 @@ public:
      * @param protocol Protocol to use (default: 0 for default protocol)
      * @return File descriptor of the created socket, or -1 on error
      */
-    static int CreateSocket(const int domain, const int type, const int protocol = 0) {
-        const int sockfd = socket(domain, type, protocol);
-        if (sockfd < 0) {
-            return -1;
-        }
-        return sockfd;
-    }
+    static int CreateSocket(int domain, int type, int protocol = 0);
 
     /**
      * @brief Binds a socket to a specific address.
@@ -37,13 +29,7 @@ public:
      * @param peer Address to bind to
      * @return true if binding succeeds, false otherwise
      */
-    static bool Bind(const int sockfd, const InetAddr &peer) {
-        if (const int ret = bind(sockfd, reinterpret_cast<const sockaddr *>(&peer.GetAddr()),
-                                 peer.GetAddrLen()); ret < 0) {
-            return false;
-        }
-        return true;
-    }
+    static bool Bind(int sockfd, const InetAddr &peer);
 
     /**
      * @brief Puts a socket into listening state.
@@ -51,9 +37,7 @@ public:
      * @param backlog Maximum number of pending connections
      * @return true if listening starts successfully, false otherwise
      */
-    static bool Listen(const int sockfd, const int backlog) {
-        return listen(sockfd, backlog) >= 0;
-    }
+    static bool Listen(int sockfd, int backlog);
 
     /**
      * @brief Accepts an incoming connection on a listening socket.
@@ -61,16 +45,7 @@ public:
      * @param addr_client Output parameter to store client address
      * @return Connected socket file descriptor, or -1 on error
      */
-    static int Accept(const int listen_sockfd, InetAddr &addr_client) {
-        sockaddr_in temp{};
-        socklen_t len = sizeof temp;
-        const int connect_sockfd = accept(listen_sockfd, reinterpret_cast<sockaddr *>(&temp), &len);
-        if (connect_sockfd < 0) {
-            return -1;
-        }
-        addr_client.SetAddr(temp);
-        return connect_sockfd;
-    }
+    static int Accept(int listen_sockfd, InetAddr &addr_client);
 
     /**
      * @brief Initiates a connection to a remote address.
@@ -78,24 +53,24 @@ public:
      * @param peer Remote address to connect to
      * @return true if connection succeeds, false otherwise
      */
-    static bool Connect(const int sockfd, const InetAddr &peer) {
-        return connect(sockfd, reinterpret_cast<const sockaddr *>(&peer.GetAddr()), peer.GetAddrLen()) >= 0;
-    }
+    static bool Connect(int sockfd, const InetAddr &peer);
 
     /**
      * @brief Reads data from a socket.
      * @param sockfd Socket file descriptor
+     * @param max_size Maximum number of bytes to read, auto set by Conf::network_buffer_length
      * @return Received data as string, or empty string on error/connection close
      */
-    static std::string Read(const int sockfd) {
-        char inbuffer[Conf::network_buffer_length];
-        const ssize_t n = read(sockfd, inbuffer, sizeof inbuffer - 1);
-        if (n <= 0) {
-            return {};
-        }
-        inbuffer[n] = '\0';
-        return inbuffer;
-    }
+    static std::string Read(int sockfd, size_t max_size = Conf::network_buffer_length);
+
+    /**
+     * @brief Reads data from a socket into a string.
+     * @param sockfd Socket file descriptor
+     * @param str_to_fill Output string to store received data
+     * @param max_size Maximum number of bytes to read, auto set by Conf::network_buffer_length
+     * @return true if reception succeeds, false on error
+     */
+    static bool Read(int sockfd, std::string& str_to_fill, size_t max_size = Conf::network_buffer_length);
 
     /**
      * @brief Writes data to a socket.
@@ -103,24 +78,14 @@ public:
      * @param message Data to send
      * @return Number of bytes written, or negative value on error
      */
-    static ssize_t Write(const int sockfd, const std::string &message) {
-        return write(sockfd, message.c_str(), message.size());
-    }
+    static ssize_t Write(int sockfd, const std::string &message);
 
     /**
      * @brief Closes a socket.
      * @param sockfd Socket file descriptor to close
      * @return true if closed successfully or already invalid, false on error
      */
-    static bool Close(const int sockfd) {
-        if (sockfd >= 0) {
-            if (const int ret = close(sockfd); ret < 0) {
-                return false;
-            }
-            return true;
-        }
-        return true;
-    }
+    static bool Close(int sockfd);
 
     // === UDP Operations ===
 
@@ -131,17 +96,7 @@ public:
      * @param peer Destination address
      * @return Number of bytes sent, or -1 on error
      */
-    static ssize_t SendTo(const int sockfd, const std::string &data, const InetAddr &peer) {
-        const ssize_t n = sendto(
-            sockfd, data.c_str(), data.size(), 0,
-            reinterpret_cast<const sockaddr *>(&peer.GetAddr()), peer.GetAddrLen());
-        if (n < 0) {
-            LOG_ERROR() << "sendto error: " << strerror(errno);
-            return -1;
-        }
-        LOG_DEBUG() << "send " << n << "bytes to " << peer.GetIp() << ":" << peer.GetPort();
-        return n;
-    }
+    static ssize_t SendTo(int sockfd, const std::string &data, const InetAddr &peer);
 
     /**
      * @brief Receives data from a UDP socket and retrieves sender address.
@@ -150,21 +105,7 @@ public:
      * @param sender_to_fill Output parameter to store sender's address
      * @return true if reception succeeds, false on error
      */
-    static bool RecvFrom(const int sockfd, std::string& str_to_fill, InetAddr &sender_to_fill) {
-        char inbuffer[Conf::network_buffer_length];
-        sockaddr_in temp{};
-        socklen_t len = sizeof temp;
-        if (const ssize_t n = recvfrom(sockfd, inbuffer, sizeof inbuffer - 1, 0,
-                                       reinterpret_cast<sockaddr *>(&temp), &len); n < 0) {
-            LOG_ERROR() << "recv error: " << strerror(errno);
-            return false;
-        } else {
-            inbuffer[n] = '\0';
-        }
-        sender_to_fill.SetAddr(temp);
-        str_to_fill = inbuffer;
-        return true;
-    }
+    static bool RecvFrom(int sockfd, std::string& str_to_fill, InetAddr &sender_to_fill);
 
     /**
      * @brief Receives data from a UDP socket without retrieving sender address.
@@ -172,18 +113,7 @@ public:
      * @param str_to_fill Output string to store received data
      * @return true if reception succeeds, false on error
      */
-    static bool RecvFrom(const int sockfd, std::string& str_to_fill) {
-        char inbuffer[Conf::network_buffer_length];
-        if (const ssize_t n = recvfrom(sockfd, inbuffer, sizeof inbuffer, 0,
-                                       nullptr, nullptr); n < 0) {
-            LOG_ERROR() << "recv error: " << strerror(errno);
-            return false;
-        } else {
-            inbuffer[n] = '\0';
-        }
-        str_to_fill = inbuffer;
-        return true;
-    }
+    static bool RecvFrom(int sockfd, std::string& str_to_fill);
 
     // === Configuration Options ===
 

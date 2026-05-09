@@ -1,12 +1,10 @@
 #pragma once
 
-#include <netinet/in.h>
-
-#include <csignal>
 #include <functional>
 
-#include "include/sym/SymINet.h"
-#include "include/sym/SymThread.h"
+#include "../../utils/module/SymINet.h"
+#include "../../utils/module/SymLog.h"
+#include "../../utils/module/SymThread.h"
 
 static constexpr in_port_t default_port = 8080;
 static constexpr int default_backlog = 32;

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "SocketUtils.hpp"
+#include "SocketUtils.h"
 #include "../utils/InetAddr.hpp"
-#include "../utils/Log.hpp"
 #include "../utils/Conf.hpp"
 
 #define CREATE_SOCKET (SocketUtils::CreateSocket(AF_INET, SOCK_DGRAM))
@@ -19,7 +18,7 @@ private:
      * @brief Validates that the socket file descriptor is valid.
      * @return true if socket is valid, false otherwise
      */
-    bool CheckSockfd() const {
+    [[nodiscard]] bool CheckSockfd() const {
         if (_sockfd < 0) {
             LOG_ERROR() << "create UDP socket failed";
             return false;
@@ -51,7 +50,7 @@ public:
      * @param local_addr Local address to bind to
      * @return true if binding succeeds, false otherwise
      */
-    bool Bind(const InetAddr &local_addr) const {
+    [[nodiscard]] bool Bind(const InetAddr &local_addr) const {
         if(!CheckSockfd()) {
             return false;
         }
@@ -68,7 +67,7 @@ public:
      * @param peer_addr Destination address
      * @return Number of bytes sent, or false (0) on socket error
      */
-    ssize_t SendTo(const std::string& data, const InetAddr& peer_addr) const {
+    [[nodiscard]] ssize_t SendTo(const std::string& data, const InetAddr& peer_addr) const {
         if(!CheckSockfd()) {
             return false;
         }
@@ -96,7 +95,7 @@ public:
      * @brief Receives data without retrieving sender address.
      * @return Received data as string, or empty string on error
      */
-    std::string RecvFrom() const {
+    [[nodiscard]] std::string RecvFrom() const {
         if(!CheckSockfd()) {
             return {};
         }

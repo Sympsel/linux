@@ -3,7 +3,8 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
-#include "Log.hpp"
+
+#include "../../include/module/SymLog.h"
 
 /**
  * @brief INI configuration file parser with singleton pattern.

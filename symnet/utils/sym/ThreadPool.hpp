@@ -6,7 +6,6 @@
 #include "Mutex.hpp"
 #include "Cond.hpp"
 #include "Thread.hpp"
-#include "../utils/Log.hpp"
 
 using namespace sym;
 
@@ -117,7 +116,7 @@ class ThreadPool {
      * @param task Task to be executed by a worker thread
      */
     void Push(const T& task) {
-        LockGuard lockguard(_lock);
+        LockGuard lock_guard(_lock);
         _q.emplace(task);
         if (_sleeper_cnt > 0)
             _cond.NotifyAll();
@@ -170,7 +169,7 @@ class ThreadPool {
      * @note Warns and rejects tasks if the pool is quitting.
      */
     void Enqueue(const T& task) {
-        LockGuard lockguard(_lock);
+        LockGuard lock_guard(_lock);
         if (_status == QUIT) {
             LOG_WARN() << "Threadpool is going to exit.";
             return;
@@ -190,7 +189,7 @@ class ThreadPool {
     void Quit() {
         if (_status == QUIT) {
             LOG_INFO() << "Threadpool is going to exit.";
-            LockGuard lockguard(_lock);
+            LockGuard lock_guard(_lock);
             _status = QUIT;
             _cond.NotifyAll();
         }

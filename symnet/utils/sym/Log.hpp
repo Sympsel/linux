@@ -77,11 +77,11 @@ namespace sym {
      * @brief Enumeration of log severity levels.
      */
     enum class log_level_t {
-        DEBUG,      ///< Debug-level messages for development
-        INFO,       ///< Informational messages about normal operation
-        WARNING,    ///< Warning messages about potential issues
-        ERROR,      ///< Error messages about failures
-        FATAL       ///< Fatal error messages before termination
+        DEBUG, ///< Debug-level messages for development
+        INFO, ///< Informational messages about normal operation
+        WARNING, ///< Warning messages about potential issues
+        ERROR, ///< Error messages about failures
+        FATAL ///< Fatal error messages before termination
     };
 
     /**
@@ -372,8 +372,11 @@ namespace sym {
         ~logger() = default;
 
         logger(const logger &) = delete;
+
         logger &operator=(const logger &) = delete;
+
         logger(logger &&) = delete;
+
         logger &operator=(logger &&) = delete;
 
         /**
@@ -564,7 +567,7 @@ namespace sym {
         return instance;
     }
 
-// Convenience macros for logging
+    // Convenience macros for logging
 #define LOG(level) sym::get_logger()(level, __FILE__, __LINE__)
 #define LOG_DEBUG() LOG(sym::log_level_t::DEBUG)
 #define LOG_INFO()  LOG(sym::log_level_t::INFO)
