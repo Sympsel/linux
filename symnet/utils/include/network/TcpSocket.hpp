@@ -38,7 +38,7 @@ public:
      * @param backlog Maximum number of pending connections (default: 32)
      * @return true if listening starts successfully, false otherwise
      */
-    static bool Listen(const int sockfd, const int backlog = 32) {
+    static bool Listen(const int sockfd, const int backlog = Conf::network_backlog) {
         if (const int ret = listen(sockfd, backlog); ret < 0) {
             LOG_ERROR() << "listen error";
             return false;

@@ -50,7 +50,7 @@ public:
     inline static std::string log_directory = "./log/";
 
     /// Default log filename (empty means auto-generated with date)
-    inline static std::string log_filename = "";
+    inline static std::string log_filename;
 
     /// Enable colored console output by default
     inline static bool log_color_enabled = true;
