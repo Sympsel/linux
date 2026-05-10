@@ -2,7 +2,7 @@ include_directories(utils/include utils/module utils/src)
 cmake_minimum_required(VERSION 3.14)
 project(symutils)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 收集所有源文件

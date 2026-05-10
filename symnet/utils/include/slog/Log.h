@@ -232,8 +232,7 @@ namespace sym {
 
             ~LogMsg();
 
-            template<class T>
-            LogMsg &operator<<(const T &info) {
+            LogMsg &operator<<(const auto &info) {
                 std::stringstream ss;
                 ss << info;
                 _log_info += ss.str();

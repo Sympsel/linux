@@ -3,8 +3,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <iostream>
 #include <utility>
+#include <string>
 
 /**
  * @brief Wrapper class for IPv4 socket addresses.
@@ -114,6 +114,15 @@ public:
      */
     bool operator==(const InetAddr& other) const {
         return _port == other._port && _ip == other._ip;
+    }
+
+    /**
+     * @brief Assigns a sockaddr_in structure to an InetAddr instance.
+     * @param addr Socket address structure to assign
+     */
+    InetAddr& operator=(const sockaddr_in& addr) {
+        SetAddr(addr);
+        return *this;
     }
 
     ~InetAddr() = default;

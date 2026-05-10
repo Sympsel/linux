@@ -115,6 +115,10 @@ public:
      */
     static bool RecvFrom(int sockfd, std::string& str_to_fill);
 
+    // === TCP Operations ===
+    // int Recv(int sockfd)
+    // todo
+
     // === Configuration Options ===
 
     /**
