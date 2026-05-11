@@ -25,7 +25,7 @@ public:
      * @param addr Address structure containing IP and port
      */
     explicit TcpSSocket(const sockaddr_in &addr) {
-        _addr_helper.SetAddr(addr);
+        _addr_helper = addr;
     }
 
     /**

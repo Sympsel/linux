@@ -31,6 +31,8 @@ public:
      */
     static bool Bind(int sockfd, const InetAddr &peer);
 
+    // === TCP Operations ===
+
     /**
      * @brief Puts a socket into listening state.
      * @param sockfd Socket file descriptor
@@ -81,6 +83,22 @@ public:
     static ssize_t Write(int sockfd, const std::string &message);
 
     /**
+     * @brief Receives data from a TCP socket.
+     * @param sockfd Socket file descriptor
+     * @param str_to_fill Output string to store received data
+     * @return Number of bytes received, or -1 on error
+     */
+    static ssize_t Recv(int sockfd, std::string& str_to_fill);
+
+    /**
+     * @brief Sends data to a TCP socket.
+     * @param sockfd Socket file descriptor
+     * @param message Data to send
+     * @return Number of bytes sent, or -1 on error
+     */
+    static ssize_t Send(int sockfd, const std::string& message);
+
+    /**
      * @brief Closes a socket.
      * @param sockfd Socket file descriptor to close
      * @return true if closed successfully or already invalid, false on error
@@ -114,10 +132,6 @@ public:
      * @return true if reception succeeds, false on error
      */
     static bool RecvFrom(int sockfd, std::string& str_to_fill);
-
-    // === TCP Operations ===
-    // int Recv(int sockfd)
-    // todo
 
     // === Configuration Options ===
 

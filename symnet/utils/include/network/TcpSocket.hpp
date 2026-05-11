@@ -61,7 +61,7 @@ public:
             LOG_WARN() << "accept error";
             return -1;
         }
-        client_addr.SetAddr(temp);
+        client_addr = temp;
         LOG_INFO() << "accept success. [fd: " << conn_sockfd << "]";
         return conn_sockfd;
     }

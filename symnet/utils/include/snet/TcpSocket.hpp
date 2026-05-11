@@ -5,9 +5,10 @@
 #include "Socket.hpp"
 
 
-class TcpSocket : public Socket {
+class TcpSocket : public ITcpSocket {
 public:
-    explicit TcpSocket(const int sockfd = -1) : _sockfd(sockfd) {
+    explicit TcpSocket(const int sockfd = -1) {
+        _sockfd = sockfd;
     }
 
     void CreateSocket() override {
@@ -21,8 +22,7 @@ public:
         _addr.sin_addr.s_addr = htonl(INADDR_ANY);
         _addr.sin_family = AF_INET;
         _addr.sin_port = htons(port);
-        constexpr int len = sizeof _addr;
-        if (const int ret = bind(_sockfd, reinterpret_cast<sockaddr *>(&_addr), len); ret == -1) {
+        if (const int ret = bind(_sockfd, reinterpret_cast<sockaddr *>(&_addr), sizeof _addr); ret == -1) {
             exit(BIND_ERROR);
         }
     }
@@ -34,7 +34,7 @@ public:
         listen(_sockfd, default_a);
     }
 
-    std::shared_ptr<Socket> Acceptor(InetAddr &client_addr) override {
+    std::shared_ptr<ITcpSocket> Acceptor(InetAddr &client_addr) override {
         sockaddr_in peer{};
         socklen_t len = sizeof peer;
         int sockfd = accept(_sockfd, reinterpret_cast<sockaddr *>(&peer), &len);
@@ -83,7 +83,4 @@ public:
     }
 
     ~TcpSocket() override = default;
-
-private:
-    int _sockfd;
 };

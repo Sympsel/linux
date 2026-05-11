@@ -9,7 +9,7 @@
 template<class TaskType>
 class TcpServer {
 private:
-    void HandleIO(const std::shared_ptr<Socket>& sockfd, const InetAddr& client_addr) {
+    void HandleIO(const std::shared_ptr<ITcpSocket>& sockfd, const InetAddr& client_addr) {
         std::string inbuffer;
         while (true) {
             if (const ssize_t n = sockfd->Recv(inbuffer); n < 0) {
@@ -39,7 +39,7 @@ public:
           _listen_sockfd(std::make_unique<TcpSocket>()),
           _running(false),
           _task(nullptr) {
-        _listen_sockfd->BuildSocketMethod(_port);
+        _listen_sockfd->BuildServerSocketMethod(_port);
     }
 
     void Init(const TaskType& task) {
@@ -79,7 +79,7 @@ public:
 
 private:
     int _port;
-    std::unique_ptr<Socket> _listen_sockfd;
+    std::unique_ptr<ITcpSocket> _listen_sockfd;
     bool _running;
 
     TaskType _task;

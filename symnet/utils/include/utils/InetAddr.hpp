@@ -14,6 +14,18 @@
  * binary and string representations of IP addresses.
  */
 class InetAddr {
+private:
+    /**
+     * @brief Sets the entire sockaddr_in structure and updates cached values.
+     * @param addr Socket address structure to copy
+     */
+    void SetAddr(const sockaddr_in& addr) {
+        _addr = addr;
+        char buffer[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &_addr.sin_addr, buffer, sizeof buffer);
+        _ip = buffer;
+        _port = ntohs(_addr.sin_port);
+    }
 public:
     /**
      * @brief Default constructor. Initializes to zero values.
@@ -87,17 +99,7 @@ public:
         _ip = std::move(ip);
     }
 
-    /**
-     * @brief Sets the entire sockaddr_in structure and updates cached values.
-     * @param addr Socket address structure to copy
-     */
-    void SetAddr(const sockaddr_in& addr) {
-        _addr = addr;
-        char buffer[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &_addr.sin_addr, buffer, sizeof buffer);
-        _ip = buffer;
-        _port = ntohs(_addr.sin_port);
-    }
+
 
     /**
      * @brief Gets the size of the sockaddr_in structure.

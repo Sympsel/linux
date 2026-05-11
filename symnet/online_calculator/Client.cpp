@@ -32,7 +32,7 @@ int main(const int argc, char *argv[]) {
 
     // 创建协议层
     JsonSerializer json_serializer;
-    // 占位任务 (客户端不调用 HandleRequest 的业务部分)
+    // 占位任务, 用于自动推导类型
     const auto dummy_task = [](const CalcRequest &) -> CalcResponse {
         return CalcResponse{};
     };

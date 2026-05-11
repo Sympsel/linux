@@ -32,7 +32,7 @@ int SocketUtils::Accept(const int listen_sockfd, InetAddr &addr_client) {
     if (connect_sockfd < 0) {
         return -1;
     }
-    addr_client.SetAddr(temp);
+    addr_client = temp;
     return connect_sockfd;
 }
 
@@ -99,7 +99,7 @@ bool SocketUtils::RecvFrom(const int sockfd, std::string& str_to_fill, InetAddr 
                                    } else {
                                        inbuffer[n] = '\0';
                                    }
-    sender_to_fill.SetAddr(temp);
+    sender_to_fill = temp;
     str_to_fill = inbuffer;
     return true;
 }
@@ -116,6 +116,20 @@ bool SocketUtils::RecvFrom(const int sockfd, std::string& str_to_fill) {
     str_to_fill = inbuffer;
     return true;
 }
+
+    ssize_t SocketUtils::Recv(const int sockfd, std::string& str_to_fill) {
+        char buffer[Conf::network_buffer_length];
+        const ssize_t n = recv(sockfd, buffer, sizeof buffer - 1, 0);
+        if (n > 0) {
+            buffer[n] = '\0';
+            str_to_fill.assign(buffer, n);
+        }
+        return n;
+    }
+
+    ssize_t SocketUtils::Send(const int sockfd, const std::string& message) {
+        return send(sockfd, message.c_str(), message.size(), 0);
+    }
 
 bool SocketUtils::SetReuseAddr(const int sockfd) {
     constexpr int opt = 1;

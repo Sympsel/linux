@@ -148,7 +148,7 @@ public:
      */
     std::string Get(const std::string &section, const std::string &key, const std::string &default_value = "") const {
         const auto key_name = section + "." + key;
-        return _ini_map.find(key_name) != _ini_map.end() ? _ini_map.at(key_name) : default_value;
+        return _ini_map.contains(key_name) ? _ini_map.at(key_name) : default_value;
     }
 
     /**
