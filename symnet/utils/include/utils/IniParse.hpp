@@ -4,7 +4,7 @@
 #include <fstream>
 #include <filesystem>
 
-#include "../module/SymLog.h"
+#include "../../module/SymLog.h"
 
 /**
  * @brief INI configuration file parser with singleton pattern.
