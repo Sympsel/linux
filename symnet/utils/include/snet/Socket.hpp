@@ -87,6 +87,8 @@ public:
 
     virtual ssize_t Recv(std::string &) = 0;
 
+    virtual ssize_t Recv(std::string &, size_t) = 0;
+
     virtual bool Send(const std::string &) = 0;
 
 public:

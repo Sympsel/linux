@@ -4,34 +4,61 @@
 #include <json/value.h>
 #include <json/writer.h>
 
+#include "DataType.hpp"
 #include "../../utils/module/SymNet.h"
 
-// todo replace int/int
-class HttpSerializer : public ISerializer<int, int> {
+
+class HttpSerializer : public ISerializer<HttpRequest, HttpResponse> {
 public:
-    std::string SerializeRequest(const int &req) const override {
+    [[nodiscard]] std::string SerializeRequest(const HttpRequest &req) const override {
         Json::Value root;
-        root["x"] = 1;
+        root["method"] = req.method;
+        root["path"] = req.path;
+        root["version"] = req.version;
+        Json::Value headers;
+        for (const auto &[key, value]: req.headers) {
+            headers[key] = value;
+        }
+        root["headers"] = headers;
+        root["body"] = req.body;
         return Write(root);
     }
 
-    bool DeserializeRequest(const std::string &str, int &out) const override {
+    bool DeserializeRequest(const std::string &str, HttpRequest &out) const override {
         Json::Value root;
         if (!Parse(str, root)) return false;
-        out = root["x"].asInt();
+        out.method = root["method"].asString();
+        out.path = root["path"].asString();
+        out.version = root["version"].asString();
+        for (const auto & key : root["headers"].getMemberNames()) {
+            out.headers[key] = root["headers"][key].asString();
+        }
+        out.body = root["body"].asString();
         return true;
     }
 
-    std::string SerializeResponse(const int &resp) const override {
+    [[nodiscard]] std::string SerializeResponse(const HttpResponse &resp) const override {
         Json::Value root;
-        root["x"] = 1;
+        root["status_code"] = resp.status_code;
+        root["status_text"] = resp.status_text;
+        Json::Value headers;
+        for (const auto &[key, values]: resp.headers) {
+            headers[key] = values;
+        }
+        root["headers"] = headers;
+        root["body"] = resp.body;
         return Write(root);
     }
 
-    bool DeserializeResponse(const std::string &str, int &out) const override {
+    bool DeserializeResponse(const std::string &str, HttpResponse &out) const override {
         Json::Value root;
         if (!Parse(str, root)) return false;
-        out = root["x"].asInt();
+        out.status_code = root["status_code"].asString();
+        out.status_text = root["status_text"].asString();
+        for (const auto & key : root["headers"].getMemberNames()) {
+            out.headers[key] = root["headers"][key].asString();
+        }
+        out.body = root["body"].asString();
         return true;
     }
 

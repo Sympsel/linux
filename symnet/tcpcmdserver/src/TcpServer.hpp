@@ -2,8 +2,8 @@
 
 #include <netinet/in.h>
 
-#include "../module/SymINet.h"
-#include "../module/SymLog.h"
+#include "../../utils/module/SymINet.h"
+#include "../../utils/module/SymLog.h"
 
 static constexpr in_port_t default_port = 8080;
 static constexpr int default_backlog = 32;

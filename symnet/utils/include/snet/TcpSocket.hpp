@@ -46,27 +46,40 @@ public:
     }
 
     ssize_t Recv(std::string &str_to_fill) override {
-        // todo
-        char buffer[1024];
+        return Recv(str_to_fill, 1024);
+    }
+
+    ssize_t Recv(std::string &str_to_fill, const size_t size) override {
+        char buffer[size];
         const ssize_t n = recv(_sockfd, buffer, sizeof buffer - 1, 0);
         if (n < 0) {
             return n;
         }
         buffer[n] = '\0';
-        str_to_fill += buffer;
+        str_to_fill.append(buffer, n);
         return n;
     }
 
     bool Send(const std::string &str) override {
-        return send(_sockfd, str.c_str(), str.size(), 0);
+        size_t total_sent = 0;
+        while (total_sent < str.size()) {
+            const ssize_t n = send(_sockfd, str.c_str() + total_sent, str.size() - total_sent, 0);
+            if (n < 0) {
+                LOG_ERROR() << "send error: " << strerror(errno);
+                return false;
+            }
+            total_sent += n;
+        }
+        return true;
     }
 
     const int &GetSockfd() override {
         return _sockfd;
     }
 
-    bool Connect(const InetAddr& peer) override {
-        if (const int ret = connect(_sockfd, reinterpret_cast<const sockaddr *>(&peer.GetAddr()), peer.GetAddrLen()); ret < 0) {
+    bool Connect(const InetAddr &peer) override {
+        if (const int ret = connect(_sockfd, reinterpret_cast<const sockaddr *>(&peer.GetAddr()), peer.GetAddrLen());
+            ret < 0) {
             LOG_ERROR() << "connect error: " << strerror(errno);
             return false;
         } else {
