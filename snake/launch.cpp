@@ -9,7 +9,8 @@ int main() {
             " g++ -std=c++20 -O2 "
             "-o out/snake "
             "src/main.cpp "
-            "-lncurses -ljsoncpp";
+            "-DW "
+            "-lncursesw -ljsoncpp";
     if (system(compile.c_str()) != 0) {
         printf("Compile failed!\n");
         return 1;

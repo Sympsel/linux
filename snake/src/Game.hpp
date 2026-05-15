@@ -9,6 +9,9 @@ namespace Sym {
     class Game {
     private:
         void Init() {
+#ifdef W
+            setlocale(LC_ALL, "");
+#endif
             // ncurses 初始化
             initscr(); // 初始化 ncurses
             cbreak(); // 行缓冲关闭，Ctrl+C 等信号仍可传递
@@ -27,6 +30,17 @@ namespace Sym {
 
             _frame.Init();
             _last_update_time = std::chrono::steady_clock::now();
+
+            // if (const std::string main_music = _assets_file_path + "/游戏主旋律.mp3";
+                // !std::filesystem::exists(main_music)) {
+                // LOG_WARN() << "Music file not found!";
+            // } else {
+                // std::thread music_thread([&]() {
+                    // const std::string cmd = "mpg123 -q " + main_music;
+                    // system(cmd.c_str());
+                // });
+                // music_thread.detach();
+            // }
         }
 
         void HandleInput() {
@@ -90,6 +104,9 @@ namespace Sym {
             : _frame(width, height, def_len),
               _status(RUNNING),
               _score() {
+            // _assets_file_path = std::filesystem::canonical(
+                // std::filesystem::current_path() / "assets"
+            // );
         }
 
         void Update() {
@@ -120,14 +137,22 @@ namespace Sym {
                 // 如果经过时间差大于等于移动间隔，则更新游戏状态
                 if (elapsed >= _frame.GetSnake().GetMoveInterval()) {
                     Update();
+#ifdef W
+                    _frame.RenderW();
+#else
                     _frame.Render();
+#endif
                     _last_update_time = currentTime;
                 }
 
                 // 当食物过期时，设置新的食物
                 if (_frame.IsFoodExpired()) {
                     _frame.SetFood();
+#ifdef W
+                    _frame.RenderW();
+#else
                     _frame.Render();
+#endif
                 }
 
                 // 休眠16ms 约60FPS, 避免CPU占用过高
@@ -152,5 +177,7 @@ namespace Sym {
         Status _status;
         int _score;
         std::chrono::steady_clock::time_point _last_update_time;
+
+        // std::string _assets_file_path;
     };
 }

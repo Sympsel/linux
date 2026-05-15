@@ -70,7 +70,7 @@ namespace Sym {
             _speed_level = level;
             // todo config it
             const int offset = level - (max_speed_level + 1) / 2;
-            _move_interval = std::max(conf["move_interval"] - offset * 20, conf["min_move_interval"]);
+            _move_interval = std::max(conf["move_interval"] - offset * 30, conf["min_move_interval"]);
         }
 
         [[nodiscard]] SpeedLevel GetMoveLevel() const {

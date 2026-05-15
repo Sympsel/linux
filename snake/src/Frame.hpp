@@ -23,9 +23,10 @@ namespace Sym {
         void Init() {
             {
                 int id = 0;
-                const auto& foods = conf.GetConf().food_list;
-                for (const auto &food: foods) {
-                    _foods[id++] = food;
+                for (const auto &foods = conf.GetConf().food_list; const auto &food: foods) {
+                    _foods[id] = food;
+                    _foods[id].percent += foods[id].percent;
+                    ++id;
                 }
             }
             _snake.Init();
@@ -50,8 +51,8 @@ namespace Sym {
                 (std::find(snake_body.begin() + 1, snake_body.end(),
                            _snake.GetHead()->pos) != snake_body.end())) {
                 _snake.SetStatus(Snake::KILL_BY_SELF);
-            } else if (_snake.GetHead()->pos.first <= 0 || _snake.GetHead()->pos.first >= _width ||
-                       _snake.GetHead()->pos.second <= 0 || _snake.GetHead()->pos.second >= _height) {
+            } else if (_snake.GetHead()->pos.first < 0 || _snake.GetHead()->pos.first >= _width ||
+                       _snake.GetHead()->pos.second < 0 || _snake.GetHead()->pos.second >= _height) {
                 _snake.SetStatus(Snake::KILL_BY_WALL);
             }
             return 0;
@@ -60,12 +61,17 @@ namespace Sym {
         void SetFood() {
             std::uniform_int_distribution<int> width_dist(1, _width - 1);
             std::uniform_int_distribution<int> height_dist(1, _height - 1);
-
-            // todo _foods may be empty
-            std::uniform_int_distribution<int> type_dist(0, static_cast<int>(_foods.size()) - 1);
+            std::uniform_int_distribution<int> type_dist(1, 100);
             const int type_id = type_dist(_rng);
-            for (auto [id, food]: _foods) {
-                if (food.percent > type_id) {
+            if (_foods.empty()) {
+                LOG_FATAL() << "Food list is empty!";
+                sleep(2);
+                exit(EXIT_FAILURE);
+            }
+
+            // 遍历累加后的百分位数，找到第一个大于随机数的食物类型
+            for (const auto &[id, food]: _foods) {
+                if (food.percent >= type_id) {
                     _curr_food_type_id = id;
                     break;
                 }
@@ -78,7 +84,7 @@ namespace Sym {
                 x = width_dist(_rng);
                 y = height_dist(_rng);
                 if (const auto &body = _snake.GetBodyPos();
-                    std::find(body.begin(), body.end(), Pos{x, y}) != body.end()) {
+                    std::ranges::find(body, Pos{x, y}) != body.end()) {
                     flag = true;
                 }
             }
@@ -96,9 +102,54 @@ namespace Sym {
         }
 
 
+        /**
+         * @brief 绘制游戏画面, 宽体字符绘制
+         */
+        void RenderW() const {
+            clear();
+
+            attron(COLOR_PAIR(3));
+            // 宽字符模式下，宽度需要 * 2
+            for (int i = 0; i <= _width * 2 + 1; ++i) {
+                mvaddch(0, i, ACS_HLINE);
+                mvaddch(_height + 1, i, ACS_HLINE);
+            }
+            for (int i = 0; i <= _height + 1; ++i) {
+                mvaddch(i, 0, ACS_VLINE);
+                mvaddch(i, _width * 2 + 1, ACS_VLINE);
+            }
+            mvaddch(0, 0, ACS_ULCORNER);
+            mvaddch(0, _width * 2 + 1, ACS_URCORNER);
+            mvaddch(_height + 1, 0, ACS_LLCORNER);
+            mvaddch(_height + 1, _width * 2 + 1, ACS_LRCORNER);
+            attroff(COLOR_PAIR(3));
+
+            // 修复 1: 开启颜色
+            attron(COLOR_PAIR(2));
+            // 修复 2: 使用 mvprintw 直接输出 UTF-8 字符串
+            mvprintw(_food_pos.second + 1, _food_pos.first * 2 + 1, "%s",
+                     _foods.at(_curr_food_type_id).signal.c_str());
+            attroff(COLOR_PAIR(2));
+
+            const auto body = _snake.GetBodyPos();
+            attron(COLOR_PAIR(1));
+            for (size_t i = 0; i < body.size(); i++) {
+                if (i == 0) {
+                    mvprintw(body[i].second + 1, body[i].first * 2 + 1, "●");
+                } else {
+                    mvprintw(body[i].second + 1, body[i].first * 2 + 1, "○");
+                }
+            }
+            attroff(COLOR_PAIR(1));
+
+            refresh();
+        }
+
+        /**
+         * @brief 绘制游戏画面, 字符绘制
+         */
         void Render() const {
             clear();
-            // 绘制边框
             attron(COLOR_PAIR(3));
             for (int i = 0; i <= _width + 1; ++i) {
                 mvaddch(0, i, ACS_HLINE);
@@ -108,20 +159,18 @@ namespace Sym {
                 mvaddch(i, 0, ACS_VLINE);
                 mvaddch(i, _width + 1, ACS_VLINE);
             }
-            // 绘制边框角
             mvaddch(0, 0, ACS_ULCORNER);
             mvaddch(0, _width + 1, ACS_URCORNER);
             mvaddch(_height + 1, 0, ACS_LLCORNER);
             mvaddch(_height + 1, _width + 1, ACS_LRCORNER);
             attroff(COLOR_PAIR(3));
 
-            // 绘制食物
             attron(COLOR_PAIR(2));
-            char food_char = _foods.at(_curr_food_type_id).signal;
-            mvaddch(_food_pos.second + 1, _food_pos.first + 1, food_char);
+            // 普通模式下也统一使用 mvprintw
+            mvprintw(_food_pos.second + 1, _food_pos.first + 1, "%s",
+                     _foods.at(_curr_food_type_id).signal.c_str());
             attroff(COLOR_PAIR(2));
 
-            // 绘制蛇
             const auto body = _snake.GetBodyPos();
             attron(COLOR_PAIR(1));
             for (size_t i = 0; i < body.size(); i++) {
@@ -130,7 +179,6 @@ namespace Sym {
             }
             attroff(COLOR_PAIR(1));
 
-            // 刷新屏幕
             refresh();
         }
 

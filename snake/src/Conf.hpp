@@ -60,7 +60,7 @@ namespace Sym {
                     food.duration_time = food_item.get("duration_time", 5).asInt();
 
                     std::string signal_str = food_item.get("signal", "*").asString();
-                    food.signal = signal_str.empty() ? '*' : signal_str[0];
+                    food.signal = signal_str.empty() ? "●" : signal_str;
 
                     _conf.food_list.push_back(food);
                 }
@@ -103,7 +103,7 @@ namespace Sym {
          * @brief 获取整型配置项
          * @param key 配置项名
          * @return 配置项值
-         */
+        */
         int operator[](const std::string &key) const {
             if (key == "width")
                 return _conf.width;

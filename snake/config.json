@@ -1,5 +1,5 @@
 {
-  "width": 60,
+  "width": 30,
   "height": 20,
   "def_len": 8,
   "move_interval": 200,
@@ -11,13 +11,13 @@
       "score": 10,
       "percent": 80,
       "duration_time": 5,
-      "signal": "*"
+      "signal": "●"
     },
     {
       "score": 20,
       "percent": 20,
       "duration_time": 5,
-      "signal": "X"
+      "signal": "❤\uFE0F"
     }
   ]
 }
