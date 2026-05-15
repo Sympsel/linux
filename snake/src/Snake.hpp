@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <utility>
 #include <random>
 #include <ncurses.h>
+#include "Conf.hpp"
 
 namespace Sym {
     using Pos = std::pair<int, int>;
@@ -21,11 +21,8 @@ namespace Sym {
     };
 
     enum NodeType {
-        EMPTY,
         BODY,
-        HEAD,
-        WALL,
-        BLOCK,
+        HEAD
     };
 
     struct Node {
@@ -50,7 +47,7 @@ namespace Sym {
               _len(def_len),
               _status(NORMAL),
               _move_interval(200),
-              _speed_level(5) {
+              _speed_level(conf["def_speed_level"]) {
         }
 
         void SetDirect(const Direct direct) {
@@ -65,14 +62,15 @@ namespace Sym {
         }
 
         void SetMoveSpeed(SpeedLevel level) {
+            const int max_speed_level = conf["max_speed_level"];
             if (level < 1) level = 1;
-            else if (level > 9) level = 9;
+            else if (level > max_speed_level) level = max_speed_level;
             else {
             }
             _speed_level = level;
             // todo config it
-            const int offset = level - (9 + 1) / 2;
-            _move_interval = std::max(200 - offset * 20, 30);
+            const int offset = level - (max_speed_level + 1) / 2;
+            _move_interval = std::max(conf["move_interval"] - offset * 20, conf["min_move_interval"]);
         }
 
         [[nodiscard]] SpeedLevel GetMoveLevel() const {
@@ -120,7 +118,7 @@ namespace Sym {
             _tail->prev = _head;
             _head->next = _tail;
 
-            int cnt = _len - 2;
+            int cnt = conf["def_len"] - 2;
             while (cnt--) {
                 Grow();
             }

@@ -1,22 +1,15 @@
 #pragma once
 
 #include <algorithm>
+#include <chrono>
 #include <unordered_map>
 #include <utility>
 
 #include "Snake.hpp"
+#include "Conf.hpp"
 
 namespace Sym {
-    struct Food {
-        int score;
-        int percent; // from 0 to 100 百分位数
-
-        Food() : score(0), percent(0) {
-        }
-
-        Food(const int score, const int weight) : score(score), percent(weight) {
-        }
-    };
+    struct Food;
 
     class Frame {
     public:
@@ -29,8 +22,11 @@ namespace Sym {
 
         void Init() {
             {
-                _foods[1] = {10, 80};
-                _foods[2] = {20, 100};
+                int id = 0;
+                const auto& foods = conf.GetConf().food_list;
+                for (const auto &food: foods) {
+                    _foods[id++] = food;
+                }
             }
             _snake.Init();
             SetFood();
@@ -88,6 +84,7 @@ namespace Sym {
             }
 
             _food_pos = {x, y};
+            _food_last_time = std::chrono::steady_clock::now();
         }
 
         [[nodiscard]] const Pos &GetFoodPos() const {
@@ -120,7 +117,8 @@ namespace Sym {
 
             // 绘制食物
             attron(COLOR_PAIR(2));
-            mvaddch(_food_pos.second + 1, _food_pos.first + 1, '*');
+            char food_char = _foods.at(_curr_food_type_id).signal;
+            mvaddch(_food_pos.second + 1, _food_pos.first + 1, food_char);
             attroff(COLOR_PAIR(2));
 
             // 绘制蛇
@@ -136,8 +134,15 @@ namespace Sym {
             refresh();
         }
 
-        [[nodiscard]] const Snake& GetSnake() const {
+        [[nodiscard]] const Snake &GetSnake() const {
             return _snake;
+        }
+
+        [[nodiscard]] bool IsFoodExpired() const {
+            const auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now() - _food_last_time
+            ).count();
+            return elapsed > _foods.at(_curr_food_type_id).duration_time;
         }
 
         ~Frame() = default;
@@ -148,6 +153,7 @@ namespace Sym {
         std::unordered_map<int, Food> _foods;
         Pos _food_pos;
         int _curr_food_type_id;
+        std::chrono::steady_clock::time_point _food_last_time;
         Snake _snake;
         std::mt19937 _rng;
     };

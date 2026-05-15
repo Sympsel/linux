@@ -3,6 +3,7 @@
 #include "Frame.hpp"
 #include <chrono>
 #include <thread>
+#include "Conf.hpp"
 
 namespace Sym {
     class Game {
@@ -122,6 +123,13 @@ namespace Sym {
                     _frame.Render();
                     _last_update_time = currentTime;
                 }
+
+                // 当食物过期时，设置新的食物
+                if (_frame.IsFoodExpired()) {
+                    _frame.SetFood();
+                    _frame.Render();
+                }
+
                 // 休眠16ms 约60FPS, 避免CPU占用过高
                 std::this_thread::sleep_for(std::chrono::milliseconds(16));
             }
@@ -143,7 +151,6 @@ namespace Sym {
         Frame _frame;
         Status _status;
         int _score;
-        // int _food_last_time;
         std::chrono::steady_clock::time_point _last_update_time;
     };
 }

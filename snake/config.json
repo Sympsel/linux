@@ -1,0 +1,23 @@
+{
+  "width": 60,
+  "height": 20,
+  "def_len": 8,
+  "move_interval": 200,
+  "min_move_interval": 50,
+  "max_speed_level": 9,
+  "def_speed_level": 5,
+  "food_list": [
+    {
+      "score": 10,
+      "percent": 80,
+      "duration_time": 5,
+      "signal": "*"
+    },
+    {
+      "score": 20,
+      "percent": 20,
+      "duration_time": 5,
+      "signal": "X"
+    }
+  ]
+}
