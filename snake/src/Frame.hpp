@@ -52,7 +52,7 @@ namespace Sym {
                            _snake.GetHead()->pos) != snake_body.end())) {
                 _snake.SetStatus(Snake::KILL_BY_SELF);
             } else if (_snake.GetHead()->pos.first < 0 || _snake.GetHead()->pos.first >= _width ||
-                       _snake.GetHead()->pos.second < 0 || _snake.GetHead()->pos.second >= _height) {
+                       _snake.GetHead()->pos.second < 1 || _snake.GetHead()->pos.second >= _height) {
                 _snake.SetStatus(Snake::KILL_BY_WALL);
             }
             return 0;
@@ -60,7 +60,7 @@ namespace Sym {
 
         void SetFood() {
             std::uniform_int_distribution<int> width_dist(1, _width - 1);
-            std::uniform_int_distribution<int> height_dist(1, _height - 1);
+            std::uniform_int_distribution<int> height_dist(2, _height - 1);
             std::uniform_int_distribution<int> type_dist(1, 100);
             const int type_id = type_dist(_rng);
             if (_foods.empty()) {
@@ -111,22 +111,22 @@ namespace Sym {
             attron(COLOR_PAIR(3));
             // 宽字符模式下，宽度需要 * 2
             for (int i = 0; i <= _width * 2 + 1; ++i) {
-                mvaddch(0, i, ACS_HLINE);
+                mvaddch(1, i, ACS_HLINE);
                 mvaddch(_height + 1, i, ACS_HLINE);
             }
             for (int i = 0; i <= _height + 1; ++i) {
                 mvaddch(i, 0, ACS_VLINE);
                 mvaddch(i, _width * 2 + 1, ACS_VLINE);
             }
-            mvaddch(0, 0, ACS_ULCORNER);
-            mvaddch(0, _width * 2 + 1, ACS_URCORNER);
+            mvaddch(1, 0, ACS_ULCORNER);
+            mvaddch(1, _width * 2 + 1, ACS_URCORNER);
             mvaddch(_height + 1, 0, ACS_LLCORNER);
             mvaddch(_height + 1, _width * 2 + 1, ACS_LRCORNER);
             attroff(COLOR_PAIR(3));
 
-            // 修复 1: 开启颜色
+            // 开启颜色
             attron(COLOR_PAIR(2));
-            // 修复 2: 使用 mvprintw 直接输出 UTF-8 字符串
+            // 使用 mvprintw 直接输出 UTF-8 字符串
             mvprintw(_food_pos.second + 1, _food_pos.first * 2 + 1, "%s",
                      _foods.at(_curr_food_type_id).signal.c_str());
             attroff(COLOR_PAIR(2));
@@ -166,7 +166,7 @@ namespace Sym {
             attroff(COLOR_PAIR(3));
 
             attron(COLOR_PAIR(2));
-            // 普通模式下也统一使用 mvprintw
+
             mvprintw(_food_pos.second + 1, _food_pos.first + 1, "%s",
                      _foods.at(_curr_food_type_id).signal.c_str());
             attroff(COLOR_PAIR(2));
@@ -191,6 +191,10 @@ namespace Sym {
                 std::chrono::steady_clock::now() - _food_last_time
             ).count();
             return elapsed > _foods.at(_curr_food_type_id).duration_time;
+        }
+
+        [[nodiscard]] int GetHeight() const {
+            return _height;
         }
 
         ~Frame() = default;

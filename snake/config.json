@@ -8,13 +8,13 @@
   "def_speed_level": 5,
   "food_list": [
     {
-      "score": 10,
+      "score": 20,
       "percent": 80,
       "duration_time": 5,
       "signal": "●"
     },
     {
-      "score": 20,
+      "score": 50,
       "percent": 20,
       "duration_time": 5,
       "signal": "❤\uFE0F"
