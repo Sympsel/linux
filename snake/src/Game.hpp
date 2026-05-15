@@ -31,16 +31,19 @@ namespace Sym {
             _frame.Init();
             _last_update_time = std::chrono::steady_clock::now();
 
-            // if (const std::string main_music = _assets_file_path + "/游戏主旋律.mp3";
-                // !std::filesystem::exists(main_music)) {
-                // LOG_WARN() << "Music file not found!";
-            // } else {
-                // std::thread music_thread([&]() {
-                    // const std::string cmd = "mpg123 -q " + main_music;
-                    // system(cmd.c_str());
-                // });
-                // music_thread.detach();
-            // }
+            // 初始化资源路径
+            try {
+                _assets_file_path = std::filesystem::canonical(
+                    std::filesystem::current_path() / "assets"
+                );
+            } catch (const std::exception &e) {
+                LOG_WARN() << "Failed to initialize assets path: " << e.what();
+                return;
+            }
+            {
+                // 播放背景音乐
+                PlaySound("游戏主旋律.mp3", true);
+            }
         }
 
         void HandleInput() {
@@ -51,20 +54,32 @@ namespace Sym {
                     if (snake.GetDirect() != DOWN) {
                         snake.SetDirect(UP);
                     }
+                    {
+                        PlaySound("清脆响声.mp3");
+                    }
                     break;
                 case KEY_DOWN:
                     if (snake.GetDirect() != UP) {
                         snake.SetDirect(DOWN);
+                    }
+                    {
+                        PlaySound("清脆响声.mp3");
                     }
                     break;
                 case KEY_LEFT:
                     if (snake.GetDirect() != RIGHT) {
                         snake.SetDirect(LEFT);
                     }
+                    {
+                        PlaySound("清脆响声.mp3");
+                    }
                     break;
                 case KEY_RIGHT:
                     if (snake.GetDirect() != LEFT) {
                         snake.SetDirect(RIGHT);
+                    }
+                    {
+                        PlaySound("清脆响声.mp3");
                     }
                     break;
                 case ' ':
@@ -73,16 +88,25 @@ namespace Sym {
                     } else {
                         _status = PAUSE;
                     }
+                    {
+                        PlaySound("清脆响声.mp3");
+                    }
                     break;
                 case 'a':
                 case 'A':
                     std::cout << "Speed up!" << std::endl;
                     _frame.GetSnake().Accelerate(1);
+                    {
+                        PlaySound("清脆响声.mp3");
+                    }
                     break;
                 case 's':
                 case 'S':
                     std::cout << "Slow down!" << std::endl;
                     _frame.GetSnake().Accelerate(-1);
+                    {
+                        PlaySound("清脆响声.mp3");
+                    }
                     break;
                 case 'q':
                 case 'Q':
@@ -93,6 +117,11 @@ namespace Sym {
             }
         }
 
+        static void StopBackgroundMusic() {
+            // 只停止循环播放的背景音乐（通过查找带 -Z 参数的进程）
+            system("pkill -f 'mpg123.*-Z' 2>/dev/null");
+        }
+
     public:
         enum Status {
             RUNNING,
@@ -100,13 +129,12 @@ namespace Sym {
             GAME_OVER
         };
 
-        explicit Game(const int width = 120, const int height = 80, const int def_len = 5)
+        explicit Game(const int width = conf["width"],
+                      const int height = conf["height"],
+                      const int def_len = conf["def_len"])
             : _frame(width, height, def_len),
               _status(RUNNING),
               _score() {
-            // _assets_file_path = std::filesystem::canonical(
-                // std::filesystem::current_path() / "assets"
-            // );
         }
 
         void Update() {
@@ -159,12 +187,44 @@ namespace Sym {
                 std::this_thread::sleep_for(std::chrono::milliseconds(16));
             }
             if (_status == GAME_OVER) {
+                {
+                    PlaySound("摔门声.mp3");
+                    StopBackgroundMusic();
+                    PlaySound("死亡旋律.mp3", true);
+                }
                 // todo 显示结束画面
                 std::cout << "Game Over! Final Score: " << _score << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(3));
                 std::cout << "Press any key to exit..." << std::endl;
                 getchar();
                 // todo 提示是否重新开始
+            }
+
+            // todo play game over sound
+        }
+
+        /**
+         *
+         * @param sound_file 音乐文件名
+         * @param is_background 是否后台播放
+         */
+        void PlaySound(const std::string &sound_file, bool is_background = false) const {
+            if (const std::string sound_file_path = _assets_file_path + "/" + sound_file;
+                std::filesystem::exists(sound_file_path)) {
+                std::thread sound_thread([sound_file_path, is_background]() {
+                    if (is_background) {
+                        // 后台音乐：循环播放，使用 -Z 参数
+                        const std::string cmd = "mpg123 -q -Z \"" + sound_file_path + "\" >/dev/null 2>&1 &";
+                        system(cmd.c_str());
+                    } else {
+                        // 音效：只播放一次
+                        const std::string cmd = "mpg123 -q \"" + sound_file_path + "\" >/dev/null 2>&1 &";
+                        system(cmd.c_str());
+                    }
+                });
+                sound_thread.detach();
+            } else {
+                LOG_WARN() << "Sound file not found: " << sound_file_path;
             }
         }
 
@@ -177,7 +237,6 @@ namespace Sym {
         Status _status;
         int _score;
         std::chrono::steady_clock::time_point _last_update_time;
-
-        // std::string _assets_file_path;
+        std::string _assets_file_path;
     };
 }
