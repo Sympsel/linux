@@ -55,9 +55,7 @@ namespace Sym {
                         }
                         break;
                     case Snake::Status::FACE_BODY:
-                        // todo
                     case Snake::Status::FACE_WALL:
-                        // todo
                         return 0;
                     case Snake::Status::FACE_FOOD:
                         _snake.Grow();
