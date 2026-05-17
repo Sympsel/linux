@@ -6,9 +6,13 @@
 #include "Conf.hpp"
 #include "Log.hpp"
 
+#include "thread/ThreadPool.hpp"
+
 namespace sc = std::chrono;
 
 namespace Sym {
+    using MusicTask = std::function<void()>;
+
     class Game {
     private:
         void Init() {
@@ -37,6 +41,9 @@ namespace Sym {
 
             _frame.Init();
             _last_update_time = sc::steady_clock::now();
+
+            // 初始化音频线程池
+            ThreadPool<MusicTask>::GetInstance(3);
 
             // 初始化资源路径
             try {
@@ -199,7 +206,7 @@ namespace Sym {
         void PlaySound(const std::string &sound_file, bool is_background = false) const {
             if (const std::string sound_file_path = _assets_file_path + "/" + sound_file;
                 std::filesystem::exists(sound_file_path)) {
-                std::thread sound_thread([sound_file_path, is_background,sound_file]() {
+                const MusicTask task = [sound_file_path, is_background,sound_file] {
                     if (is_background) {
                         // 后台音乐：循环播放，使用 -Z 参数
                         const std::string cmd = "mpg123 -q -Z \"" + sound_file_path + "\" >/dev/null 2>&1 &";
@@ -211,8 +218,8 @@ namespace Sym {
                         system(cmd.c_str());
                         LOG_DEBUG() << "Playing sound effect: " << sound_file;
                     }
-                });
-                sound_thread.detach();
+                };
+                ThreadPool<MusicTask>::GetInstance().Enqueue(task);
             } else {
                 LOG_WARN() << "Sound file not found: " << sound_file_path;
             }
@@ -291,10 +298,9 @@ namespace Sym {
             if (key == 'c') {
                 LOG_INFO() << "User chose to play again";
                 return true;
-            } else {
-                LOG_INFO() << "User chose to quit";
-                return false;
             }
+            LOG_INFO() << "User chose to quit";
+            return false;
         }
 
         void GameTick() {
@@ -359,6 +365,12 @@ namespace Sym {
         ~Game() {
             LOG_DEBUG() << "Destroying Game object...";
             StopAllSounds();
+
+            auto &pool = ThreadPool<MusicTask>::GetInstance();
+            pool.Quit();
+            pool.Stop();
+            pool.Wait();
+
             endwin();
             LOG_DEBUG() << "Game object destroyed";
         }
