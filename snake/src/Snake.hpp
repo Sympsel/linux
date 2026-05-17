@@ -34,10 +34,11 @@ namespace Sym {
 
     class Snake {
     public:
-        enum Status {
+        enum class Status {
             NORMAL,
-            KILL_BY_SELF,
-            KILL_BY_WALL
+            FACE_BODY,
+            FACE_WALL,
+            FACE_FOOD
         };
 
     public:
@@ -45,7 +46,7 @@ namespace Sym {
             : _head(nullptr), _tail(nullptr),
               _direct(RIGHT),
               _len(def_len),
-              _status(NORMAL),
+              _status(Status::NORMAL),
               _move_interval(200),
               _speed_level(conf["def_speed_level"]) {
         }

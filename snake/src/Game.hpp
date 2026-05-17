@@ -6,6 +6,8 @@
 #include "Conf.hpp"
 #include "Log.hpp"
 
+namespace sc = std::chrono;
+
 namespace Sym {
     class Game {
     private:
@@ -34,7 +36,7 @@ namespace Sym {
             }
 
             _frame.Init();
-            _last_update_time = std::chrono::steady_clock::now();
+            _last_update_time = sc::steady_clock::now();
 
             // 初始化资源路径
             try {
@@ -98,10 +100,10 @@ namespace Sym {
                     }
                     break;
                 case ' ':
-                    if (_status == PAUSE) {
-                        _status = RUNNING;
+                    if (_status == Status::PAUSE) {
+                        _status = Status::RUNNING;
                     } else {
-                        _status = PAUSE;
+                        _status = Status::PAUSE;
                     }
                     LOG_DEBUG() << "Pressed: Pause";
                     {
@@ -130,7 +132,7 @@ namespace Sym {
                 case 'Q':
                     LOG_INFO() << "User requested quit (pressed Q)";
 
-                    _status = GAME_OVER;
+                    _status = Status::GAME_OVER;
                     break;
                 default:
                     break;
@@ -163,7 +165,18 @@ namespace Sym {
             mvprintw(0, 35, " Length: %-4d ", snake_length);
 
             // 显示游戏状态
-            const char *status_text = (_status == RUNNING) ? "RUNNING" : (_status == PAUSE) ? "PAUSED" : "GAME OVER";
+            const char *status_text{};
+            switch (_status) {
+                case Status::RUNNING:
+                    status_text = "RUNNING";
+                    break;
+                case Status::PAUSE:
+                    status_text = "PAUSED";
+                    break;
+                case Status::GAME_OVER:
+                    status_text = "GAME OVER";
+                    break;
+            }
             mvprintw(0, 55, " Status: %-10s ", status_text);
 
             attroff(COLOR_PAIR(3) | A_BOLD);
@@ -176,25 +189,6 @@ namespace Sym {
             mvprintw(row_begin + offset, 2, "%s", tips.c_str());
 
             attroff(COLOR_PAIR(3) | A_BOLD);
-        }
-
-        void Update() {
-            _score += _frame.Update();
-            const auto &snake_status = _frame.GetSnake().GetStatus();
-            if (snake_status == Snake::KILL_BY_SELF ||
-                snake_status == Snake::KILL_BY_WALL) {
-                _status = GAME_OVER;
-            }
-            if (snake_status == Snake::KILL_BY_SELF) {
-                LOG_WARN() << "Snake killed itself! Final score: " << _score;
-            } else if (snake_status == Snake::KILL_BY_WALL) {
-                LOG_WARN() << "Snake hit the wall! Final score: " << _score;
-            } else {
-            }
-            // todo 对死因分别处理
-            ++_score;
-            RenderTopStatusBar();
-            refresh();
         }
 
         /**
@@ -225,7 +219,7 @@ namespace Sym {
         }
 
     public:
-        enum Status {
+        enum class Status {
             RUNNING,
             PAUSE,
             GAME_OVER
@@ -235,102 +229,130 @@ namespace Sym {
                       const int height = conf["height"],
                       const int def_len = conf["def_len"])
             : _frame(width, height, def_len),
-              _status(RUNNING),
+              _status(Status::RUNNING),
               _score() {
         }
 
 
-        bool Run() {
-            LOG_INFO() << "Starting game ...";
-            Init();
-            while (_status != GAME_OVER) {
-                HandleInput();
-                if (_status == PAUSE) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                    continue;
-                }
+        void ProcessRunningState() {
+            switch (_frame.GetSnake().GetStatus()) {
+                case Snake::Status::NORMAL:
+                    break;
+                case Snake::Status::FACE_BODY:
+                    LOG_INFO() << "Snake kill itself! Final score: " << _score;
+                    _status = Status::GAME_OVER;
+                    break;
+                case Snake::Status::FACE_WALL:
+                    LOG_INFO() << "Snake face wall! Final score: " << _score;
+                    _status = Status::GAME_OVER;
+                    break;
+                case Snake::Status::FACE_FOOD:
+                    break;
+            }
+        }
 
-                // 计算时间差
-                auto currentTime = std::chrono::steady_clock::now();
-                const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    currentTime - _last_update_time
-                ).count();
+        static void ProcessPauseState() {
+            std::this_thread::sleep_for(sc::milliseconds(100));
+        }
 
-                // 如果经过时间差大于等于移动间隔，则更新游戏状态
-                if (elapsed >= _frame.GetSnake().GetMoveInterval()) {
-                    Update();
-#ifdef W
-                    _frame.RenderW();
-#else
-                    _frame.Render();
-#endif
-                    _last_update_time = currentTime;
-                    RenderTopStatusBar();
-                    refresh();
-                }
+        bool HandleGameOver() {
+            LOG_INFO() << "Game Over! Final Score: " << _score;
+            if (const auto snake_status = _frame.GetSnake().GetStatus();
+                snake_status == Snake::Status::FACE_BODY ||
+                snake_status == Snake::Status::FACE_WALL) {
+                LOG_INFO() << "Playing death sound sequence";
+                PlaySound("摔门声.mp3");
+                StopBackgroundMusic();
+                PlaySound("死亡旋律.mp3", true);
+            } else {
+                LOG_INFO() << "User quit without death (pressed 'q')";
+                StopBackgroundMusic();
+            }
+            // 显示结束画面
+            RenderTopStatusBar();
+            RenderBottomTipsBar("GAME OVER! Final Score: " + std::to_string(_score));
+            refresh();
 
-                // 当食物过期时，设置新的食物
-                if (_frame.IsFoodExpired()) {
-                    _frame.SetFood();
-                    LOG_DEBUG() << "Food expired, new food placed at: ("
-                            << _frame.GetFoodPos().first << ", "
-                            << _frame.GetFoodPos().second << ")";
-#ifdef W
-                    _frame.RenderW();
-#else
-                    _frame.Render();
-#endif
-                    RenderTopStatusBar();
-                    refresh();
-                }
-
-                // 休眠16ms 约60FPS, 避免CPU占用过高
-                std::this_thread::sleep_for(std::chrono::milliseconds(16));
+            // 用于防止用户一直操作导致结算画面直接退出
+            sleep(3);
+            // 清空输入缓冲区
+            while (getch() != ERR) {
             }
 
-            if (_status == GAME_OVER) {
-                LOG_INFO() << "Game Over! Final Score: " << _score;
-                // 如果是按'q'退出,则不播放死亡音乐
-                if (_frame.GetSnake().GetStatus() == Snake::KILL_BY_SELF ||
-                    _frame.GetSnake().GetStatus() == Snake::KILL_BY_WALL) {
-                    LOG_INFO() << "Playing death sound sequence";
-                    PlaySound("摔门声.mp3");
-                    StopBackgroundMusic();
-                    PlaySound("死亡旋律.mp3", true);
-                } else {
-                    LOG_INFO() << "User quit without death (pressed Q)";
+            RenderTopStatusBar();
+            RenderBottomTipsBar("GAME OVER! Final Score: " + std::to_string(_score));
+            RenderBottomTipsBar("Press 'c' to continue or any other key to quit...", 1);
+            refresh();
 
-                    StopBackgroundMusic();
-                }
+            nodelay(stdscr, FALSE);
+            const char key = getch();
+            nodelay(stdscr, TRUE);
 
-                // 显示结束画面
-                RenderTopStatusBar();
-                RenderBottomTipsBar("GAME OVER! Final Score: " + std::to_string(_score));
-                refresh();
-
-                // 用于防止用户一直操作导致结算画面直接退出
-                sleep(3);
-                // 清空输入缓冲区
-                while (getch() != ERR) {
-                }
-
-                RenderTopStatusBar();
-                RenderBottomTipsBar("GAME OVER! Final Score: " + std::to_string(_score));
-                RenderBottomTipsBar("Press 'c' to continue or any other key to quit...", 1);
-                refresh();
-                // 等待用户按键
-                nodelay(stdscr, FALSE); // 改为阻塞模式，等待按键
-
-                const char key = getch();
-                nodelay(stdscr, TRUE); // 恢复非阻塞模式
-                if (key == 'c') {
-                    LOG_INFO() << "User chose to play again";
-                    return true;
-                }
+            if (key == 'c') {
+                LOG_INFO() << "User chose to play again";
+                return true;
+            } else {
                 LOG_INFO() << "User chose to quit";
+                return false;
             }
-            LOG_INFO() << "Game session ended";
-            return false;
+        }
+
+        void GameTick() {
+            const auto curr_time = sc::steady_clock::now();
+            const auto elapsed = sc::duration_cast<sc::milliseconds>(
+                curr_time - _last_update_time
+            ).count();
+
+            if (elapsed >= _frame.GetSnake().GetMoveInterval()) {
+                _score += _frame.Update();
+#ifdef W
+                _frame.RenderW();
+#else
+                _frame.Render();
+#endif
+                _last_update_time = curr_time;
+                RenderTopStatusBar();
+                refresh();
+            }
+
+            if (_frame.IsFoodExpired()) {
+                _frame.SetFood();
+                LOG_DEBUG() << "Food expired, new food placed at: ("
+                        << _frame.GetFoodPos().first << ", "
+                        << _frame.GetFoodPos().second << ")";
+#ifdef W
+                _frame.RenderW();
+#else
+                _frame.Render();
+#endif
+                RenderTopStatusBar();
+                refresh();
+            }
+        }
+
+        bool Run() {
+            LOG_INFO() << "Starting game with state machine...";
+            Init();
+
+            while (true) {
+                HandleInput();
+                switch (_status) {
+                    case Status::RUNNING:
+                        ProcessRunningState();
+                        if (_status != Status::GAME_OVER) {
+                            GameTick();
+                        }
+                        break;
+                    case Status::PAUSE:
+                        ProcessPauseState();
+                        break;
+                    case Status::GAME_OVER:
+                        const bool is_replay = HandleGameOver();
+                        LOG_INFO() << "Game session ended";
+                        return is_replay;
+                }
+                std::this_thread::sleep_for(sc::milliseconds(16));
+            }
         }
 
 
@@ -345,7 +367,7 @@ namespace Sym {
         Frame _frame;
         Status _status;
         int _score;
-        std::chrono::steady_clock::time_point _last_update_time;
+        sc::steady_clock::time_point _last_update_time;
         std::string _assets_file_path;
     };
 }

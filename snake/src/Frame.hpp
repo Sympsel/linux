@@ -23,7 +23,8 @@ namespace Sym {
         void Init() {
             {
                 int id = 0;
-                for (const auto &foods = conf.GetConf().food_list; const auto &food: foods) {
+                const auto &foods = conf.GetConf().food_list;
+                for (const auto &food: foods) {
                     _foods[id] = food;
                     _foods[id].percent += foods[id].percent;
                     ++id;
@@ -38,24 +39,36 @@ namespace Sym {
          * @return 蛇吃食物的得分
          */
         int Update() {
-            _snake.move();
-
-            if (_snake.GetHead()->pos == _food_pos) {
-                _snake.Grow();
-                const int score = _foods[_curr_food_type_id].score;
-                SetFood();
-                return score;
+            while (true) {
+                switch (_snake.GetStatus()) {
+                    case Snake::Status::NORMAL:
+                        _snake.move();
+                        if (_snake.GetHead()->pos == _food_pos) {
+                            _snake.SetStatus(Snake::Status::FACE_FOOD);
+                        } else if (auto snake_body = _snake.GetBodyPos();
+                            std::find(snake_body.begin() + 1, snake_body.end(),
+                                      _snake.GetHead()->pos) != snake_body.end()) {
+                            _snake.SetStatus(Snake::Status::FACE_BODY);
+                        } else if (_snake.GetHead()->pos.first < 0 || _snake.GetHead()->pos.first >= _width ||
+                                   _snake.GetHead()->pos.second < 1 || _snake.GetHead()->pos.second >= _height) {
+                            _snake.SetStatus(Snake::Status::FACE_WALL);
+                        }
+                        break;
+                    case Snake::Status::FACE_BODY:
+                        // todo
+                    case Snake::Status::FACE_WALL:
+                        // todo
+                        return 0;
+                    case Snake::Status::FACE_FOOD:
+                        _snake.Grow();
+                        const int score = _foods[_curr_food_type_id].score;
+                        SetFood();
+                        // 重新设置回正常状态
+                        _snake.SetStatus(Snake::Status::NORMAL);
+                        return score;
+                }
+                return 0;
             }
-
-            if (auto snake_body = _snake.GetBodyPos();
-                (std::find(snake_body.begin() + 1, snake_body.end(),
-                           _snake.GetHead()->pos) != snake_body.end())) {
-                _snake.SetStatus(Snake::KILL_BY_SELF);
-            } else if (_snake.GetHead()->pos.first < 0 || _snake.GetHead()->pos.first >= _width ||
-                       _snake.GetHead()->pos.second < 1 || _snake.GetHead()->pos.second >= _height) {
-                _snake.SetStatus(Snake::KILL_BY_WALL);
-            }
-            return 0;
         }
 
         void SetFood() {
@@ -83,9 +96,12 @@ namespace Sym {
                 flag = false;
                 x = width_dist(_rng);
                 y = height_dist(_rng);
-                if (const auto &body = _snake.GetBodyPos();
-                    std::ranges::find(body, Pos{x, y}) != body.end()) {
-                    flag = true;
+                const auto &body = _snake.GetBodyPos();
+                for (const auto &pos: body) {
+                    if (pos == Pos{x, y}) {
+                        flag = true;
+                        break;
+                    }
                 }
             }
 
