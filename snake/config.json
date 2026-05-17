@@ -6,15 +6,16 @@
   "min_move_interval": 50,
   "max_speed_level": 9,
   "def_speed_level": 5,
+  "score_on_every_move": 1,
   "food_list": [
     {
-      "score": 20,
+      "score": 40,
       "percent": 80,
       "duration_time": 5,
       "signal": "●"
     },
     {
-      "score": 50,
+      "score": 100,
       "percent": 20,
       "duration_time": 5,
       "signal": "❤\uFE0F"

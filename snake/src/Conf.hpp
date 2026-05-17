@@ -17,12 +17,13 @@ namespace Sym {
         int min_move_interval;
         int max_speed_level;
         int def_speed_level;
+        int score_on_every_move;
 
         std::vector<Food> food_list;
 
         ConfigItem() : width(), height(), def_len(),
                        move_interval(), min_move_interval(),
-                       max_speed_level(), def_speed_level() {
+                       max_speed_level(), def_speed_level(), score_on_every_move() {
         }
     };
 
@@ -50,7 +51,7 @@ namespace Sym {
             _conf.min_move_interval = root.get("min_move_interval", 50).asInt();
             _conf.max_speed_level = root.get("max_speed_level", 9).asInt();
             _conf.def_speed_level = root.get("def_speed_level", 5).asInt();
-
+            _conf.score_on_every_move = root.get("score_on_every_move", 1).asInt();
 
             if (const Json::Value &food_array = root["food_list"]; food_array.isArray()) {
                 for (const auto &food_item: food_array) {
@@ -119,6 +120,8 @@ namespace Sym {
                 return _conf.max_speed_level;
             if (key == "def_speed_level")
                 return _conf.def_speed_level;
+            if (key == "score_on_every_move")
+                return _conf.score_on_every_move;
             throw std::runtime_error("Config key not found: " + key);
         }
 

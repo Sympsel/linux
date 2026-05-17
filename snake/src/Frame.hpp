@@ -2,11 +2,14 @@
 
 #include <algorithm>
 #include <chrono>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
 #include "Snake.hpp"
 #include "Conf.hpp"
+
+namespace sc = std::chrono;
 
 namespace Sym {
     struct Food;
@@ -104,7 +107,7 @@ namespace Sym {
             }
 
             _food_pos = {x, y};
-            _food_last_time = std::chrono::steady_clock::now();
+            _food_last_time = sc::steady_clock::now();
         }
 
         [[nodiscard]] const Pos &GetFoodPos() const {
@@ -200,9 +203,21 @@ namespace Sym {
             return _snake;
         }
 
+        void PauseFoodTimer() {
+            _pause_time = std::chrono::steady_clock::now();
+        }
+
+        void ResumeFoodTimer() {
+            if (_pause_time.has_value()) {
+                const auto pause_duration = std::chrono::steady_clock::now() - _pause_time.value();
+                _food_last_time += pause_duration;
+                _pause_time.reset();
+            }
+        }
+
         [[nodiscard]] bool IsFoodExpired() const {
-            const auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
-                std::chrono::steady_clock::now() - _food_last_time
+            const auto elapsed = sc::duration_cast<sc::seconds>(
+                sc::steady_clock::now() - _food_last_time
             ).count();
             return elapsed > _foods.at(_curr_food_type_id).duration_time;
         }
@@ -219,7 +234,9 @@ namespace Sym {
         std::unordered_map<int, Food> _foods;
         Pos _food_pos;
         int _curr_food_type_id;
-        std::chrono::steady_clock::time_point _food_last_time;
+        sc::steady_clock::time_point _food_last_time;
+        // 记录暂停时间, 用于重置暂停期间的食物时间
+        std::optional<sc::steady_clock::time_point> _pause_time;
         Snake _snake;
         std::mt19937 _rng;
     };

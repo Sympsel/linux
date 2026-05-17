@@ -54,5 +54,14 @@ int main(const int argc, char *argv[]) {
     FLUSH_LOG();
     std::cerr << "[DEBUG] Program exiting normally" << std::endl;
 
+    // 关闭音频线程池
+    LOG_INFO() << "Shutting down audio thread pool...";
+    auto& audio_pool = ThreadPool<std::function<void()>>::GetInstance();
+    audio_pool.Quit();
+    audio_pool.Stop();
+    audio_pool.Wait();
+    LOG_INFO() << "Audio thread pool stopped";
+
+    std::cerr << "[DEBUG] Program exiting normally" << std::endl;
     return 0;
 }

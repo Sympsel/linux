@@ -109,8 +109,12 @@ namespace Sym {
                 case ' ':
                     if (_status == Status::PAUSE) {
                         _status = Status::RUNNING;
+                        _frame.ResumeFoodTimer();
+                        LOG_INFO() << "Game resumed, food timer adjusted";
                     } else {
                         _status = Status::PAUSE;
+                        _frame.PauseFoodTimer();
+                        LOG_INFO() << "Game paused, food timer frozen";
                     }
                     LOG_DEBUG() << "Pressed: Pause";
                     {
@@ -165,11 +169,11 @@ namespace Sym {
 
             // 显示速度等级
             const int speed_level = _frame.GetSnake().GetMoveLevel();
-            mvprintw(0, 20, " Speed: %-3d ", speed_level);
+            mvprintw(0, 15, " Speed: %-2d ", speed_level);
 
             // 显示蛇长度
             const int snake_length = static_cast<int>(_frame.GetSnake().GetBodyPos().size());
-            mvprintw(0, 35, " Length: %-4d ", snake_length);
+            mvprintw(0, 25, " Len: %-3d ", snake_length);
 
             // 显示游戏状态
             const char *status_text{};
@@ -184,7 +188,7 @@ namespace Sym {
                     status_text = "GAME OVER";
                     break;
             }
-            mvprintw(0, 55, " Status: %-10s ", status_text);
+            mvprintw(0, 34, " Status: %-10s ", status_text);
 
             attroff(COLOR_PAIR(3) | A_BOLD);
         }
@@ -310,7 +314,8 @@ namespace Sym {
             ).count();
 
             if (elapsed >= _frame.GetSnake().GetMoveInterval()) {
-                _score += _frame.Update();
+                _score += _frame.Update() + conf["score_on_every_move"];
+
 #ifdef W
                 _frame.RenderW();
 #else
@@ -340,6 +345,7 @@ namespace Sym {
             LOG_INFO() << "Starting game with state machine...";
             Init();
 
+
             while (true) {
                 HandleInput();
                 switch (_status) {
@@ -365,11 +371,6 @@ namespace Sym {
         ~Game() {
             LOG_DEBUG() << "Destroying Game object...";
             StopAllSounds();
-
-            auto &pool = ThreadPool<MusicTask>::GetInstance();
-            pool.Quit();
-            pool.Stop();
-            pool.Wait();
 
             endwin();
             LOG_DEBUG() << "Game object destroyed";
