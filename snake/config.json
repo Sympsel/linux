@@ -7,17 +7,20 @@
   "max_speed_level": 9,
   "def_speed_level": 5,
   "score_on_every_move": 1,
+  "max_hungry_time": 100,
   "food_list": [
     {
       "score": 40,
       "percent": 80,
       "duration_time": 5,
+      "hunger_restore": 30,
       "signal": "●"
     },
     {
       "score": 100,
       "percent": 20,
       "duration_time": 5,
+      "hunger_restore": 60,
       "signal": "❤\uFE0F"
     }
   ]

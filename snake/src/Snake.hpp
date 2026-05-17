@@ -38,7 +38,8 @@ namespace Sym {
             NORMAL,
             FACE_BODY,
             FACE_WALL,
-            FACE_FOOD
+            FACE_FOOD,
+            STARVED
         };
 
     public:
@@ -48,7 +49,9 @@ namespace Sym {
               _len(def_len),
               _status(Status::NORMAL),
               _move_interval(200),
-              _speed_level(conf["def_speed_level"]) {
+              _speed_level(conf["def_speed_level"]),
+              _cur_satiety(conf["max_hungry_time"]),
+              _max_satiety(conf["max_hungry_time"]) {
         }
 
         void SetDirect(const Direct direct) {
@@ -145,6 +148,32 @@ namespace Sym {
             _tail = temp;
         }
 
+        void DecreaseHunger(const int amount = 1) {
+            if (_cur_satiety > 0) {
+                _cur_satiety -= amount;
+                if (_cur_satiety <= 0) {
+                    _cur_satiety = 0;
+                    _status = Status::STARVED;
+                }
+            }
+        }
+
+        void IncreaseHunger(const int amount = 5) {
+            _cur_satiety = std::min(amount + _cur_satiety, _max_satiety);
+        }
+
+        // void ResetHunger() {
+        //     _cur_satiety = _max_satiety;
+        // }
+
+        [[nodiscard]] int GetCurHunger() const {
+            return _cur_satiety;
+        }
+
+        [[nodiscard]] int GetMaxHunger() const {
+            return _max_satiety;
+        }
+
         [[nodiscard]] int GetMoveInterval() const {
             return _move_interval;
         }
@@ -174,5 +203,8 @@ namespace Sym {
         Status _status;
         int _move_interval;
         int _speed_level;
+        // 饱食度
+        int _cur_satiety;
+        int _max_satiety;
     };
 }

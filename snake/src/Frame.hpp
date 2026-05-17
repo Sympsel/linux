@@ -46,6 +46,7 @@ namespace Sym {
                 switch (_snake.GetStatus()) {
                     case Snake::Status::NORMAL:
                         _snake.move();
+                        _snake.DecreaseHunger();
                         if (_snake.GetHead()->pos == _food_pos) {
                             _snake.SetStatus(Snake::Status::FACE_FOOD);
                         } else if (auto snake_body = _snake.GetBodyPos();
@@ -56,13 +57,21 @@ namespace Sym {
                                    _snake.GetHead()->pos.second < 1 || _snake.GetHead()->pos.second >= _height) {
                             _snake.SetStatus(Snake::Status::FACE_WALL);
                         }
+
+                        if (_snake.GetCurHunger() <= 0) {
+                            _snake.SetStatus(Snake::Status::STARVED);
+                        }
                         break;
                     case Snake::Status::FACE_BODY:
                     case Snake::Status::FACE_WALL:
+                    case Snake::Status::STARVED:
                         return 0;
                     case Snake::Status::FACE_FOOD:
                         _snake.Grow();
-                        const int score = _foods[_curr_food_type_id].score;
+                        const auto& cur_food = _foods[_curr_food_type_id];
+                        const int score = cur_food.score;
+                        // 恢复饱食度
+                        _snake.IncreaseHunger(cur_food.hunger_restore);
                         SetFood();
                         // 重新设置回正常状态
                         _snake.SetStatus(Snake::Status::NORMAL);
@@ -224,6 +233,14 @@ namespace Sym {
 
         [[nodiscard]] int GetHeight() const {
             return _height;
+        }
+
+        [[nodiscard]] int GetCurrentFoodHungerRestore() const {
+            return _foods.at(_curr_food_type_id).hunger_restore;
+        }
+
+        [[nodiscard]] int GetCurrentFoodScore() const {
+            return _foods.at(_curr_food_type_id).score;
         }
 
         ~Frame() = default;

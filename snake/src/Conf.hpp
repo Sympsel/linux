@@ -9,6 +9,12 @@
 #include "Log.hpp"
 
 namespace Sym {
+    /**
+     * @brief 配置项, 注册一个配置项分三步
+     * 1. 添加配置项到结构体成员
+     * 2. 在解析函数中读取配置文件
+     * 3. 提供方括号重载获取整形配置值, 圆括号提供字符串配置值
+     */
     struct ConfigItem {
         int width;
         int height;
@@ -18,12 +24,14 @@ namespace Sym {
         int max_speed_level;
         int def_speed_level;
         int score_on_every_move;
+        int max_hungry_time;
 
         std::vector<Food> food_list;
 
         ConfigItem() : width(), height(), def_len(),
                        move_interval(), min_move_interval(),
-                       max_speed_level(), def_speed_level(), score_on_every_move() {
+                       max_speed_level(), def_speed_level(),
+                       score_on_every_move(), max_hungry_time() {
         }
     };
 
@@ -52,6 +60,7 @@ namespace Sym {
             _conf.max_speed_level = root.get("max_speed_level", 9).asInt();
             _conf.def_speed_level = root.get("def_speed_level", 5).asInt();
             _conf.score_on_every_move = root.get("score_on_every_move", 1).asInt();
+            _conf.max_hungry_time = root.get("max_hungry_time", 200).asInt();
 
             if (const Json::Value &food_array = root["food_list"]; food_array.isArray()) {
                 for (const auto &food_item: food_array) {
@@ -59,6 +68,7 @@ namespace Sym {
                     food.score = food_item.get("score", 10).asInt();
                     food.percent = food_item.get("percent", 80).asInt();
                     food.duration_time = food_item.get("duration_time", 5).asInt();
+                    food.hunger_restore = food_item.get("hunger_restore", 60).asInt();
 
                     std::string signal_str = food_item.get("signal", "*").asString();
                     food.signal = signal_str.empty() ? "●" : signal_str;
@@ -122,7 +132,10 @@ namespace Sym {
                 return _conf.def_speed_level;
             if (key == "score_on_every_move")
                 return _conf.score_on_every_move;
-            throw std::runtime_error("Config key not found: " + key);
+            if (key == "max_hungry_time")
+                return _conf.max_hungry_time;
+            LOG_ERROR() << "Config key not found: " << key;
+            return 0;
         }
 
         /**

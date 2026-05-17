@@ -175,20 +175,26 @@ namespace Sym {
             const int snake_length = static_cast<int>(_frame.GetSnake().GetBodyPos().size());
             mvprintw(0, 25, " Len: %-3d ", snake_length);
 
+
+            // 显示饥饿值
+            const int hunger = _frame.GetSnake().GetCurHunger();
+            const int max_hunger = _frame.GetSnake().GetMaxHunger();
+            mvprintw(0, 34, "Hun:%-3d/%-3d", hunger, max_hunger);
+
             // 显示游戏状态
             const char *status_text{};
             switch (_status) {
                 case Status::RUNNING:
-                    status_text = "RUNNING";
+                    status_text = "RUN";
                     break;
                 case Status::PAUSE:
-                    status_text = "PAUSED";
+                    status_text = "PAU";
                     break;
                 case Status::GAME_OVER:
-                    status_text = "GAME OVER";
+                    status_text = "OVER";
                     break;
             }
-            mvprintw(0, 34, " Status: %-10s ", status_text);
+            mvprintw(0, 45, " Status: %s ", status_text);
 
             attroff(COLOR_PAIR(3) | A_BOLD);
         }
@@ -241,7 +247,7 @@ namespace Sym {
                       const int def_len = conf["def_len"])
             : _frame(width, height, def_len),
               _status(Status::RUNNING),
-              _score() {
+              _score(), _bottom_tip_timer() {
         }
 
 
@@ -257,7 +263,20 @@ namespace Sym {
                     LOG_INFO() << "Snake face wall! Final score: " << _score;
                     _status = Status::GAME_OVER;
                     break;
-                case Snake::Status::FACE_FOOD:
+                case Snake::Status::FACE_FOOD: {
+                    _last_food_score = std::to_string(_frame.GetCurrentFoodScore());
+                    _last_food_restore = std::to_string(_frame.GetCurrentFoodHungerRestore());
+
+                    // 设置底部提示文本和持续时间（帧数）
+                    _bottom_tip_text = "Eat a food! Score: +" + _last_food_score
+                                       + " | Hunger: +" + _last_food_restore;
+                    _bottom_tip_timer = 5;
+
+                    break;
+                }
+                case Snake::Status::STARVED:
+                    LOG_INFO() << "Snake starved! Final score: " << _score;
+                    _status = Status::GAME_OVER;
                     break;
             }
         }
@@ -268,17 +287,28 @@ namespace Sym {
 
         bool HandleGameOver() {
             LOG_INFO() << "Game Over! Final Score: " << _score;
-            if (const auto snake_status = _frame.GetSnake().GetStatus();
-                snake_status == Snake::Status::FACE_BODY ||
-                snake_status == Snake::Status::FACE_WALL) {
-                LOG_INFO() << "Playing death sound sequence";
-                PlaySound("摔门声.mp3");
-                StopBackgroundMusic();
-                PlaySound("死亡旋律.mp3", true);
-            } else {
-                LOG_INFO() << "User quit without death (pressed 'q')";
-                StopBackgroundMusic();
+
+            // 清空底部提示
+            ClearBottomTip();
+
+            switch (_frame.GetSnake().GetStatus()) {
+                case Snake::Status::FACE_BODY:
+                case Snake::Status::FACE_WALL:
+                    LOG_INFO() << "Playing death sound sequence";
+                    PlaySound("摔门声.mp3");
+                    StopBackgroundMusic();
+                    PlaySound("死亡音效.mp3", true);
+                    break;
+                case Snake::Status::STARVED:
+                    LOG_INFO() << "Playing death sound sequence";
+                    StopBackgroundMusic();
+                    PlaySound("死亡音效.mp3", true);
+                    break;
+                default:
+                    LOG_INFO() << "User quit without death (pressed 'q')";
+                    StopBackgroundMusic();
             }
+
             // 显示结束画面
             RenderTopStatusBar();
             RenderBottomTipsBar("GAME OVER! Final Score: " + std::to_string(_score));
@@ -289,6 +319,7 @@ namespace Sym {
             // 清空输入缓冲区
             while (getch() != ERR) {
             }
+
 
             RenderTopStatusBar();
             RenderBottomTipsBar("GAME OVER! Final Score: " + std::to_string(_score));
@@ -307,6 +338,27 @@ namespace Sym {
             return false;
         }
 
+        void ClearBottomTip() {
+            _bottom_tip_text.clear();
+            _bottom_tip_timer = 0;
+
+            // 清除屏幕上的提示文字
+            const int row_begin = _frame.GetHeight() + 2;
+            const int clear_width = conf["width"] + 10;
+
+            for (int i = 0; i < 3; ++i) {
+                mvprintw(row_begin + i, 0, "%*s", clear_width, "");
+            }
+            refresh();
+        }
+
+        void RenderPersistentBottomTip() {
+            if (_bottom_tip_timer > 0 && !_bottom_tip_text.empty()) {
+                RenderBottomTipsBar(_bottom_tip_text);
+                --_bottom_tip_timer;
+            }
+        }
+
         void GameTick() {
             const auto curr_time = sc::steady_clock::now();
             const auto elapsed = sc::duration_cast<sc::milliseconds>(
@@ -321,6 +373,11 @@ namespace Sym {
 #else
                 _frame.Render();
 #endif
+
+                // 绘制持久化底部提示
+                if (_bottom_tip_timer >= 0) {
+                    RenderPersistentBottomTip();
+                }
                 _last_update_time = curr_time;
                 RenderTopStatusBar();
                 refresh();
@@ -380,7 +437,13 @@ namespace Sym {
         Frame _frame;
         Status _status;
         int _score;
+        std::string _bottom_tip_text;
+
         sc::steady_clock::time_point _last_update_time;
         std::string _assets_file_path;
+        int _bottom_tip_timer;
+
+        std::string _last_food_score;
+        std::string _last_food_restore;
     };
 }

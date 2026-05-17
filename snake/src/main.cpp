@@ -4,6 +4,7 @@
 #include "Conf.hpp"
 #include "Game.hpp"
 #include "Log.hpp"
+#include "thread/ThreadPool.hpp"
 
 using namespace sym;
 Sym::Conf conf;
@@ -41,6 +42,12 @@ int main(const int argc, char *argv[]) {
     FLUSH_LOG();
     std::cerr << "[DEBUG] Config loaded, logs flushed" << std::endl;
 
+    // 清空日志文件
+    const std::string log_file = log_dir + "snake.log";
+    std::ofstream(log_file, std::ios::trunc).close();
+    LOG_INFO() << "=== Game Started ===";
+    LOG_INFO() << "Log file cleared on program start";
+
     while (true) {
         const auto game = std::make_unique<Sym::Game>(
             conf["width"], conf["height"], conf["def_len"]
@@ -48,11 +55,11 @@ int main(const int argc, char *argv[]) {
         if (const bool is_replay = game->Run(); !is_replay) {
             break;
         }
+        LOG_INFO() << "=== Restarting Game ===";
     }
 
     // 确保所有日志都写入文件
     FLUSH_LOG();
-    std::cerr << "[DEBUG] Program exiting normally" << std::endl;
 
     // 关闭音频线程池
     LOG_INFO() << "Shutting down audio thread pool...";
@@ -63,5 +70,7 @@ int main(const int argc, char *argv[]) {
     LOG_INFO() << "Audio thread pool stopped";
 
     std::cerr << "[DEBUG] Program exiting normally" << std::endl;
+
     return 0;
 }
+
