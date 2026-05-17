@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "Buffer.hpp"
+#include "../utils/Buffer.hpp"
 #include "HttpData.hpp"
 
 class HttpParser {
@@ -56,7 +56,6 @@ public:
                     break;
                 case PARSE_BODY:
                     if (buffer.getReadableBytes() >= cont_len) {
-                        // todo
                         request.body.assign(buffer.peek(), cont_len);
                         buffer.retrieve(cont_len);
                         state = PARSE_DONE;

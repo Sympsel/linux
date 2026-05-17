@@ -1,0 +1,67 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的技术博客</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">📝 技术博客</a>
+            <ul class="nav-links">
+                <li><a href="/">首页</a></li>
+                <li><a href="/posts.html">文章</a></li>
+                <li><a href="/about.html">关于</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1>欢迎来到我的技术博客</h1>
+            <p>分享编程经验、技术心得和学习笔记</p>
+        </section>
+
+        <section class="blog-grid">
+            <article class="blog-card">
+                <div class="blog-card-image">🚀</div>
+                <div class="blog-card-content">
+                    <h3>C++ HTTP 服务器开发实战</h3>
+                    <div class="meta">2026-05-17 · C++ · 网络编程</div>
+                    <p>从零开始构建高性能 HTTP 服务器，使用 epoll、非阻塞 I/O 和现代 C++ 特性...</p>
+                    <a href="/posts/cpp-http-server.html" class="read-more">阅读全文 →</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-card-image">⚡</div>
+                <div class="blog-card-content">
+                    <h3>深入理解 epoll I/O 多路复用</h3>
+                    <div class="meta">2026-05-16 · Linux · 系统编程</div>
+                    <p>epoll 是 Linux 下高性能网络编程的核心技术，本文深入解析其工作原理和最佳实践...</p>
+                    <a href="/posts/epoll-guide.html" class="read-more">阅读全文 →</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-card-image">🎨</div>
+                <div class="blog-card-content">
+                    <h3>现代 C++ 特性完全指南</h3>
+                    <div class="meta">2026-05-15 · C++ · 编程语言</div>
+                    <p>从 C++11 到 C++20，掌握智能指针、lambda、协程等现代 C++ 核心特性...</p>
+                    <a href="/posts/modern-cpp.html" class="read-more">阅读全文 →</a>
+                </div>
+            </article>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 技术博客 | Built with ❤️ using C++ HTTP Server</p>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

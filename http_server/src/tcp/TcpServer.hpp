@@ -30,12 +30,12 @@ public:
         ::setsockopt(_listen_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt);
 
         // 绑定地址
-        struct sockaddr_in addr;
+        sockaddr_in addr{};
         addr.sin_family = AF_INET;
         addr.sin_addr.s_addr = INADDR_ANY;
         addr.sin_port = htons(_port);
 
-        if (::bind(_listen_fd, reinterpret_cast<const struct sockaddr *>(&addr), sizeof addr) < 0) {
+        if (::bind(_listen_fd, reinterpret_cast<const sockaddr *>(&addr), sizeof addr) < 0) {
             LOG_FATAL() << "Failed to bind address";
             return false;
         }
@@ -47,14 +47,14 @@ public:
         }
 
         // 创建epoll
-        _epoll_fd = ::epoll_create(0);
+        _epoll_fd = ::epoll_create1(0);
         if (_epoll_fd < 0) {
             LOG_ERROR() << "Failed to create epoll";
             return false;
         }
 
         // 添加监听套接字到epoll
-        struct epoll_event event;
+        epoll_event event{};
         event.events = EPOLLIN; // 监听可读事件
         event.data.fd = _listen_fd;
         ::epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _listen_fd, &event);
@@ -72,7 +72,7 @@ public:
             for (int i{}; i < nfds; ++i) {
                 if (events[i].data.fd == _listen_fd) {
                     // 接收新连接
-                    struct sockaddr_in client_addr;
+                    sockaddr_in client_addr{};
                     socklen_t client_len = sizeof client_addr;
                     int client_fd = ::accept4(_listen_fd,
                                               reinterpret_cast<struct sockaddr *>(&client_addr),
@@ -86,7 +86,7 @@ public:
                     _connections[client_fd] = conn;
 
                     // 将新连接加入epoll
-                    struct epoll_event event;
+                    epoll_event event{};
                     event.events = EPOLLIN | EPOLLET; // 边缘触发模式
                     event.data.fd = client_fd;
                     ::epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, client_fd, &event);
@@ -118,5 +118,6 @@ private:
     int _listen_fd;
     int _epoll_fd;
     std::unordered_map<int, std::shared_ptr<TcpConnection> > _connections;
+    // 新连接回调
     NewConnectionCallback _new_connection_cb;
 };

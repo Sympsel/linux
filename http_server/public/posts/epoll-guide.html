@@ -1,0 +1,79 @@
+<!-- public/posts/epoll-guide.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深入理解 epoll - 技术博客</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">📝 技术博客</a>
+            <ul class="nav-links">
+                <li><a href="/">首页</a></li>
+                <li><a href="/posts.html">文章</a></li>
+                <li><a href="/about.html">关于</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <article class="article">
+            <a href="/posts.html" class="back-link">← 返回文章列表</a>
+            <h1>深入理解 epoll I/O 多路复用</h1>
+            <div class="meta">2026-05-16 · Linux · 系统编程 · 阅读时间 12 分钟</div>
+
+            <div class="article-content">
+                <p>Epoll 是 Linux 内核提供的一种高效的 I/O 事件通知机制，是构建高性能网络服务器的基石。</p>
+
+                <h2>📖 什么是 I/O 多路复用？</h2>
+                <p>I/O 多路复用允许单个线程同时监控多个文件描述符，当其中任何一个就绪时（可读、可写），就会通知应用程序。</p>
+
+                <h2>🔄 Epoll 工作流程</h2>
+                <ol>
+                    <li><strong>创建：</strong>使用 <code>epoll_create()</code> 创建 epoll 实例</li>
+                    <li><strong>注册：</strong>使用 <code>epoll_ctl()</code> 添加要监控的文件描述符</li>
+                    <li><strong>等待：</strong>使用 <code>epoll_wait()</code> 等待事件发生</li>
+                    <li><strong>处理：</strong>处理就绪的事件</li>
+                </ol>
+
+                <h2>⚡ LT vs ET 模式</h2>
+
+                <h3>水平触发（LT - Level Triggered）</h3>
+                <p>只要文件描述符处于就绪状态，每次调用 <code>epoll_wait()</code> 都会返回该事件。</p>
+
+                <h3>边缘触发（ET - Edge Triggered）</h3>
+                <p>只有在状态变化时才通知一次，必须一次性处理完所有数据。</p>
+
+                <pre><code>// ET 模式需要循环读取直到 EAGAIN
+while (true) {
+    ssize_t n = read(fd, buffer, sizeof(buffer));
+    if (n < 0 && errno == EAGAIN) {
+        break;  // 数据读完
+    }
+    // 处理数据...
+}</code></pre>
+
+                <h2>🎯 最佳实践</h2>
+                <ul>
+                    <li>使用 ET 模式 + 非阻塞 I/O 获得最佳性能</li>
+                    <li>合理设置最大事件数，避免内存浪费</li>
+                    <li>及时处理事件，避免事件堆积</li>
+                    <li>注意文件描述符的生命周期管理</li>
+                </ul>
+
+                <h2>💡 总结</h2>
+                <p>Epoll 是 Linux 下构建高并发服务器的首选方案，理解其工作原理对于网络编程至关重要。</p>
+            </div>
+        </article>
+
+        <footer>
+            <p>&copy; 2026 技术博客 | Built with ❤️ using C++ HTTP Server</p>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

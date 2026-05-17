@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ HTTP 服务器开发实战 - 技术博客</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">📝 技术博客</a>
+            <ul class="nav-links">
+                <li><a href="/">首页</a></li>
+                <li><a href="/posts.html">文章</a></li>
+                <li><a href="/about.html">关于</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <article class="article">
+            <a href="/posts.html" class="back-link">← 返回文章列表</a>
+            <h1>C++ HTTP 服务器开发实战</h1>
+            <div class="meta">2026-05-17 · C++ · 网络编程 · 阅读时间 15 分钟</div>
+
+            <div class="article-content">
+                <p>本文将带你从零开始构建一个高性能的 HTTP 服务器，使用现代 C++ 特性和 Linux 系统调用。</p>
+
+                <h2>🎯 项目目标</h2>
+                <p>我们的目标是构建一个能够处理高并发连接的 HTTP 服务器，支持静态文件服务和 API 路由。</p>
+
+                <h2>🛠️ 核心技术</h2>
+
+                <h3>1. Epoll I/O 多路复用</h3>
+                <p>Epoll 是 Linux 下最高效的 I/O 多路复用机制，能够轻松处理数万并发连接。</p>
+
+                <pre><code>// 创建 epoll 实例
+int epoll_fd = epoll_create1(0);
+
+// 添加监听 socket
+struct epoll_event event;
+event.events = EPOLLIN;
+event.data.fd = listen_fd;
+epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listen_fd, &event);
+
+// 等待事件
+int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);</code></pre>
+
+                <h3>2. 非阻塞 Socket</h3>
+                <p>使用非阻塞模式避免线程在 I/O 操作上等待，提高并发性能。</p>
+
+                <pre><code>// 设置非阻塞
+fcntl(sockfd, F_SETFL, O_NONBLOCK);</code></pre>
+
+                <h3>3. 智能指针内存管理</h3>
+                <p>使用 <code>std::shared_ptr</code> 和 <code>std::unique_ptr</code> 自动管理资源生命周期。</p>
+
+                <h2>📁 项目结构</h2>
+                <pre><code>http_server/
+├── src/
+│   ├── tcp/
+│   │   ├── TcpServer.hpp
+│   │   └── TcpConnection.hpp
+│   ├── http/
+│   │   ├── HttpParser.hpp
+│   │   └── HttpServer.hpp
+│   └── app/
+│       └── PathManager.hpp
+├── public/
+│   ├── index.html
+│   ├── css/
+│   └── js/
+└── CMakeLists.txt</code></pre>
+
+                <h2>🚀 性能优化</h2>
+                <ul>
+                    <li>使用边缘触发（ET）模式减少系统调用次数</li>
+                    <li>缓冲区复用减少内存分配</li>
+                    <li>零拷贝技术提高数据传输效率</li>
+                    <li>连接池管理减少创建销毁开销</li>
+                </ul>
+
+                <h2>💡 总结</h2>
+                <p>通过这个项目，我们不仅构建了一个实用的 HTTP 服务器，还深入理解了网络编程的核心概念。现代 C++ 的特性让代码更加安全和易维护。</p>
+            </div>
+        </article>
+
+        <footer>
+            <p>&copy; 2026 技术博客 | Built with ❤️ using C++ HTTP Server</p>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

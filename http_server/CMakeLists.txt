@@ -3,5 +3,10 @@ project(http_server)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(http_server main.cpp
-        Buffer.hpp)
+include_directories(
+        src/http
+        src/tcp
+        src/utils
+)
+
+add_executable(http_server Server.cpp)

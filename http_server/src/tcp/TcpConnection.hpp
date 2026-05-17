@@ -5,8 +5,8 @@
 #include <functional>
 #include <memory>
 
-#include "Buffer.hpp"
-#include "Log.hpp"
+#include "../utils/Buffer.hpp"
+#include "../utils/Log.hpp"
 
 // 继承 std::enable_shared_from_this<TcpConnection>
 // 是为了让类能够安全地从成员函数内部获取指向自身的 shared_ptr
