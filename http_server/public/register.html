@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 技术博客</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="/" class="logo">📝 技术博客</a>
+                <h1>创建账户</h1>
+                <p>加入我们的技术社区</p>
+            </div>
+
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" placeholder="选择用户名" required minlength="3" maxlength="20">
+                    <span class="form-icon">👤</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                    <span class="form-icon">✉️</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" placeholder="至少8位" required minlength="8">
+                    <span class="form-icon">🔒</span>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <span class="strength-text" id="strengthText"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">确认密码</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="再次输入密码" required>
+                    <span class="form-icon">🔐</span>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <span class="checkmark"></span>
+                        我同意 <a href="/terms.html">服务条款</a> 和 <a href="/privacy.html">隐私政策</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary">注册</button>
+
+                <div class="social-login">
+                    <p>或使用以下方式注册</p>
+                    <div class="social-buttons">
+                        <button type="button" class="btn-social btn-github">
+                            <span>🐙</span> GitHub
+                        </button>
+                        <button type="button" class="btn-social btn-google">
+                            <span>🔵</span> Google
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <p>已有账户? <a href="/login.html">立即登录</a></p>
+            </div>
+        </div>
+
+        <div class="auth-bg">
+            <div class="auth-bg-content">
+                <h2>开始您的技术之旅</h2>
+                <p>注册成为会员，享受以下特权</p>
+                <ul class="benefits-list">
+                    <li>📝 发布和管理自己的技术文章</li>
+                    <li>💬 与其他开发者互动交流</li>
+                    <li>🔔 订阅您感兴趣的技术话题</li>
+                    <li>📊 个性化阅读推荐</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>
