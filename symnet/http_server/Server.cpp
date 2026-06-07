@@ -2,8 +2,6 @@
 
 #include "src/HttpServer.hpp"
 
-using http_business_task_t = std::function<HttpResponse(const HttpRequest &)>;
-
 void Usage(const std::string &proc_name) {
     std::cout << "Usage: " << proc_name << " <port>" << std::endl;
 }
@@ -16,7 +14,7 @@ int main(const int argc, char *argv[]) {
 
     in_port_t server_port = std::stoi(argv[1]);
 
-    const auto http_server = std::make_unique<HttpServer<http_business_task_t>>(server_port);
+    const auto http_server = std::make_unique<HttpServer>(server_port);
 
     http_server->Run([](const HttpRequest& req) -> HttpResponse {
         LOG_INFO() << "get a request: " << req.method << " " << req.path << " " << req.version;

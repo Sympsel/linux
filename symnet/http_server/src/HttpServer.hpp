@@ -4,7 +4,8 @@
 #include "TcpServer.hpp"
 #include "HttpProtocol.hpp"
 
-template <class TaskType>
+using http_business_task_t = std::function<HttpResponse(const HttpRequest &)>;
+
 class HttpServer {
 public:
     using http_task_t = std::function<std::string(const std::string&)>;
@@ -14,9 +15,10 @@ public:
     _tcp_server(std::make_unique<TcpServer<http_task_t>>(port)){
     }
 
-    void Run(const TaskType& task) {
+    // 传递业务逻辑
+    void Run(const http_business_task_t& task) {
         _task = task;
-        _http_protocol = std::make_unique<HttpProtocol<TaskType>>(task);
+        _http_protocol = std::make_unique<HttpProtocol>(task);
         _tcp_server->Run(_http_protocol->GetHandler());
     }
 
@@ -25,5 +27,5 @@ private:
     in_port_t _port;
     TaskType _task;
     std::unique_ptr<TcpServer<http_task_t>> _tcp_server;
-    std::unique_ptr<HttpProtocol<TaskType>> _http_protocol;
+    std::unique_ptr<HttpProtocol> _http_protocol;
 };

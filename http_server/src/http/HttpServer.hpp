@@ -8,7 +8,7 @@
 
 class HttpServer {
 private:
-    using HttpCallback = std::function<void(const HttpRequest &, HttpResponse &)>;
+    using HttpCallback = std::function<void(HttpRequest &, HttpResponse &)>;
 
 public:
     HttpServer(const int port)

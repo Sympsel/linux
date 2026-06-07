@@ -4,9 +4,24 @@
 
 #include "HttpParser.hpp"
 #include "HttpSerializer.hpp"
+#include "HttpServer.hpp"
 #include "../../utils/module/SymNet.h"
 
-template<class TaskType>
+struct HttpRequest {
+    std::string method;
+    std::string path;
+    std::string version;
+    std::unordered_map<std::string, std::string> headers;
+    std::string body;
+};
+
+struct HttpResponse {
+    std::string status_code;
+    std::string status_text;
+    std::unordered_map<std::string, std::string> headers;
+    std::string body;
+};
+
 class HttpProtocol {
 private:
     static HttpResponse MakeErrorResponse(const std::string &code, const std::string &text) {
@@ -18,13 +33,14 @@ private:
         return resp;
     }
 
+    static void BuildRequestToStream(const HttpRequest& req, std::string& req_stream) {
+
+    }
+
 public:
     using net_task_t = std::function<std::string(const std::string &)>;
 
-    explicit HttpProtocol(const TaskType &task)
-        : _task(task),
-          _serializer(std::make_unique<HttpSerializer>()) {
-    }
+    explicit HttpProtocol() = default;
 
     net_task_t GetHandler() {
         return [this](const std::string &http_req_str) -> std::string {
@@ -44,8 +60,6 @@ public:
     }
 
     ~HttpProtocol() = default;
-
 private:
-    TaskType _task;
-    std::unique_ptr<HttpSerializer> _serializer;
+    http_business_task_t
 };

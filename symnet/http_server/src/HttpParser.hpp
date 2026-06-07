@@ -71,7 +71,7 @@ public:
 
         // 如果没有 Content-Length 头部字段，则添加
         if (!resp.headers.contains("content-length") &&
-            !resp.headers.contains("Contains-Length")) {
+            !resp.headers.contains("Content-Length")) {
             oss << "Content-Length: " << resp.body.size() << "\r\n";
         }
         oss << "\r\n";
@@ -86,7 +86,7 @@ private:
         auto start = str.begin();
         auto end = str.end();
         while (start != end && std::isspace(*start)) ++start;
-        while (start != end && std::isspace(*end)) --end;
+        while (start != end && std::isspace(*std::prev(end))) --end;
         str = std::string(start, end);
     }
 

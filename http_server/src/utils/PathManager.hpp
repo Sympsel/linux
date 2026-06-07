@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include "../utils/Log.hpp"
+#include "Log.hpp"
 
 namespace fs = std::filesystem;
 

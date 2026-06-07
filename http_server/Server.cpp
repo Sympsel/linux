@@ -23,9 +23,13 @@ int main(const int argc, char *argv[]) {
         LOG_INFO() << "Starting HTTP server on port " << port;
 
         const auto server = std::make_unique<HttpServer>(port);
+        auto app = std::make_unique<Application>();
+
+        app->registerHandles();
+
         server->setHttpCallback(
-            [](const HttpRequest &req, HttpResponse &resp) {
-                Application::handleRequest(req, resp);
+            [&app](HttpRequest &req, HttpResponse &resp) {
+                app->handleRequest(req, resp);
             }
         );
 

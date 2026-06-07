@@ -16,7 +16,7 @@ include_directories(${CURSES_INCLUDE_DIR})
 #)
 
 # 链接必要的库
-target_link_libraries(snake ${CURSES_LIBRARIES} jsoncpp pthread)
+# target_link_libraries(snake ${CURSES_LIBRARIES} jsoncpp pthread)
 
 add_executable(
         launch launch.cpp

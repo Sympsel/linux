@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -29,6 +30,36 @@ struct HttpRequest {
     void setHeader(const std::string &key, const std::string &value) {
         headers[key] = value;
     }
+
+    void print(const std::string &args = "") const {
+        std::cout << "============= Request ==============" << std::endl;
+        std::cout << "Method: " << methodToString() << std::endl;
+        std::cout << "Path: " << path << std::endl;
+        std::cout << "Version: " << version << std::endl;
+        std::cout << "Headers:" << std::endl;
+        for (const auto &[key, value]: headers) {
+            std::cout << "\t" << key << ": " << value << std::endl;
+        }
+        if (!args.empty()) {
+            std::cout << "Args: " << args << std::endl;
+        }
+        std::cout << "Body: " << body << std::endl;
+    }
+
+    std::string methodToString() const {
+        return methodToString(method);
+    }
+
+    static std::string methodToString(const HttpMethod method) {
+        switch (method) {
+            case HttpMethod::GET: return "GET";
+            case HttpMethod::POST: return "POST";
+            case HttpMethod::PUT: return "PUT";
+            case HttpMethod::DELETE: return "DELETE";
+            case HttpMethod::HEAD: return "HEAD";
+            default: return "UNKNOWN";
+        }
+    }
 };
 
 struct HttpResponse {
@@ -55,7 +86,9 @@ struct HttpResponse {
 
         // 响应头
         for (const auto &[key, value]: headers) {
-            result += key + kv_split + value + line_spilt;
+            std::stringstream ss;
+            ss << key << kv_split << value << line_spilt;
+            result += ss.str();
         }
         if (!headers.contains("Content-Length") && !body.empty()) {
             result += "Content-Length";
@@ -66,5 +99,16 @@ struct HttpResponse {
         // 响应体
         result += body;
         return result;
+    }
+
+    void print() const {
+        std::cout << "============= Response ==============" << std::endl;
+        std::cout << "Status Code: " << status_code << std::endl;
+        std::cout << "Status Text: " << status_text << std::endl;
+        std::cout << "Headers:" << std::endl;
+        for (const auto &[key, value]: headers) {
+            std::cout << "\t" << key << ": " << value << std::endl;
+        }
+        std::cout << "Body: " << body << std::endl;
     }
 };
