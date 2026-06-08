@@ -26,6 +26,24 @@ namespace _pb = ::google::protobuf;
 namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
 namespace contacts {
+template <typename>
+constexpr PeopleInfo_RemarkEntry_DoNotUse::PeopleInfo_RemarkEntry_DoNotUse(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : PeopleInfo_RemarkEntry_DoNotUse::MapEntry(PeopleInfo_RemarkEntry_DoNotUse_class_data_.base()){}
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : PeopleInfo_RemarkEntry_DoNotUse::MapEntry() {
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+struct PeopleInfo_RemarkEntry_DoNotUseDefaultTypeInternal {
+  constexpr PeopleInfo_RemarkEntry_DoNotUseDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~PeopleInfo_RemarkEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    PeopleInfo_RemarkEntry_DoNotUse _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PeopleInfo_RemarkEntry_DoNotUseDefaultTypeInternal _PeopleInfo_RemarkEntry_DoNotUse_default_instance_;
 
 inline constexpr PeopleInfo_Phone::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
@@ -33,7 +51,8 @@ inline constexpr PeopleInfo_Phone::Impl_::Impl_(
       : _cached_size_{0},
         number_(
             &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()) {}
+            ::_pbi::ConstantInitialized()),
+        type_{static_cast< ::contacts::PeopleInfo_Phone_Type >(0)} {}
 
 template <typename>
 constexpr PeopleInfo_Phone::PeopleInfo_Phone(::_pbi::ConstantInitialized)
@@ -55,6 +74,37 @@ struct PeopleInfo_PhoneDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PeopleInfo_PhoneDefaultTypeInternal _PeopleInfo_Phone_default_instance_;
 
+inline constexpr Address::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        home_address_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        unit_address_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr Address::Address(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(Address_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+struct AddressDefaultTypeInternal {
+  constexpr AddressDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~AddressDefaultTypeInternal() {}
+  union {
+    Address _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AddressDefaultTypeInternal _Address_default_instance_;
+
 inline constexpr PeopleInfo::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     ::_pbi::ConstantInitialized) noexcept
@@ -71,7 +121,19 @@ inline constexpr PeopleInfo::Impl_::Impl_(
         name_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        age_{0} {}
+        data_{nullptr},
+        age_{0},
+        #ifdef PROTOBUF_INTERNAL_REMOVE_ARENA_PTRS_MAP_FIELD
+        remark_{visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::contacts::PeopleInfo,
+            PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.remark_)>()
+        }
+        #else
+        remark_ {}
+        #endif
+        ,
+        other_contact_{},
+        _oneof_case_{} {}
 
 template <typename>
 constexpr PeopleInfo::PeopleInfo(::_pbi::ConstantInitialized)
@@ -127,27 +189,53 @@ struct ContactsDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ContactsDefaultTypeInternal _Contacts_default_instance_;
 }  // namespace contacts
-static constexpr const ::_pb::EnumDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULLABLE
-    file_level_enum_descriptors_contacts_2eproto = nullptr;
+static const ::_pb::EnumDescriptor* PROTOBUF_NONNULL
+    file_level_enum_descriptors_contacts_2eproto[1];
 static constexpr const ::_pb::ServiceDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULLABLE
     file_level_service_descriptors_contacts_2eproto = nullptr;
 const ::uint32_t
     TableStruct_contacts_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
         0x081, // bitmap
-        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_Phone, _impl_._has_bits_),
-        4, // hasbit index offset
-        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_Phone, _impl_.number_),
+        PROTOBUF_FIELD_OFFSET(::contacts::Address, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::contacts::Address, _impl_.home_address_),
+        PROTOBUF_FIELD_OFFSET(::contacts::Address, _impl_.unit_address_),
         0,
+        1,
         0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_Phone, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_Phone, _impl_.number_),
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_Phone, _impl_.type_),
+        0,
+        1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_RemarkEntry_DoNotUse, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_RemarkEntry_DoNotUse, _impl_.key_),
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo_RemarkEntry_DoNotUse, _impl_.value_),
+        0,
+        1,
+        0x085, // bitmap
         PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_._has_bits_),
-        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_._oneof_case_[0]),
+        12, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.name_),
         PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.age_),
         PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.phone_),
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.data_),
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.other_contact_),
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.other_contact_),
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.remark_),
+        PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.other_contact_),
         1,
-        2,
+        3,
         0,
+        2,
+        ~0u,
+        ~0u,
+        4,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::contacts::Contacts, _impl_._has_bits_),
         4, // hasbit index offset
@@ -157,34 +245,51 @@ const ::uint32_t
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, sizeof(::contacts::PeopleInfo_Phone)},
-        {5, sizeof(::contacts::PeopleInfo)},
-        {14, sizeof(::contacts::Contacts)},
+        {0, sizeof(::contacts::Address)},
+        {7, sizeof(::contacts::PeopleInfo_Phone)},
+        {14, sizeof(::contacts::PeopleInfo_RemarkEntry_DoNotUse)},
+        {21, sizeof(::contacts::PeopleInfo)},
+        {40, sizeof(::contacts::Contacts)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
+    &::contacts::_Address_default_instance_._instance,
     &::contacts::_PeopleInfo_Phone_default_instance_._instance,
+    &::contacts::_PeopleInfo_RemarkEntry_DoNotUse_default_instance_._instance,
     &::contacts::_PeopleInfo_default_instance_._instance,
     &::contacts::_Contacts_default_instance_._instance,
 };
 const char descriptor_table_protodef_contacts_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\016contacts.proto\022\010contacts\"k\n\nPeopleInfo"
-    "\022\014\n\004name\030\001 \001(\t\022\013\n\003age\030\002 \001(\005\022)\n\005phone\030\003 \003"
-    "(\0132\032.contacts.PeopleInfo.Phone\032\027\n\005Phone\022"
-    "\016\n\006number\030\001 \001(\t\"2\n\010Contacts\022&\n\010contacts\030"
-    "\001 \003(\0132\024.contacts.PeopleInfob\006proto3"
+    "\n\016contacts.proto\022\010contacts\032\031google/proto"
+    "buf/any.proto\"5\n\007Address\022\024\n\014home_address"
+    "\030\001 \001(\t\022\024\n\014unit_address\030\002 \001(\t\"\351\002\n\nPeopleI"
+    "nfo\022\014\n\004name\030\001 \001(\t\022\013\n\003age\030\002 \001(\005\022)\n\005phone\030"
+    "\003 \003(\0132\032.contacts.PeopleInfo.Phone\022\"\n\004dat"
+    "a\030\004 \001(\0132\024.google.protobuf.Any\022\014\n\002qq\030\005 \001("
+    "\tH\000\022\020\n\006wechat\030\006 \001(\tH\000\0220\n\006remark\030\007 \003(\0132 ."
+    "contacts.PeopleInfo.RemarkEntry\032_\n\005Phone"
+    "\022\016\n\006number\030\001 \001(\t\022-\n\004type\030\002 \001(\0162\037.contact"
+    "s.PeopleInfo.Phone.Type\"\027\n\004Type\022\006\n\002MP\020\000\022"
+    "\007\n\003TEL\020\001\032-\n\013RemarkEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+    "value\030\002 \001(\t:\0028\001B\017\n\rother_contact\"2\n\010Cont"
+    "acts\022&\n\010contacts\030\001 \003(\0132\024.contacts.People"
+    "Infob\006proto3"
+};
+static const ::_pbi::DescriptorTable* PROTOBUF_NONNULL const
+    descriptor_table_contacts_2eproto_deps[1] = {
+        &::descriptor_table_google_2fprotobuf_2fany_2eproto,
 };
 static ::absl::once_flag descriptor_table_contacts_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_contacts_2eproto = {
     false,
     false,
-    195,
+    532,
     descriptor_table_protodef_contacts_2eproto,
     "contacts.proto",
     &descriptor_table_contacts_2eproto_once,
-    nullptr,
-    0,
-    3,
+    descriptor_table_contacts_2eproto_deps,
+    1,
+    5,
     schemas,
     file_default_instances,
     TableStruct_contacts_2eproto::offsets,
@@ -192,6 +297,332 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_contacts_2epro
     file_level_service_descriptors_contacts_2eproto,
 };
 namespace contacts {
+[[nodiscard]] const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL
+PeopleInfo_Phone_Type_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_contacts_2eproto);
+  return file_level_enum_descriptors_contacts_2eproto[0];
+}
+PROTOBUF_CONSTINIT const uint32_t PeopleInfo_Phone_Type_internal_data_[] = {
+    131072u, 0u, };
+// ===================================================================
+
+class Address::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<Address>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(Address, _impl_._has_bits_);
+};
+
+Address::Address(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, Address_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:contacts.Address)
+}
+PROTOBUF_NDEBUG_INLINE Address::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::contacts::Address& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        home_address_(arena, from.home_address_),
+        unit_address_(arena, from.unit_address_) {}
+
+Address::Address(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const Address& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, Address_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  Address* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:contacts.Address)
+}
+PROTOBUF_NDEBUG_INLINE Address::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        home_address_(arena),
+        unit_address_(arena) {}
+
+inline void Address::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+Address::~Address() {
+  // @@protoc_insertion_point(destructor:contacts.Address)
+  SharedDtor(*this);
+}
+inline void Address::SharedDtor(MessageLite& self) {
+  Address& this_ = static_cast<Address&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.home_address_.Destroy();
+  this_._impl_.unit_address_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL Address::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) Address(arena);
+}
+constexpr auto Address::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(Address),
+                                            alignof(Address));
+}
+constexpr auto Address::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_Address_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // IsInitialized
+          &Address::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<Address>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &Address::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<Address>(), &Address::ByteSizeLong,
+              &Address::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(Address, _impl_._cached_size_),
+          false,
+      },
+      &Address::kDescriptorMethods,
+      &descriptor_table_contacts_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull Address_class_data_ =
+        Address::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+Address::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&Address_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(Address_class_data_.tc_table);
+  return Address_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 49, 2>
+Address::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(Address, _impl_._has_bits_),
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    Address_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::contacts::Address>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string unit_address = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0,
+      PROTOBUF_FIELD_OFFSET(Address, _impl_.unit_address_)}},
+    // string home_address = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0,
+      PROTOBUF_FIELD_OFFSET(Address, _impl_.home_address_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string home_address = 1;
+    {PROTOBUF_FIELD_OFFSET(Address, _impl_.home_address_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string unit_address = 2;
+    {PROTOBUF_FIELD_OFFSET(Address, _impl_.unit_address_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\20\14\14\0\0\0\0\0"
+    "contacts.Address"
+    "home_address"
+    "unit_address"
+  }},
+};
+PROTOBUF_NOINLINE void Address::Clear() {
+// @@protoc_insertion_point(message_clear_start:contacts.Address)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.home_address_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.unit_address_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL Address::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const Address& this_ = static_cast<const Address&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL Address::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const Address& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:contacts.Address)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string home_address = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_home_address().empty()) {
+      const ::std::string& _s = this_._internal_home_address();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.Address.home_address");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string unit_address = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_unit_address().empty()) {
+      const ::std::string& _s = this_._internal_unit_address();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.Address.unit_address");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:contacts.Address)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t Address::ByteSizeLong(const MessageLite& base) {
+  const Address& this_ = static_cast<const Address&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t Address::ByteSizeLong() const {
+  const Address& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:contacts.Address)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    // string home_address = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_home_address().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_home_address());
+      }
+    }
+    // string unit_address = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_unit_address().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_unit_address());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void Address::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                            const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this =
+      static_cast<Address*>(&to_msg);
+  auto& from = static_cast<const Address&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:contacts.Address)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_home_address().empty()) {
+        _this->_internal_set_home_address(from._internal_home_address());
+      } else {
+        if (_this->_impl_.home_address_.IsDefault()) {
+          _this->_internal_set_home_address("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_unit_address().empty()) {
+        _this->_internal_set_unit_address(from._internal_unit_address());
+      } else {
+        if (_this->_impl_.unit_address_.IsDefault()) {
+          _this->_internal_set_unit_address("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void Address::CopyFrom(const Address& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:contacts.Address)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void Address::InternalSwap(Address* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.home_address_, &other->_impl_.home_address_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.unit_address_, &other->_impl_.unit_address_, arena);
+}
+
+::google::protobuf::Metadata Address::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
 // ===================================================================
 
 class PeopleInfo_Phone::_Internal {
@@ -232,6 +663,7 @@ PeopleInfo_Phone::PeopleInfo_Phone(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.type_ = from._impl_.type_;
 
   // @@protoc_insertion_point(copy_constructor:contacts.PeopleInfo.Phone)
 }
@@ -243,6 +675,7 @@ PROTOBUF_NDEBUG_INLINE PeopleInfo_Phone::Impl_::Impl_(
 
 inline void PeopleInfo_Phone::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.type_ = {};
 }
 PeopleInfo_Phone::~PeopleInfo_Phone() {
   // @@protoc_insertion_point(destructor:contacts.PeopleInfo.Phone)
@@ -301,16 +734,16 @@ PeopleInfo_Phone::GetClassData() const {
   return PeopleInfo_Phone_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 40, 2>
+const ::_pbi::TcParseTable<1, 2, 0, 40, 2>
 PeopleInfo_Phone::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(PeopleInfo_Phone, _impl_._has_bits_),
     0, // no _extensions_
-    1, 0,  // max_field_number, fast_idx_mask
+    2, 8,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967294,  // skipmap
+    4294967292,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
+    2,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     PeopleInfo_Phone_class_data_.base(),
@@ -320,6 +753,10 @@ PeopleInfo_Phone::_table_ = {
     ::_pbi::TcParser::GetTable<::contacts::PeopleInfo_Phone>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
+    // .contacts.PeopleInfo.Phone.Type type = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PeopleInfo_Phone, _impl_.type_), 1>(),
+     {16, 1, 0,
+      PROTOBUF_FIELD_OFFSET(PeopleInfo_Phone, _impl_.type_)}},
     // string number = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0,
@@ -329,6 +766,8 @@ PeopleInfo_Phone::_table_ = {
   }}, {{
     // string number = 1;
     {PROTOBUF_FIELD_OFFSET(PeopleInfo_Phone, _impl_.number_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // .contacts.PeopleInfo.Phone.Type type = 2;
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo_Phone, _impl_.type_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
   }},
   // no aux_entries
   {{
@@ -348,6 +787,7 @@ PROTOBUF_NOINLINE void PeopleInfo_Phone::Clear() {
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
     _impl_.number_.ClearNonDefaultToEmpty();
   }
+  _impl_.type_ = 0;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -381,6 +821,15 @@ PROTOBUF_NOINLINE void PeopleInfo_Phone::Clear() {
     }
   }
 
+  // .contacts.PeopleInfo.Phone.Type type = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (this_._internal_type() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteEnumToArray(
+          2, this_._internal_type(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -404,13 +853,21 @@ PROTOBUF_NOINLINE void PeopleInfo_Phone::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void)cached_has_bits;
 
-   {
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     // string number = 1;
-    cached_has_bits = this_._impl_._has_bits_[0];
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_number().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_number());
+      }
+    }
+    // .contacts.PeopleInfo.Phone.Type type = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (this_._internal_type() != 0) {
+        total_size += 1 +
+                      ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
       }
     }
   }
@@ -432,12 +889,19 @@ void PeopleInfo_Phone::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    if (!from._internal_number().empty()) {
-      _this->_internal_set_number(from._internal_number());
-    } else {
-      if (_this->_impl_.number_.IsDefault()) {
-        _this->_internal_set_number("");
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_number().empty()) {
+        _this->_internal_set_number(from._internal_number());
+      } else {
+        if (_this->_impl_.number_.IsDefault()) {
+          _this->_internal_set_number("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (from._internal_type() != 0) {
+        _this->_impl_.type_ = from._impl_.type_;
       }
     }
   }
@@ -461,11 +925,109 @@ void PeopleInfo_Phone::InternalSwap(PeopleInfo_Phone* PROTOBUF_RESTRICT PROTOBUF
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.number_, &other->_impl_.number_, arena);
+  swap(_impl_.type_, other->_impl_.type_);
 }
 
 ::google::protobuf::Metadata PeopleInfo_Phone::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
+// ===================================================================
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+PeopleInfo_RemarkEntry_DoNotUse::PeopleInfo_RemarkEntry_DoNotUse()
+    : SuperType(PeopleInfo_RemarkEntry_DoNotUse_class_data_.base()) {}
+PeopleInfo_RemarkEntry_DoNotUse::PeopleInfo_RemarkEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+    : SuperType(arena, PeopleInfo_RemarkEntry_DoNotUse_class_data_.base()) {}
+#else   // PROTOBUF_CUSTOM_VTABLE
+PeopleInfo_RemarkEntry_DoNotUse::PeopleInfo_RemarkEntry_DoNotUse() : SuperType() {}
+PeopleInfo_RemarkEntry_DoNotUse::PeopleInfo_RemarkEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena) : SuperType(arena) {}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+inline void* PROTOBUF_NONNULL PeopleInfo_RemarkEntry_DoNotUse::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) PeopleInfo_RemarkEntry_DoNotUse(arena);
+}
+constexpr auto PeopleInfo_RemarkEntry_DoNotUse::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(PeopleInfo_RemarkEntry_DoNotUse),
+                                            alignof(PeopleInfo_RemarkEntry_DoNotUse));
+}
+constexpr auto PeopleInfo_RemarkEntry_DoNotUse::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_PeopleInfo_RemarkEntry_DoNotUse_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // IsInitialized
+          &PeopleInfo_RemarkEntry_DoNotUse::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<PeopleInfo_RemarkEntry_DoNotUse>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &PeopleInfo_RemarkEntry_DoNotUse::SharedDtor,
+          static_cast<void (::google::protobuf::MessageLite::*)()>(&PeopleInfo_RemarkEntry_DoNotUse::ClearImpl),
+              ::google::protobuf::Message::ByteSizeLongImpl, ::google::protobuf::Message::_InternalSerializeImpl
+              ,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(PeopleInfo_RemarkEntry_DoNotUse, _impl_._cached_size_),
+          false,
+      },
+      &PeopleInfo_RemarkEntry_DoNotUse::kDescriptorMethods,
+      &descriptor_table_contacts_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull PeopleInfo_RemarkEntry_DoNotUse_class_data_ =
+        PeopleInfo_RemarkEntry_DoNotUse::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+PeopleInfo_RemarkEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&PeopleInfo_RemarkEntry_DoNotUse_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(PeopleInfo_RemarkEntry_DoNotUse_class_data_.tc_table);
+  return PeopleInfo_RemarkEntry_DoNotUse_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 48, 2>
+PeopleInfo_RemarkEntry_DoNotUse::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(PeopleInfo_RemarkEntry_DoNotUse, _impl_._has_bits_),
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    PeopleInfo_RemarkEntry_DoNotUse_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::DiscardEverythingFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::contacts::PeopleInfo_RemarkEntry_DoNotUse>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string value = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 1, 0,
+      PROTOBUF_FIELD_OFFSET(PeopleInfo_RemarkEntry_DoNotUse, _impl_.value_)}},
+    // string key = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 0, 0,
+      PROTOBUF_FIELD_OFFSET(PeopleInfo_RemarkEntry_DoNotUse, _impl_.key_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string key = 1;
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo_RemarkEntry_DoNotUse, _impl_.key_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string value = 2;
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo_RemarkEntry_DoNotUse, _impl_.value_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\37\3\5\0\0\0\0\0"
+    "contacts.PeopleInfo.RemarkEntry"
+    "key"
+    "value"
+  }},
+};
 // ===================================================================
 
 class PeopleInfo::_Internal {
@@ -474,8 +1036,16 @@ class PeopleInfo::_Internal {
       decltype(::std::declval<PeopleInfo>()._impl_._has_bits_);
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_._has_bits_);
+  static constexpr ::int32_t kOneofCaseOffset =
+      PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_._oneof_case_);
 };
 
+void PeopleInfo::clear_data() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.data_ != nullptr) _impl_.data_->Clear();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000004U);
+}
 PeopleInfo::PeopleInfo(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, PeopleInfo_class_data_.base()) {
@@ -500,7 +1070,18 @@ PROTOBUF_NDEBUG_INLINE PeopleInfo::Impl_::Impl_(
         phone_ { visibility, arena, from.phone_ }
         #endif
         ,
-        name_(arena, from.name_) {}
+        name_(arena, from.name_),
+        #ifdef PROTOBUF_INTERNAL_REMOVE_ARENA_PTRS_MAP_FIELD
+        remark_{visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::contacts::PeopleInfo,
+            PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.remark_)>()
+        , from.remark_}
+        #else
+        remark_ { visibility, arena, from.remark_ }
+        #endif
+        ,
+        other_contact_{},
+        _oneof_case_{from._oneof_case_[0]} {}
 
 PeopleInfo::PeopleInfo(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -515,7 +1096,21 @@ PeopleInfo::PeopleInfo(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.data_ = (CheckHasBit(cached_has_bits, 0x00000004U))
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.data_)
+                : nullptr;
   _impl_.age_ = from._impl_.age_;
+  switch (other_contact_case()) {
+    case OTHER_CONTACT_NOT_SET:
+      break;
+      case kQq:
+        new (&_impl_.other_contact_.qq_) decltype(_impl_.other_contact_.qq_){arena, from._impl_.other_contact_.qq_};
+        break;
+      case kWechat:
+        new (&_impl_.other_contact_.wechat_) decltype(_impl_.other_contact_.wechat_){arena, from._impl_.other_contact_.wechat_};
+        break;
+  }
 
   // @@protoc_insertion_point(copy_constructor:contacts.PeopleInfo)
 }
@@ -532,11 +1127,27 @@ PROTOBUF_NDEBUG_INLINE PeopleInfo::Impl_::Impl_(
         phone_ { visibility, arena }
         #endif
         ,
-        name_(arena) {}
+        name_(arena),
+        #ifdef PROTOBUF_INTERNAL_REMOVE_ARENA_PTRS_MAP_FIELD
+        remark_{visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::contacts::PeopleInfo,
+            PROTOBUF_FIELD_OFFSET(::contacts::PeopleInfo, _impl_.remark_)>()
+        }
+        #else
+        remark_ { visibility, arena }
+        #endif
+        ,
+        other_contact_{},
+        _oneof_case_{} {}
 
 inline void PeopleInfo::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.age_ = {};
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, data_),
+           0,
+           offsetof(Impl_, age_) -
+               offsetof(Impl_, data_) +
+               sizeof(Impl_::age_));
 }
 PeopleInfo::~PeopleInfo() {
   // @@protoc_insertion_point(destructor:contacts.PeopleInfo)
@@ -550,8 +1161,32 @@ inline void PeopleInfo::SharedDtor(MessageLite& self) {
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.name_.Destroy();
+  delete this_._impl_.data_;
+  if (this_.has_other_contact()) {
+    this_.clear_other_contact();
+  }
   this_._impl_.~Impl_();
 }
+
+void PeopleInfo::clear_other_contact() {
+// @@protoc_insertion_point(one_of_clear_start:contacts.PeopleInfo)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  switch (other_contact_case()) {
+    case kQq: {
+      _impl_.other_contact_.qq_.Destroy();
+      break;
+    }
+    case kWechat: {
+      _impl_.other_contact_.wechat_.Destroy();
+      break;
+    }
+    case OTHER_CONTACT_NOT_SET: {
+      break;
+    }
+  }
+  _impl_._oneof_case_[0] = OTHER_CONTACT_NOT_SET;
+}
+
 
 inline void* PROTOBUF_NONNULL PeopleInfo::PlacementNew_(
     const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
@@ -568,6 +1203,10 @@ constexpr auto PeopleInfo::InternalNewImpl_() {
   constexpr auto arena_bits = ::google::protobuf::internal::EncodePlacementArenaOffsets({
       PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.phone_) +
           decltype(PeopleInfo::_impl_.phone_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+      PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.remark_) +
+          decltype(PeopleInfo::_impl_.remark_)::
               InternalGetArenaOffset(
                   ::google::protobuf::Message::internal_visibility()),
   });
@@ -614,17 +1253,17 @@ PeopleInfo::GetClassData() const {
   return PeopleInfo_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 1, 32, 2>
+const ::_pbi::TcParseTable<2, 7, 3, 46, 2>
 PeopleInfo::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_._has_bits_),
     0, // no _extensions_
-    3, 24,  // max_field_number, fast_idx_mask
+    7, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967288,  // skipmap
+    4294967168,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    3,  // num_field_entries
-    1,  // num_aux_entries
+    7,  // num_field_entries
+    3,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     PeopleInfo_class_data_.base(),
     nullptr,  // post_loop_handler
@@ -633,14 +1272,17 @@ PeopleInfo::_table_ = {
     ::_pbi::TcParser::GetTable<::contacts::PeopleInfo>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    {::_pbi::TcParser::MiniParse, {}},
+    // .google.protobuf.Any data = 4;
+    {::_pbi::TcParser::FastMtS1,
+     {34, 2, 1,
+      PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.data_)}},
     // string name = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 1, 0,
       PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.name_)}},
     // int32 age = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PeopleInfo, _impl_.age_), 2>(),
-     {16, 2, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PeopleInfo, _impl_.age_), 3>(),
+     {16, 3, 0,
       PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.age_)}},
     // repeated .contacts.PeopleInfo.Phone phone = 3;
     {::_pbi::TcParser::FastMtR1,
@@ -652,17 +1294,31 @@ PeopleInfo::_table_ = {
     // string name = 1;
     {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.name_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // int32 age = 2;
-    {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.age_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.age_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
     // repeated .contacts.PeopleInfo.Phone phone = 3;
     {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.phone_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .google.protobuf.Any data = 4;
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.data_), _Internal::kHasBitsOffset + 2, 1, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // string qq = 5;
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.other_contact_.qq_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string wechat = 6;
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.other_contact_.wechat_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // map<string, string> remark = 7;
+    {PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.remark_), _Internal::kHasBitsOffset + 4, 2, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
   }},
   {{
       {::_pbi::TcParser::GetTable<::contacts::PeopleInfo_Phone>()},
+      {::_pbi::TcParser::GetTable<::google::protobuf::Any>()},
+      {::_pbi::TcParser::GetMapAuxInfo(
+          1, 0, 9, 9, 0)},
   }},
   {{
-    "\23\4\0\0\0\0\0\0"
+    "\23\4\0\0\0\2\6\6"
     "contacts.PeopleInfo"
     "name"
+    "qq"
+    "wechat"
+    "remark"
   }},
 };
 PROTOBUF_NOINLINE void PeopleInfo::Clear() {
@@ -673,15 +1329,25 @@ PROTOBUF_NOINLINE void PeopleInfo::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBitForRepeated(cached_has_bits, 0x00000001U)) {
       _impl_.phone_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       _impl_.name_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      ABSL_DCHECK(_impl_.data_ != nullptr);
+      _impl_.data_->Clear();
+    }
   }
-  _impl_.age_ = 0;
+  if (BatchCheckHasBit(cached_has_bits, 0x00000018U)) {
+    _impl_.age_ = 0;
+    if (CheckHasBitForRepeated(cached_has_bits, 0x00000010U)) {
+      _impl_.remark_.Clear();
+    }
+  }
+  clear_other_contact();
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -716,7 +1382,7 @@ PROTOBUF_NOINLINE void PeopleInfo::Clear() {
   }
 
   // int32 age = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     if (this_._internal_age() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<2>(
@@ -734,6 +1400,66 @@ PROTOBUF_NOINLINE void PeopleInfo::Clear() {
           ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
               3, repfield, repfield.GetCachedSize(),
               target, stream);
+    }
+  }
+
+  // .google.protobuf.Any data = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        4, *this_._impl_.data_, this_._impl_.data_->GetCachedSize(), target,
+        stream);
+  }
+
+  switch (this_.other_contact_case()) {
+    case kQq: {
+      const ::std::string& _s = this_._internal_qq();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.PeopleInfo.qq");
+      target = stream->WriteStringMaybeAliased(5, _s, target);
+      break;
+    }
+    case kWechat: {
+      const ::std::string& _s = this_._internal_wechat();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.PeopleInfo.wechat");
+      target = stream->WriteStringMaybeAliased(6, _s, target);
+      break;
+    }
+    default:
+      break;
+  }
+  // map<string, string> remark = 7;
+  if (CheckHasBitForRepeated(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_remark().empty()) {
+      using MapType = ::google::protobuf::Map<::std::string, ::std::string>;
+      using WireHelper = _pbi::MapEntryFuncs<::std::string, ::std::string,
+                                     _pbi::WireFormatLite::TYPE_STRING,
+                                     _pbi::WireFormatLite::TYPE_STRING>;
+      const auto& field = this_._internal_remark();
+
+      if (stream->IsSerializationDeterministic() && field.size() > 1) {
+        for (const auto& entry : ::google::protobuf::internal::MapSorterPtr<MapType>(field)) {
+          target = WireHelper::InternalSerialize(
+              7, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.PeopleInfo.remark");
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.second.data(), static_cast<int>(entry.second.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.PeopleInfo.remark");
+        }
+      } else {
+        for (const auto& entry : field) {
+          target = WireHelper::InternalSerialize(
+              7, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.PeopleInfo.remark");
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.second.data(), static_cast<int>(entry.second.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "contacts.PeopleInfo.remark");
+        }
+      }
     }
   }
 
@@ -762,7 +1488,7 @@ PROTOBUF_NOINLINE void PeopleInfo::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     // repeated .contacts.PeopleInfo.Phone phone = 3;
     if (CheckHasBitForRepeated(cached_has_bits, 0x00000001U)) {
       total_size += 1UL * this_._internal_phone_size();
@@ -777,12 +1503,44 @@ PROTOBUF_NOINLINE void PeopleInfo::Clear() {
                                         this_._internal_name());
       }
     }
-    // int32 age = 2;
+    // .google.protobuf.Any data = 4;
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.data_);
+    }
+    // int32 age = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (this_._internal_age() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_age());
       }
+    }
+    // map<string, string> remark = 7;
+    if (CheckHasBitForRepeated(cached_has_bits, 0x00000010U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_remark_size());
+      for (const auto& entry : this_._internal_remark()) {
+        total_size += _pbi::MapEntryFuncs<::std::string, ::std::string,
+                                       _pbi::WireFormatLite::TYPE_STRING,
+                                       _pbi::WireFormatLite::TYPE_STRING>::ByteSizeLong(entry.first, entry.second);
+      }
+    }
+  }
+  switch (this_.other_contact_case()) {
+    // string qq = 5;
+    case kQq: {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_qq());
+      break;
+    }
+    // string wechat = 6;
+    case kWechat: {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_wechat());
+      break;
+    }
+    case OTHER_CONTACT_NOT_SET: {
+      break;
     }
   }
   return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -804,7 +1562,7 @@ void PeopleInfo::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBitForRepeated(cached_has_bits, 0x00000001U)) {
       _this->_internal_mutable_phone()->InternalMergeFromWithArena(
           ::google::protobuf::MessageLite::internal_visibility(), arena,
@@ -820,12 +1578,53 @@ void PeopleInfo::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      ABSL_DCHECK(from._impl_.data_ != nullptr);
+      if (_this->_impl_.data_ == nullptr) {
+        _this->_impl_.data_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.data_);
+      } else {
+        _this->_impl_.data_->MergeFrom(*from._impl_.data_);
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (from._internal_age() != 0) {
         _this->_impl_.age_ = from._impl_.age_;
       }
     }
+    if (CheckHasBitForRepeated(cached_has_bits, 0x00000010U)) {
+      _this->_impl_.remark_.MergeFrom(from._impl_.remark_);
+    }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
+  if (const uint32_t oneof_from_case =
+          from._impl_._oneof_case_[0]) {
+    const uint32_t oneof_to_case = _this->_impl_._oneof_case_[0];
+    const bool oneof_needs_init = oneof_to_case != oneof_from_case;
+    if (oneof_needs_init) {
+      if (oneof_to_case != 0) {
+        _this->clear_other_contact();
+      }
+      _this->_impl_._oneof_case_[0] = oneof_from_case;
+    }
+
+    switch (oneof_from_case) {
+      case kQq: {
+        if (oneof_needs_init) {
+          _this->_impl_.other_contact_.qq_.InitDefault();
+        }
+        _this->_impl_.other_contact_.qq_.Set(from._internal_qq(), arena);
+        break;
+      }
+      case kWechat: {
+        if (oneof_needs_init) {
+          _this->_impl_.other_contact_.wechat_.InitDefault();
+        }
+        _this->_impl_.other_contact_.wechat_.Set(from._internal_wechat(), arena);
+        break;
+      }
+      case OTHER_CONTACT_NOT_SET:
+        break;
+    }
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
 }
@@ -846,7 +1645,15 @@ void PeopleInfo::InternalSwap(PeopleInfo* PROTOBUF_RESTRICT PROTOBUF_NONNULL oth
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.phone_.InternalSwap(&other->_impl_.phone_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
-  swap(_impl_.age_, other->_impl_.age_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.age_)
+      + sizeof(PeopleInfo::_impl_.age_)
+      - PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.data_)>(
+          reinterpret_cast<char*>(&_impl_.data_),
+          reinterpret_cast<char*>(&other->_impl_.data_));
+  _impl_.remark_.InternalSwap(&other->_impl_.remark_);
+  swap(_impl_.other_contact_, other->_impl_.other_contact_);
+  swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
 }
 
 ::google::protobuf::Metadata PeopleInfo::GetMetadata() const {

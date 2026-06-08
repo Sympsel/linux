@@ -29,7 +29,13 @@
 #include "google/protobuf/message_lite.h"
 #include "google/protobuf/repeated_field.h"  // IWYU pragma: export
 #include "google/protobuf/extension_set.h"  // IWYU pragma: export
+#include "google/protobuf/map.h"  // IWYU pragma: export
+#include "google/protobuf/map_type_handler.h"  // IWYU pragma: export
+#include "google/protobuf/map_entry.h"
+#include "google/protobuf/map_field.h"
+#include "google/protobuf/generated_enum_reflection.h"
 #include "google/protobuf/unknown_field_set.h"
+#include "google/protobuf/any.pb.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
@@ -54,6 +60,12 @@ extern "C" {
 extern const ::google::protobuf::internal::DescriptorTable descriptor_table_contacts_2eproto;
 }  // extern "C"
 namespace contacts {
+enum PeopleInfo_Phone_Type : int;
+extern const uint32_t PeopleInfo_Phone_Type_internal_data_[];
+class Address;
+struct AddressDefaultTypeInternal;
+extern AddressDefaultTypeInternal _Address_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull Address_class_data_;
 class Contacts;
 struct ContactsDefaultTypeInternal;
 extern ContactsDefaultTypeInternal _Contacts_default_instance_;
@@ -66,17 +78,103 @@ class PeopleInfo_Phone;
 struct PeopleInfo_PhoneDefaultTypeInternal;
 extern PeopleInfo_PhoneDefaultTypeInternal _PeopleInfo_Phone_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull PeopleInfo_Phone_class_data_;
+class PeopleInfo_RemarkEntry_DoNotUse;
+struct PeopleInfo_RemarkEntry_DoNotUseDefaultTypeInternal;
+extern PeopleInfo_RemarkEntry_DoNotUseDefaultTypeInternal _PeopleInfo_RemarkEntry_DoNotUse_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull PeopleInfo_RemarkEntry_DoNotUse_class_data_;
 }  // namespace contacts
 namespace google {
 namespace protobuf {
+template <>
+internal::EnumTraitsT<::contacts::PeopleInfo_Phone_Type_internal_data_>
+    internal::EnumTraitsImpl::value<::contacts::PeopleInfo_Phone_Type>;
 }  // namespace protobuf
 }  // namespace google
 
 namespace contacts {
+enum PeopleInfo_Phone_Type : int {
+  PeopleInfo_Phone_Type_MP = 0,
+  PeopleInfo_Phone_Type_TEL = 1,
+  PeopleInfo_Phone_Type_PeopleInfo_Phone_Type_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      ::std::numeric_limits<::int32_t>::min(),
+  PeopleInfo_Phone_Type_PeopleInfo_Phone_Type_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      ::std::numeric_limits<::int32_t>::max(),
+};
+
+extern const uint32_t PeopleInfo_Phone_Type_internal_data_[];
+inline constexpr PeopleInfo_Phone_Type PeopleInfo_Phone_Type_Type_MIN =
+    static_cast<PeopleInfo_Phone_Type>(0);
+inline constexpr PeopleInfo_Phone_Type PeopleInfo_Phone_Type_Type_MAX =
+    static_cast<PeopleInfo_Phone_Type>(1);
+[[nodiscard]] inline bool PeopleInfo_Phone_Type_IsValid(int value) {
+  return 0 <= value && value <= 1;
+}
+inline constexpr int PeopleInfo_Phone_Type_Type_ARRAYSIZE = 1 + 1;
+[[nodiscard]] const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL
+PeopleInfo_Phone_Type_descriptor();
+[[nodiscard]] inline auto ProtobufInternalGetEnumDescriptor(PeopleInfo_Phone_Type) {
+  return PeopleInfo_Phone_Type_descriptor();
+}
+template <typename T>
+[[nodiscard]] const ::std::string& PeopleInfo_Phone_Type_Name(T value) {
+  static_assert(::std::is_same<T, PeopleInfo_Phone_Type>::value ||
+                    ::std::is_integral<T>::value,
+                "Incorrect type passed to Type_Name().");
+  return PeopleInfo_Phone_Type_Name(static_cast<PeopleInfo_Phone_Type>(value));
+}
+template <>
+[[nodiscard]] inline const ::std::string& PeopleInfo_Phone_Type_Name(PeopleInfo_Phone_Type value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<PeopleInfo_Phone_Type_descriptor, 0, 1>(
+      static_cast<int>(value));
+}
+[[nodiscard]] inline bool PeopleInfo_Phone_Type_Parse(
+    ::absl::string_view name, PeopleInfo_Phone_Type* PROTOBUF_NONNULL value) {
+  return ::google::protobuf::internal::ParseNamedEnum<PeopleInfo_Phone_Type>(PeopleInfo_Phone_Type_descriptor(), name,
+                                           value);
+}
 
 // ===================================================================
 
 
+// -------------------------------------------------------------------
+
+class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo_RemarkEntry_DoNotUse final
+    : public ::google::protobuf::internal::MapEntry<::std::string, ::std::string,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_STRING> {
+ public:
+  using SuperType =
+      ::google::protobuf::internal::MapEntry<::std::string, ::std::string,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_STRING>;
+  PeopleInfo_RemarkEntry_DoNotUse();
+  template <typename = void>
+  explicit constexpr PeopleInfo_RemarkEntry_DoNotUse(::google::protobuf::internal::ConstantInitialized);
+  explicit PeopleInfo_RemarkEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr const void* PROTOBUF_NONNULL internal_default_instance() {
+    return &_PeopleInfo_RemarkEntry_DoNotUse_default_instance_;
+  }
+
+
+  static constexpr auto InternalGenerateClassData_();
+
+ private:
+  friend class ::google::protobuf::MessageLite;
+  friend struct ::TableStruct_contacts_2eproto;
+
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
+                                   0, 48,
+                                   2>
+      _table_;
+
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+};
+extern const ::google::protobuf::internal::ClassDataFull PeopleInfo_RemarkEntry_DoNotUse_class_data_;
 // -------------------------------------------------------------------
 
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo_Phone final : public ::google::protobuf::Message
@@ -135,7 +233,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo_Phone final : public ::g
     return *reinterpret_cast<const PeopleInfo_Phone*>(
         &_PeopleInfo_Phone_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 0;
+  static constexpr int kIndexInFileMessages = 1;
   friend void swap(PeopleInfo_Phone& a, PeopleInfo_Phone& b) { a.Swap(&b); }
   inline void Swap(PeopleInfo_Phone* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -222,10 +320,31 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo_Phone final : public ::g
 
   [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
   // nested types ----------------------------------------------------
+  using Type = PeopleInfo_Phone_Type;
+  static constexpr Type MP = PeopleInfo_Phone_Type_MP;
+  static constexpr Type TEL = PeopleInfo_Phone_Type_TEL;
+  [[nodiscard]] static inline bool Type_IsValid(int value) {
+    return PeopleInfo_Phone_Type_IsValid(value);
+  }
+  static constexpr Type Type_MIN = PeopleInfo_Phone_Type_Type_MIN;
+  static constexpr Type Type_MAX = PeopleInfo_Phone_Type_Type_MAX;
+  static constexpr int Type_ARRAYSIZE = PeopleInfo_Phone_Type_Type_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL Type_descriptor() {
+    return PeopleInfo_Phone_Type_descriptor();
+  }
+  template <typename T>
+  [[nodiscard]] static inline const ::std::string& Type_Name(T value) {
+    return PeopleInfo_Phone_Type_Name(value);
+  }
+  [[nodiscard]] static inline bool Type_Parse(
+      ::absl::string_view name, Type* PROTOBUF_NONNULL value) {
+    return PeopleInfo_Phone_Type_Parse(name, value);
+  }
 
   // accessors -------------------------------------------------------
   enum : int {
     kNumberFieldNumber = 1,
+    kTypeFieldNumber = 2,
   };
   // string number = 1;
   void clear_number() ;
@@ -242,11 +361,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo_Phone final : public ::g
   ::std::string* PROTOBUF_NONNULL _internal_mutable_number();
 
   public:
+  // .contacts.PeopleInfo.Phone.Type type = 2;
+  void clear_type() ;
+  [[nodiscard]] ::contacts::PeopleInfo_Phone_Type type() const;
+  void set_type(::contacts::PeopleInfo_Phone_Type value);
+
+  private:
+  ::contacts::PeopleInfo_Phone_Type _internal_type() const;
+  void _internal_set_type(::contacts::PeopleInfo_Phone_Type value);
+
+  public:
   // @@protoc_insertion_point(class_scope:contacts.PeopleInfo.Phone)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<0, 1,
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
                                    0, 40,
                                    2>
       _table_;
@@ -271,6 +400,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo_Phone final : public ::g
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr number_;
+    int type_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -278,6 +408,224 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo_Phone final : public ::g
 };
 
 extern const ::google::protobuf::internal::ClassDataFull PeopleInfo_Phone_class_data_;
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Address final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:contacts.Address) */ {
+ public:
+  inline Address() : Address(nullptr) {}
+  ~Address() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(Address* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(Address));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr Address(::google::protobuf::internal::ConstantInitialized);
+
+  inline Address(const Address& from) : Address(nullptr, from) {}
+  inline Address(Address&& from) noexcept
+      : Address(nullptr, ::std::move(from)) {}
+  inline Address& operator=(const Address& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Address& operator=(Address&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const Address& default_instance() {
+    return *reinterpret_cast<const Address*>(
+        &_Address_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 0;
+  friend void swap(Address& a, Address& b) { a.Swap(&b); }
+  inline void Swap(Address* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(Address* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] Address* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<Address>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const Address& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const Address& from) { Address::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(Address* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "contacts.Address"; }
+
+  explicit Address(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  Address(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Address& from);
+  Address(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, Address&& from) noexcept
+      : Address(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kHomeAddressFieldNumber = 1,
+    kUnitAddressFieldNumber = 2,
+  };
+  // string home_address = 1;
+  void clear_home_address() ;
+  [[nodiscard]] const ::std::string& home_address() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_home_address(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_home_address();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_home_address();
+  void set_allocated_home_address(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_home_address() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_home_address(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_home_address();
+
+  public:
+  // string unit_address = 2;
+  void clear_unit_address() ;
+  [[nodiscard]] const ::std::string& unit_address() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_unit_address(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_unit_address();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_unit_address();
+  void set_allocated_unit_address(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_unit_address() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_unit_address(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_unit_address();
+
+  public:
+  // @@protoc_insertion_point(class_scope:contacts.Address)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
+                                   0, 49,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const Address& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr home_address_;
+    ::google::protobuf::internal::ArenaStringPtr unit_address_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_contacts_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull Address_class_data_;
 // -------------------------------------------------------------------
 
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo final : public ::google::protobuf::Message
@@ -336,7 +684,12 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo final : public ::google:
     return *reinterpret_cast<const PeopleInfo*>(
         &_PeopleInfo_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  enum OtherContactCase {
+    kQq = 5,
+    kWechat = 6,
+    OTHER_CONTACT_NOT_SET = 0,
+  };
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(PeopleInfo& a, PeopleInfo& b) { a.Swap(&b); }
   inline void Swap(PeopleInfo* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -429,7 +782,11 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo final : public ::google:
   enum : int {
     kPhoneFieldNumber = 3,
     kNameFieldNumber = 1,
+    kDataFieldNumber = 4,
     kAgeFieldNumber = 2,
+    kRemarkFieldNumber = 7,
+    kQqFieldNumber = 5,
+    kWechatFieldNumber = 6,
   };
   // repeated .contacts.PeopleInfo.Phone phone = 3;
   [[nodiscard]] int phone_size()
@@ -466,6 +823,22 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo final : public ::google:
   ::std::string* PROTOBUF_NONNULL _internal_mutable_name();
 
   public:
+  // .google.protobuf.Any data = 4;
+  [[nodiscard]] bool has_data()
+      const;
+  void clear_data() ;
+  [[nodiscard]] const ::google::protobuf::Any& data() const;
+  [[nodiscard]] ::google::protobuf::Any* PROTOBUF_NULLABLE release_data();
+  ::google::protobuf::Any* PROTOBUF_NONNULL mutable_data();
+  void set_allocated_data(::google::protobuf::Any* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_data(::google::protobuf::Any* PROTOBUF_NULLABLE value);
+  ::google::protobuf::Any* PROTOBUF_NULLABLE unsafe_arena_release_data();
+
+  private:
+  const ::google::protobuf::Any& _internal_data() const;
+  ::google::protobuf::Any* PROTOBUF_NONNULL _internal_mutable_data();
+
+  public:
   // int32 age = 2;
   void clear_age() ;
   [[nodiscard]] ::int32_t age() const;
@@ -476,12 +849,68 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo final : public ::google:
   void _internal_set_age(::int32_t value);
 
   public:
+  // map<string, string> remark = 7;
+  [[nodiscard]] int remark_size()
+      const;
+  private:
+  int _internal_remark_size() const;
+
+  public:
+  void clear_remark() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::std::string>& remark() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::std::string>* PROTOBUF_NONNULL mutable_remark();
+
+  private:
+  const ::google::protobuf::Map<::std::string, ::std::string>& _internal_remark() const;
+  ::google::protobuf::Map<::std::string, ::std::string>* PROTOBUF_NONNULL _internal_mutable_remark();
+
+  public:
+  // string qq = 5;
+  [[nodiscard]] bool has_qq()
+      const;
+  void clear_qq() ;
+  [[nodiscard]] const ::std::string& qq() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_qq(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_qq();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_qq();
+  void set_allocated_qq(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_qq() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_qq(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_qq();
+
+  public:
+  // string wechat = 6;
+  [[nodiscard]] bool has_wechat()
+      const;
+  void clear_wechat() ;
+  [[nodiscard]] const ::std::string& wechat() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_wechat(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_wechat();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_wechat();
+  void set_allocated_wechat(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_wechat() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_wechat(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_wechat();
+
+  public:
+  void clear_other_contact();
+  OtherContactCase other_contact_case() const;
   // @@protoc_insertion_point(class_scope:contacts.PeopleInfo)
  private:
   class _Internal;
+  void set_has_qq();
+  void set_has_wechat();
+  [[nodiscard]] inline bool has_other_contact() const;
+  inline void clear_has_other_contact();
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<2, 3,
-                                   1, 32,
+  static const ::google::protobuf::internal::TcParseTable<2, 7,
+                                   3, 46,
                                    2>
       _table_;
 
@@ -506,7 +935,16 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PeopleInfo final : public ::google:
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::contacts::PeopleInfo_Phone > phone_;
     ::google::protobuf::internal::ArenaStringPtr name_;
+    ::google::protobuf::Any* PROTOBUF_NULLABLE data_;
     ::int32_t age_;
+    ::google::protobuf::internal::MapField<PeopleInfo_RemarkEntry_DoNotUse, ::std::string, ::std::string> remark_;
+    union OtherContactUnion {
+      constexpr OtherContactUnion() : _constinit_{} {}
+      ::google::protobuf::internal::ConstantInitialized _constinit_;
+      ::google::protobuf::internal::ArenaStringPtr qq_;
+      ::google::protobuf::internal::ArenaStringPtr wechat_;
+    } other_contact_;
+    ::uint32_t _oneof_case_[1];
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -572,7 +1010,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Contacts final : public ::google::p
     return *reinterpret_cast<const Contacts*>(
         &_Contacts_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(Contacts& a, Contacts& b) { a.Swap(&b); }
   inline void Swap(Contacts* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -735,6 +1173,140 @@ extern const ::google::protobuf::internal::ClassDataFull Contacts_class_data_;
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
+// Address
+
+// string home_address = 1;
+inline void Address::clear_home_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.home_address_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline const ::std::string& Address::home_address() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:contacts.Address.home_address)
+  return _internal_home_address();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void Address::set_home_address(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.home_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:contacts.Address.home_address)
+}
+inline ::std::string* PROTOBUF_NONNULL Address::mutable_home_address()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_home_address();
+  // @@protoc_insertion_point(field_mutable:contacts.Address.home_address)
+  return _s;
+}
+inline const ::std::string& Address::_internal_home_address() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.home_address_.Get();
+}
+inline void Address::_internal_set_home_address(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.home_address_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL Address::_internal_mutable_home_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.home_address_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE Address::release_home_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:contacts.Address.home_address)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.home_address_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.home_address_.Set("", GetArena());
+  }
+  return released;
+}
+inline void Address::set_allocated_home_address(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.home_address_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.home_address_.IsDefault()) {
+    _impl_.home_address_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:contacts.Address.home_address)
+}
+
+// string unit_address = 2;
+inline void Address::clear_unit_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.unit_address_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline const ::std::string& Address::unit_address() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:contacts.Address.unit_address)
+  return _internal_unit_address();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void Address::set_unit_address(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.unit_address_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:contacts.Address.unit_address)
+}
+inline ::std::string* PROTOBUF_NONNULL Address::mutable_unit_address()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_unit_address();
+  // @@protoc_insertion_point(field_mutable:contacts.Address.unit_address)
+  return _s;
+}
+inline const ::std::string& Address::_internal_unit_address() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.unit_address_.Get();
+}
+inline void Address::_internal_set_unit_address(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.unit_address_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL Address::_internal_mutable_unit_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.unit_address_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE Address::release_unit_address() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:contacts.Address.unit_address)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.unit_address_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.unit_address_.Set("", GetArena());
+  }
+  return released;
+}
+inline void Address::set_allocated_unit_address(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.unit_address_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.unit_address_.IsDefault()) {
+    _impl_.unit_address_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:contacts.Address.unit_address)
+}
+
+// -------------------------------------------------------------------
+
 // PeopleInfo_Phone
 
 // string number = 1;
@@ -801,6 +1373,33 @@ inline void PeopleInfo_Phone::set_allocated_number(::std::string* PROTOBUF_NULLA
   }
   // @@protoc_insertion_point(field_set_allocated:contacts.PeopleInfo.Phone.number)
 }
+
+// .contacts.PeopleInfo.Phone.Type type = 2;
+inline void PeopleInfo_Phone::clear_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline ::contacts::PeopleInfo_Phone_Type PeopleInfo_Phone::type() const {
+  // @@protoc_insertion_point(field_get:contacts.PeopleInfo.Phone.type)
+  return _internal_type();
+}
+inline void PeopleInfo_Phone::set_type(::contacts::PeopleInfo_Phone_Type value) {
+  _internal_set_type(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:contacts.PeopleInfo.Phone.type)
+}
+inline ::contacts::PeopleInfo_Phone_Type PeopleInfo_Phone::_internal_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::contacts::PeopleInfo_Phone_Type>(_impl_.type_);
+}
+inline void PeopleInfo_Phone::_internal_set_type(::contacts::PeopleInfo_Phone_Type value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_ = value;
+}
+
+// -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
 
@@ -876,7 +1475,7 @@ inline void PeopleInfo::clear_age() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.age_ = 0;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000004U);
+                  0x00000008U);
 }
 inline ::int32_t PeopleInfo::age() const {
   // @@protoc_insertion_point(field_get:contacts.PeopleInfo.age)
@@ -884,7 +1483,7 @@ inline ::int32_t PeopleInfo::age() const {
 }
 inline void PeopleInfo::set_age(::int32_t value) {
   _internal_set_age(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   // @@protoc_insertion_point(field_set:contacts.PeopleInfo.age)
 }
 inline ::int32_t PeopleInfo::_internal_age() const {
@@ -952,6 +1551,298 @@ PeopleInfo::_internal_mutable_phone() {
   return &_impl_.phone_;
 }
 
+// .google.protobuf.Any data = 4;
+inline bool PeopleInfo::has_data() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  PROTOBUF_ASSUME(!value || _impl_.data_ != nullptr);
+  return value;
+}
+inline const ::google::protobuf::Any& PeopleInfo::_internal_data() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::google::protobuf::Any* p = _impl_.data_;
+  return p != nullptr ? *p : reinterpret_cast<const ::google::protobuf::Any&>(::google::protobuf::_Any_default_instance_);
+}
+inline const ::google::protobuf::Any& PeopleInfo::data() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:contacts.PeopleInfo.data)
+  return _internal_data();
+}
+inline void PeopleInfo::unsafe_arena_set_allocated_data(
+    ::google::protobuf::Any* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.data_);
+  }
+  _impl_.data_ = reinterpret_cast<::google::protobuf::Any*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:contacts.PeopleInfo.data)
+}
+inline ::google::protobuf::Any* PROTOBUF_NULLABLE PeopleInfo::release_data() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::google::protobuf::Any* released = _impl_.data_;
+  _impl_.data_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::google::protobuf::Any* PROTOBUF_NULLABLE PeopleInfo::unsafe_arena_release_data() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:contacts.PeopleInfo.data)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::google::protobuf::Any* temp = _impl_.data_;
+  _impl_.data_ = nullptr;
+  return temp;
+}
+inline ::google::protobuf::Any* PROTOBUF_NONNULL PeopleInfo::_internal_mutable_data() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.data_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::google::protobuf::Any>(GetArena());
+    _impl_.data_ = reinterpret_cast<::google::protobuf::Any*>(p);
+  }
+  return _impl_.data_;
+}
+inline ::google::protobuf::Any* PROTOBUF_NONNULL PeopleInfo::mutable_data()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::google::protobuf::Any* _msg = _internal_mutable_data();
+  // @@protoc_insertion_point(field_mutable:contacts.PeopleInfo.data)
+  return _msg;
+}
+inline void PeopleInfo::set_allocated_data(::google::protobuf::Any* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.data_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::Message*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+
+  _impl_.data_ = reinterpret_cast<::google::protobuf::Any*>(value);
+  // @@protoc_insertion_point(field_set_allocated:contacts.PeopleInfo.data)
+}
+
+// string qq = 5;
+inline bool PeopleInfo::has_qq() const {
+  return other_contact_case() == kQq;
+}
+inline void PeopleInfo::set_has_qq() {
+  _impl_._oneof_case_[0] = kQq;
+}
+inline void PeopleInfo::clear_qq() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (other_contact_case() == kQq) {
+    _impl_.other_contact_.qq_.Destroy();
+    clear_has_other_contact();
+  }
+}
+inline const ::std::string& PeopleInfo::qq() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:contacts.PeopleInfo.qq)
+  return _internal_qq();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void PeopleInfo::set_qq(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (other_contact_case() != kQq) {
+    clear_other_contact();
+
+    set_has_qq();
+    _impl_.other_contact_.qq_.InitDefault();
+  }
+  _impl_.other_contact_.qq_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:contacts.PeopleInfo.qq)
+}
+inline ::std::string* PROTOBUF_NONNULL PeopleInfo::mutable_qq()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  if (other_contact_case() != kQq) {
+    clear_other_contact();
+
+    set_has_qq();
+    _impl_.other_contact_.qq_.InitDefault();
+  }
+  ::std::string* _s = _internal_mutable_qq();
+  // @@protoc_insertion_point(field_mutable:contacts.PeopleInfo.qq)
+  return _s;
+}
+inline const ::std::string& PeopleInfo::_internal_qq() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  if (other_contact_case() != kQq) {
+    return ::google::protobuf::internal::GetEmptyStringAlreadyInited();
+  }
+  return _impl_.other_contact_.qq_.Get();
+}
+inline void PeopleInfo::_internal_set_qq(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.other_contact_.qq_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL PeopleInfo::_internal_mutable_qq() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.other_contact_.qq_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE PeopleInfo::release_qq() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:contacts.PeopleInfo.qq)
+  if (other_contact_case() != kQq) {
+    return nullptr;
+  }
+  clear_has_other_contact();
+  return _impl_.other_contact_.qq_.Release();
+}
+inline void PeopleInfo::set_allocated_qq(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (has_other_contact()) {
+    clear_other_contact();
+  }
+  if (value != nullptr) {
+    set_has_qq();
+    _impl_.other_contact_.qq_.InitAllocated(value, GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:contacts.PeopleInfo.qq)
+}
+
+// string wechat = 6;
+inline bool PeopleInfo::has_wechat() const {
+  return other_contact_case() == kWechat;
+}
+inline void PeopleInfo::set_has_wechat() {
+  _impl_._oneof_case_[0] = kWechat;
+}
+inline void PeopleInfo::clear_wechat() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (other_contact_case() == kWechat) {
+    _impl_.other_contact_.wechat_.Destroy();
+    clear_has_other_contact();
+  }
+}
+inline const ::std::string& PeopleInfo::wechat() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:contacts.PeopleInfo.wechat)
+  return _internal_wechat();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void PeopleInfo::set_wechat(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (other_contact_case() != kWechat) {
+    clear_other_contact();
+
+    set_has_wechat();
+    _impl_.other_contact_.wechat_.InitDefault();
+  }
+  _impl_.other_contact_.wechat_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:contacts.PeopleInfo.wechat)
+}
+inline ::std::string* PROTOBUF_NONNULL PeopleInfo::mutable_wechat()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  if (other_contact_case() != kWechat) {
+    clear_other_contact();
+
+    set_has_wechat();
+    _impl_.other_contact_.wechat_.InitDefault();
+  }
+  ::std::string* _s = _internal_mutable_wechat();
+  // @@protoc_insertion_point(field_mutable:contacts.PeopleInfo.wechat)
+  return _s;
+}
+inline const ::std::string& PeopleInfo::_internal_wechat() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  if (other_contact_case() != kWechat) {
+    return ::google::protobuf::internal::GetEmptyStringAlreadyInited();
+  }
+  return _impl_.other_contact_.wechat_.Get();
+}
+inline void PeopleInfo::_internal_set_wechat(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.other_contact_.wechat_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL PeopleInfo::_internal_mutable_wechat() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.other_contact_.wechat_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE PeopleInfo::release_wechat() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:contacts.PeopleInfo.wechat)
+  if (other_contact_case() != kWechat) {
+    return nullptr;
+  }
+  clear_has_other_contact();
+  return _impl_.other_contact_.wechat_.Release();
+}
+inline void PeopleInfo::set_allocated_wechat(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (has_other_contact()) {
+    clear_other_contact();
+  }
+  if (value != nullptr) {
+    set_has_wechat();
+    _impl_.other_contact_.wechat_.InitAllocated(value, GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:contacts.PeopleInfo.wechat)
+}
+
+// map<string, string> remark = 7;
+inline int PeopleInfo::_internal_remark_size() const {
+  return _internal_remark().size();
+}
+inline int PeopleInfo::remark_size() const {
+  return _internal_remark_size();
+}
+inline void PeopleInfo::clear_remark() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.remark_.Clear();
+  ClearHasBitForRepeated(_impl_._has_bits_[0],
+                  0x00000010U);
+}
+inline const ::google::protobuf::Map<::std::string, ::std::string>& PeopleInfo::_internal_remark() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.remark_.GetMap();
+}
+inline const ::google::protobuf::Map<::std::string, ::std::string>& PeopleInfo::remark() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_map:contacts.PeopleInfo.remark)
+  return _internal_remark();
+}
+inline ::google::protobuf::Map<::std::string, ::std::string>* PROTOBUF_NONNULL PeopleInfo::_internal_mutable_remark() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.remark_.MutableMap();
+}
+inline ::google::protobuf::Map<::std::string, ::std::string>* PROTOBUF_NONNULL PeopleInfo::mutable_remark()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000010U);
+  // @@protoc_insertion_point(field_mutable_map:contacts.PeopleInfo.remark)
+  return _internal_mutable_remark();
+}
+
+inline bool PeopleInfo::has_other_contact() const {
+  return other_contact_case() != OTHER_CONTACT_NOT_SET;
+}
+inline void PeopleInfo::clear_has_other_contact() {
+  _impl_._oneof_case_[0] = OTHER_CONTACT_NOT_SET;
+}
+inline PeopleInfo::OtherContactCase PeopleInfo::other_contact_case() const {
+  return PeopleInfo::OtherContactCase(_impl_._oneof_case_[0]);
+}
 // -------------------------------------------------------------------
 
 // Contacts
@@ -1019,6 +1910,19 @@ Contacts::_internal_mutable_contacts() {
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace contacts
 
+
+namespace google {
+namespace protobuf {
+
+template <>
+struct is_proto_enum<::contacts::PeopleInfo_Phone_Type> : std::true_type {};
+template <>
+inline const EnumDescriptor* PROTOBUF_NONNULL GetEnumDescriptor<::contacts::PeopleInfo_Phone_Type>() {
+  return ::contacts::PeopleInfo_Phone_Type_descriptor();
+}
+
+}  // namespace protobuf
+}  // namespace google
 
 // @@protoc_insertion_point(global_scope)
 

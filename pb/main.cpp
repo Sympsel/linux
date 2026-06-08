@@ -1,21 +1,24 @@
 #include <iostream>
+#include "utils/httplib.h"
 
-#include "contacts.pb.h"
+using std::cout;
+using std::endl;
+using namespace httplib;
 
 int main() {
-    std::string pif_s;
-    {
-        contacts::PeopleInfo pif;
-        pif.set_name("zhangsan");
-        pif.set_age(18);
-        (void)pif.SerializeToString(&pif_s);
-        std::cout << pif_s << std::endl;
-    }
+    cout << "==== 服务启动 ====" << endl;
+    Server server;
 
-    {
-        contacts::PeopleInfo pif;
-        (void)pif.ParseFromString(pif_s);
-        std::cout << pif.name() << " " << pif.age() << std::endl;
-    }
+    server.Post("/test-post", [](const Request& req, Response& resp) {
+        cout << "接收到post请求" << endl;
+        resp.status = 200;
+    });
+
+    server.Get("/test-get", [](const Request& req, Response& resp) {
+        cout << "接收到get请求" << endl;
+        resp.status = 200;
+    });
+
+    server.listen("0.0.0.0", 8123);
     return 0;
 }

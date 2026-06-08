@@ -9,7 +9,8 @@ if(NOT Protobuf_FOUND)
     find_package(Protobuf MODULE REQUIRED)
 endif()
 
-add_executable(pb main.cpp contacts.pb.cc)
+add_executable(pb main.cpp
+        contacts.pb.cc)
 
 # 根据找到的 Protobuf 类型选择正确的 target
 if(TARGET protobuf::libprotobuf)

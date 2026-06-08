@@ -2,6 +2,14 @@ syntax = "proto3";
 
 package contacts;
 
+import "google/protobuf/any.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message Address {
+  string home_address = 1;
+  string unit_address = 2;
+}
 
 message PeopleInfo {
   string name = 1;
@@ -9,9 +17,21 @@ message PeopleInfo {
 
   message Phone {
     string number = 1;
+    enum Type {
+      MP = 0; // 移动电话
+      TEL = 1; // 固定电话
+    }
+    Type type = 2;
+  }
+  repeated Phone phone = 3;
+  google.protobuf.Any data = 4;
+
+  oneof other_contact {
+    string qq = 5;
+    string wechat = 6;
   }
 
-  repeated Phone phone = 3;
+  map<string, string> remark = 7;
 }
 
 message Contacts {
