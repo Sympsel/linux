@@ -1,0 +1,30 @@
+syntax = "proto3";
+package add_contact;
+
+
+
+message Request {
+  string name = 1;
+  int32 age = 2;
+  message Phone {
+    reserved 2;
+    string number = 1;
+    enum Type {
+      MP = 0; // 移动
+      TEL = 1; // 固定
+    }
+//    Type type = 2;
+  }
+  repeated Phone phone = 3;
+  message Address {
+    string home_address = 1;
+    string unit_address = 2;
+  }
+  Address address = 4;
+}
+
+message Response {
+  bool success = 1;
+  string error_desc = 2;
+  string uid = 3;
+}

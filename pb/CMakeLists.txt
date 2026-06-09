@@ -1,33 +1,35 @@
 cmake_minimum_required(VERSION 4.2)
 project(pb)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 尝试使用 CONFIG 模式,如果失败则使用模块模式
-find_package(Protobuf CONFIG QUIET)
-if(NOT Protobuf_FOUND)
-    find_package(Protobuf MODULE REQUIRED)
-endif()
+# 使用 CONFIG 模式查找 Protobuf
+find_package(Protobuf CONFIG REQUIRED)
 
-add_executable(pb main.cpp
-        contacts.pb.cc)
+# 客户端可执行文件
+add_executable(client client/main.cpp
+        common/add_contact.pb.cc)
+target_include_directories(client PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/client
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
+)
+target_link_libraries(client
+        protobuf::libprotobuf
+        protobuf::libprotoc
+)
 
-# 根据找到的 Protobuf 类型选择正确的 target
-if(TARGET protobuf::libprotobuf)
-    target_link_libraries(pb protobuf::libprotobuf)
-else()
-    target_link_libraries(pb ${PROTOBUF_LIBRARIES})
-    # 查找并链接 absl 库
-    find_library(ABSL_LOG_INTERNAL_CHECK_OP NAMES absl_log_internal_check_op)
-    find_library(ABSL_STRINGS NAMES absl_strings)
-    if(ABSL_LOG_INTERNAL_CHECK_OP)
-        target_link_libraries(pb ${ABSL_LOG_INTERNAL_CHECK_OP})
-    endif()
-    if(ABSL_STRINGS)
-        target_link_libraries(pb ${ABSL_STRINGS})
-    endif()
-endif()
-
-target_include_directories(pb PRIVATE ${PROTOBUF_INCLUDE_DIRS})
-
-#  g++ -std=c++20 -o main main.cpp contacts.pb.cc $(pkg-config --cflags --libs protobuf)
+# 服务端可执行文件
+add_executable(server server/main.cpp
+        common/add_contact.pb.cc
+)
+target_include_directories(server PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/server
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
+)
+target_link_libraries(server
+        protobuf::libprotobuf
+        protobuf::libprotoc
+)
