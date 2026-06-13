@@ -3,4 +3,8 @@ project(io)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(io main.cpp)
+add_executable(io main.cpp
+        InetAddr.hpp
+        Log.hpp
+        SelectServer.hpp
+        TcpServer.hpp)
