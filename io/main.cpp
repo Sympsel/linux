@@ -1,11 +1,10 @@
 #include <memory>
-#include <print>
-#include "SelectServer.hpp"
+#include "epoll/EpollServer.hpp"
 
 constexpr uint16_t gPort = 8080;
 
 int main() {
-    auto select_server = std::make_unique<SelectServer>(gPort);
-    select_server->start();
+    const auto epollServer = std::make_unique<EpollServer>(gPort);
+    epollServer->start();
     return 0;
 }

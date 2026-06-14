@@ -1,14 +1,16 @@
 #pragma once
 
 #include <sys/select.h>
+#include <print>
 
-#include "TcpServer.hpp"
+#include "../TcpServer.hpp"
 
 class SelectServer {
 private:
     static constexpr int _size = sizeof(fd_set) * 8;
 
-    void handleEvent() {
+    // 连接管理器
+    void accepter() {
         InetAddr clientAddr;
         int fd = TcpSocket::accept(_listenSocket->getSockfd(), clientAddr);
         std::println("获取一个新连接，fd: {}", fd);
@@ -17,15 +19,25 @@ private:
             if (pos == _arrayFds + _size) {
                 std::println("连接已满，请稍候再试");
                 close(fd);
+                *pos = fd;
             } else {
+                close(fd);
                 *pos = fd;
             }
         }
     }
 
-    void handleClientData(const int fd) {
+    void ioHandler(int &fd) {
         std::println("处理客户端数据，文件描述符为 {}", fd);
-        // (void)_arrayFds;
+        char buffer[1024];
+        ssize_t n = recv(fd, buffer, sizeof buffer - 1, 0);
+        if (n == 0) {
+            std::println("连接断开，文件描述符为 {}", fd);
+            close(fd);
+            fd = -1;
+        } else if (n < 0) {
+            std::println("读取数据失败，文件描述符为 {}", fd);
+        }
     }
 
 public:
@@ -38,12 +50,11 @@ public:
         for (int &arrayFd: _arrayFds) {
             arrayFd = -1;
         }
-    }
-
-    void start() {
         // 把监听套接字添加到辅助数组
         _arrayFds[0] = _listenSocket->getSockfd();
+    }
 
+    void dispatcher() {
         while (true) {
             fd_set rfds;
             FD_ZERO(&rfds);
@@ -65,25 +76,21 @@ public:
                 std::println("SelectServer: select失败");
                 continue;
             }
-            if (n == 0) {
-                std::println("timeout");
-                continue;
-            }
             std::println("SelectServer: 接收到新连接， 数量为 {}", n);
-            for (auto& fd : _arrayFds) {
+            for (auto &fd: _arrayFds) {
                 if (fd == -1) {
                     continue;
                 }
                 if (FD_ISSET(fd, &rfds)) {
                     if (fd == _listenSocket->getSockfd()) {
                         // 如果是监听套接字，则将新连接添加到辅助数组
-                        handleEvent();
+                        accepter();
                     } else {
-                        handleClientData(fd);
+                        ioHandler(fd);
                     }
                 }
             }
-            handleEvent();
+            accepter();
         }
     }
 
