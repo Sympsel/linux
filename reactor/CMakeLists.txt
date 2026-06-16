@@ -7,9 +7,10 @@ include_directories(epoll utils)
 
 add_executable(reactor Main.cpp
         Connection.hpp
-        Listener.hpp
-        IOHandler.hpp
         Poller.hpp
         Common.hpp
-        TcpServer.hpp
-        Reactor.hpp)
+        Reactor.hpp
+        Listener.cpp
+        Protocol.hpp
+        IOHandler.cpp
+)

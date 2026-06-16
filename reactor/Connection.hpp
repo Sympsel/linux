@@ -1,12 +1,14 @@
 #pragma once
 
-#include <string>
+#include <memory>
 
 #include "InetAddr.hpp"
 
-class Connection {
+class Reactor;
+
+class Connection : public std::enable_shared_from_this<Connection> {
 public:
-    explicit Connection() : _eventItem() {
+    explicit Connection() : _eventItem(), _reactor(nullptr) {
     }
 
     virtual void receiver() = 0;
@@ -25,12 +27,16 @@ public:
         _eventItem = eventItem;
     }
 
+    void setInetAddr(const InetAddr& clientAddr) {
+        _clientAddr = clientAddr;
+    }
+
     virtual ~Connection() = default;
 
 protected:
-    std::string _inBuffer;
-    std::string _outBuffer;
     InetAddr _clientAddr;
-
     uint32_t _eventItem;
+
+public:
+    Reactor *_reactor;
 };
