@@ -37,8 +37,25 @@ public:
         }
     }
 
-    void updateEventItem(const int fd, const uint32_t eventItem) const {
+    [[deprecated]] void updateEventItem(const int fd, const uint32_t eventItem) const {
         _epoller->updateEventItem(fd, eventItem);
+    }
+
+    void setReadWriteEventItem(const int fd, const bool careReadable, const bool careWritable) const {
+        updateReadWriteEventItem(fd, careReadable, careWritable);
+    }
+
+    void updateReadWriteEventItem(const int fd, const bool careReadable, const bool careWritable) const {
+        uint32_t eventItem = ET;
+        if (careReadable) {
+            eventItem |= IN;
+        }
+        if (careWritable) {
+            eventItem |= OUT;
+        }
+        if (isConnectionExists(fd)) {
+            _epoller->updateEventItem(fd, eventItem);
+        }
     }
 
     void dispatcher() {

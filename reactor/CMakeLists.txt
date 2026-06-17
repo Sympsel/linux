@@ -13,4 +13,6 @@ add_executable(reactor Main.cpp
         Listener.cpp
         Protocol.hpp
         IOHandler.cpp
+        HttpProtocol.hpp
+        utils/Buffer.hpp
 )

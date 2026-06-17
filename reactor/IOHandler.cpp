@@ -27,25 +27,25 @@ void IOHandler::receiver() {
     }
     // 如果有完整报文，就从输入缓冲区切下来一个报文，如果没有就什么也不做
     if (!_inBuffer.empty()) {
-        _outBuffer += handleRequest(_inBuffer);
+        _outBuffer.append(handleRequest(_inBuffer));
         // 触发发送：设置 OUT 事件
         if (_reactor && !_outBuffer.empty()) {
-            _reactor->updateEventItem(_clientSockFd, IN | OUT | ET);
+            _reactor->updateReadWriteEventItem(_clientSockFd, true, true);
         }
     }
 }
 
-std::string IOHandler::handleRequest(std::string &request) {
+std::string IOHandler::handleRequest(Buffer &request) {
     size_t pos = 0;
-    while ((pos = request.find("\r\n", pos)) != std::string::npos) {
-        request.replace(pos, 2, "\n");
-        ++pos;
-    }
-    std::replace(request.begin(), request.end(), '\r', '\n');
+    // while ((pos = request.find("\r\n", pos)) != std::string::npos) {
+    //     request.replace(pos, 2, "\n");
+    //     ++pos;
+    // }
+    // std::replace(request.begin(), request.end(), '\r', '\n');
     // todo 注册一个协议
-    std::string response = request;
+    std::string response = request.peek();
+    request.retrieveAll();
     LOG_DEBUG() << std::format("收到数据，长度: {}", response.size());
-    request.clear();
     return response;
 }
 
@@ -55,12 +55,12 @@ void IOHandler::sender() {
     }
     if (_outBuffer.empty()) {
         // 没有数据要发送，移除 OUT 事件
-        _reactor->updateEventItem(_clientSockFd, IN | ET);
+        _reactor->updateReadWriteEventItem(_clientSockFd, true, false);
     }
     while (!_outBuffer.empty()) {
-        ssize_t n = TcpSocket::sendTo(_clientSockFd, _outBuffer);
-        if (n > 0) {
-            _outBuffer.erase(0, n);
+        if (ssize_t n = TcpSocket::sendTo(_clientSockFd, _outBuffer);
+            n > 0) {
+            _outBuffer.retrieve(n);
             LOG_DEBUG() << std::format("发送数据，长度: {}", n);
         } else if (n < 0) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -72,13 +72,15 @@ void IOHandler::sender() {
                 continue;
             }
             LOG_ERROR() << std::format("发送数据失败，地址为{}:{}，错误信息：{}",
-                _clientAddr.getIp(), _clientAddr.getPort(), strerror(errno)
+                                       _clientAddr.getIp(), _clientAddr.getPort(), strerror(errno)
             );
             _reactor->removeConnection(shared_from_this());
             break;
         }
     }
-    _reactor->updateEventItem(_clientSockFd, IN | ET);
+    if (_outBuffer.empty()) {
+        _reactor->updateReadWriteEventItem(_clientSockFd, true, false);
+    }
 }
 
 void IOHandler::expecter() {

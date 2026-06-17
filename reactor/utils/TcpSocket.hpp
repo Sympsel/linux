@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include "Buffer.hpp"
 #include "InetAddr.hpp"
 #include "Log.hpp"
 
@@ -109,6 +110,10 @@ public:
         return receive(_sockfd, outMsg, size);
     }
 
+    ssize_t receive(Buffer &outMsg, const size_t size = 1024) const {
+        return receive(_sockfd, outMsg, size);
+    }
+
     static ssize_t receive(const int receiveFd, std::string& outMsg, const size_t size = 1024) {
         char outBuffer[size];
         const ssize_t n = ::recv(receiveFd, outBuffer, size - 1, 0);
@@ -124,12 +129,43 @@ public:
         return n;
     }
 
-    size_t sendTo(const std::string& msgToSend) const {
+    static ssize_t receive(const int receiveFd, Buffer& outMsg, const size_t size = 1024) {
+        char outBuffer[size];
+        const ssize_t n = ::recv(receiveFd, outBuffer, size - 1, 0);
+        if (n < 0) {
+            return -1;
+        }
+        if (n == 0) {
+            // 对端关闭连接
+            return 0;
+        }
+        outBuffer[n] = '\0';
+        outMsg.append(outBuffer, n);
+        return n;
+    }
+
+    [[nodiscard]] size_t sendTo(const std::string& msgToSend) const {
+        return sendTo(_sockfd, msgToSend);
+    }
+
+    [[nodiscard]] size_t sendTo(const Buffer& msgToSend) const {
         return sendTo(_sockfd, msgToSend);
     }
 
     static ssize_t sendTo(const int destFd, const std::string& msgToSend) {
         ssize_t n = ::send(destFd, msgToSend.c_str(), msgToSend.size(), 0);
+        if (n < 0) {
+            LOG_ERROR() << std::format("send error: {}", strerror(errno));
+            return -1;
+        }
+        return n;
+    }
+
+    static ssize_t sendTo(const int destFd, const Buffer& buffer) {
+        if (buffer.empty()) {
+            return 0;
+        }
+        const ssize_t n = ::send(destFd, buffer.peek(), buffer.getReadableSize(), 0);
         if (n < 0) {
             LOG_ERROR() << std::format("send error: {}", strerror(errno));
             return -1;
