@@ -5,9 +5,9 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#include "Buffer.hpp"
-#include "InetAddr.hpp"
-#include "Log.hpp"
+#include "../utils/Buffer.hpp"
+#include "../utils/InetAddr.hpp"
+#include "../utils/Log.hpp"
 
 class TcpSocket {
 private:
@@ -153,7 +153,7 @@ public:
     }
 
     static ssize_t sendTo(const int destFd, const std::string& msgToSend) {
-        ssize_t n = ::send(destFd, msgToSend.c_str(), msgToSend.size(), 0);
+        const ssize_t n = ::send(destFd, msgToSend.c_str(), msgToSend.size(), 0);
         if (n < 0) {
             LOG_ERROR() << std::format("send error: {}", strerror(errno));
             return -1;

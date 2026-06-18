@@ -3,9 +3,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include "Log.hpp"
-#include "Poller.hpp"
 #include "Listener.h"
+#include "Poller.hpp"
 #include "Common.hpp"
 
 class Connection;
@@ -30,7 +29,14 @@ public:
         connection->_reactor = this;
     }
 
-    void removeConnection(const std::shared_ptr<Connection>& connection) {
+    void addListener(const std::shared_ptr<Listener>& listener) {
+        listener->setReactor(this);
+        const int fd = listener->getListenFd();
+        _epoller->addEventItem(fd, true, false);
+        _listener = listener;
+    }
+
+    void removeConnection(const std::shared_ptr<Connection> &connection) {
         if (const int fd = connection->getSockFd(); isConnectionExists(fd)) {
             _connections.erase(fd);
             _epoller->removeEventItem(fd);
@@ -46,14 +52,9 @@ public:
     }
 
     void updateReadWriteEventItem(const int fd, const bool careReadable, const bool careWritable) const {
-        uint32_t eventItem = ET;
-        if (careReadable) {
-            eventItem |= IN;
-        }
-        if (careWritable) {
-            eventItem |= OUT;
-        }
         if (isConnectionExists(fd)) {
+            uint32_t eventItem;
+            Poller::setEventItemReadWrite(eventItem, careReadable, careWritable);
             _epoller->updateEventItem(fd, eventItem);
         }
     }
@@ -61,14 +62,19 @@ public:
     void dispatcher() {
         while (true) {
             constexpr int timeout = 2000;
-            int n = _epoller->waitReadyEvents(_revs, sizeof _revs, timeout);
+            const int n = _epoller->waitReadyEvents(_revs, sizeof _revs, timeout);
             for (int i = 0; i < n; ++i) {
                 int sockFd = _revs[i].data.fd;
                 auto reventItem = _revs[i].events;
 
                 // EPOLLHUP 对端关闭连接
                 if (reventItem & ERROR || reventItem & HUP) {
-                    reventItem = IN | OUT;
+                    Poller::setEventItemReadWrite(reventItem, true, true);
+                }
+
+                if (_listener && sockFd == _listener->getListenFd()) {
+                    _listener->accept();
+                    continue;
                 }
 
                 if (reventItem & IN) {
@@ -91,9 +97,10 @@ private:
     static constexpr size_t MAX_EVENTS = 128;
     // epoll模型
     std::unique_ptr<Poller> _epoller;
-    // 组织所有的 Connection
+    // 监听器
+    std::shared_ptr<Listener> _listener;
+    // 连接管理
     std::unordered_map<int, std::shared_ptr<Connection> > _connections;
     // 就绪队列
     epoll_event _revs[MAX_EVENTS]{};
-
 };

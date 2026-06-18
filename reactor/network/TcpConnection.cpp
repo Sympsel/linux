@@ -1,9 +1,10 @@
-#include "IOHandler.h"
-#include "Reactor.hpp"
+#include "../TcpConnection.h"
+#include "../core/Reactor.hpp"
+#include "TcpSocket.hpp"
 
-void IOHandler::receiver() {
+void TcpConnection::receiver() {
     while (true) {
-        const ssize_t n = TcpSocket::receive(_clientSockFd, _inBuffer);
+        const ssize_t n = TcpSocket::receive(_sockFd, _inBuffer);
         if (n < 0) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 break;
@@ -13,52 +14,46 @@ void IOHandler::receiver() {
             }
             LOG_WARN() << std::format("客户端接收出错，地址为{}:{}"
                                       , _clientAddr.getIp(), _clientAddr.getPort());
-            if (_reactor) {
-                _reactor->removeConnection(shared_from_this());
-            }
-            expecter();
-            break;
+            handleClose();
+            return;
         }
         if (n == 0) {
             LOG_INFO() << std::format("客户端退出，地址为{}:{}"
                                       , _clientAddr.getIp(), _clientAddr.getPort());
-            break;
+            handleClose();
+            return;
         }
     }
-    // 如果有完整报文，就从输入缓冲区切下来一个报文，如果没有就什么也不做
+
+    // 如果有自定义消息处理器，调用它
     if (!_inBuffer.empty()) {
-        _outBuffer.append(handleRequest(_inBuffer));
+        if (_messageHandler) {
+            _messageHandler(_inBuffer, _outBuffer);
+        } else {
+            // 默认行为：回显
+            _outBuffer.append(_inBuffer.peek(), _inBuffer.getReadableSize());
+            _inBuffer.retrieveAll();
+        }
+
         // 触发发送：设置 OUT 事件
         if (_reactor && !_outBuffer.empty()) {
-            _reactor->updateReadWriteEventItem(_clientSockFd, true, true);
+            _reactor->setReadWriteEventItem(_sockFd, true, true);
         }
     }
 }
 
-std::string IOHandler::handleRequest(Buffer &request) {
-    size_t pos = 0;
-    // while ((pos = request.find("\r\n", pos)) != std::string::npos) {
-    //     request.replace(pos, 2, "\n");
-    //     ++pos;
-    // }
-    // std::replace(request.begin(), request.end(), '\r', '\n');
-    // todo 注册一个协议
-    std::string response = request.peek();
-    request.retrieveAll();
-    LOG_DEBUG() << std::format("收到数据，长度: {}", response.size());
-    return response;
-}
-
-void IOHandler::sender() {
+void TcpConnection::sender() {
     if (_reactor == nullptr) {
         LOG_ERROR() << "没有设置反应堆";
     }
     if (_outBuffer.empty()) {
         // 没有数据要发送，移除 OUT 事件
-        _reactor->updateReadWriteEventItem(_clientSockFd, true, false);
+        _reactor->setReadWriteEventItem(_sockFd, true, false);
+        return;
     }
+
     while (!_outBuffer.empty()) {
-        if (ssize_t n = TcpSocket::sendTo(_clientSockFd, _outBuffer);
+        if (ssize_t n = TcpSocket::sendTo(_sockFd, _outBuffer);
             n > 0) {
             _outBuffer.retrieve(n);
             LOG_DEBUG() << std::format("发送数据，长度: {}", n);
@@ -74,20 +69,23 @@ void IOHandler::sender() {
             LOG_ERROR() << std::format("发送数据失败，地址为{}:{}，错误信息：{}",
                                        _clientAddr.getIp(), _clientAddr.getPort(), strerror(errno)
             );
-            _reactor->removeConnection(shared_from_this());
-            break;
+            handleClose();
+            return;
         }
     }
+
     if (_outBuffer.empty()) {
-        _reactor->updateReadWriteEventItem(_clientSockFd, true, false);
+        _reactor->setReadWriteEventItem(_sockFd, true, false);
     }
 }
 
-void IOHandler::expecter() {
+void TcpConnection::expecter() {
     LOG_INFO() << std::format("清理连接，地址为{}:{}", _clientAddr.getIp(), _clientAddr.getPort());
+    handleClose();
+}
+
+void TcpConnection::handleClose() {
     if (_reactor) {
-        _reactor->removeConnection(shared_from_this());
-    } else {
-        LOG_ERROR() << "没有设置反应堆";
+        _reactor->removeConnection(std::shared_ptr<TcpConnection>(this));
     }
 }

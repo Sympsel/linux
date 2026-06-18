@@ -1,12 +1,12 @@
 #pragma once
 
-#include <memory>
-
+#include "Common.hpp"
 #include "InetAddr.hpp"
+#include "Buffer.hpp"
 
 class Reactor;
 
-class Connection : public std::enable_shared_from_this<Connection> {
+class Connection {
 public:
     explicit Connection() : _eventItem(), _reactor(nullptr) {
     }
@@ -27,6 +27,16 @@ public:
         _eventItem = eventItem;
     }
 
+    void setReadWriteEventItem(const bool readable, const bool writable) {
+        _eventItem = ET;
+        if (readable) {
+            _eventItem |= IN;
+        }
+        if (writable) {
+            _eventItem |= OUT;
+        }
+    }
+
     void setInetAddr(const InetAddr& clientAddr) {
         _clientAddr = clientAddr;
     }
@@ -37,6 +47,8 @@ protected:
     InetAddr _clientAddr;
     uint32_t _eventItem;
 
+    Buffer _inBuffer;
+    Buffer _outBuffer;
 public:
     Reactor *_reactor;
 };

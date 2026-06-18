@@ -3,16 +3,9 @@ project(reactor)
 
 set(CMAKE_CXX_STANDARD 23)
 
-include_directories(epoll utils)
+include_directories(epoll utils core network http)
 
 add_executable(reactor Main.cpp
-        Connection.hpp
-        Poller.hpp
-        Common.hpp
-        Reactor.hpp
-        Listener.cpp
-        Protocol.hpp
-        IOHandler.cpp
-        HttpProtocol.hpp
-        utils/Buffer.hpp
+        network/Listener.cpp
+        http/HttpConnection.cpp
 )

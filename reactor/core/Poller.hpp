@@ -4,7 +4,6 @@
 #include <cstring>
 
 #include "Log.hpp"
-
 #include "Common.hpp"
 
 /**
@@ -28,10 +27,13 @@ public:
         }
     }
 
-    Poller(const Poller&) = delete;
-    Poller& operator=(const Poller&) = delete;
-    Poller(Poller&&) = delete;
-    Poller& operator=(Poller&&) = delete;
+    Poller(const Poller &) = delete;
+
+    Poller &operator=(const Poller &) = delete;
+
+    Poller(Poller &&) = delete;
+
+    Poller &operator=(Poller &&) = delete;
 
     void addEventItem(const int fd, const uint32_t eventItem) const {
         epoll_event epEvent{};
@@ -39,9 +41,13 @@ public:
         epEvent.events = eventItem;
         if (::epoll_ctl(_epFd, EPOLL_CTL_ADD, fd, &epEvent) < 0) {
             LOG_ERROR() << std::format("epoll_ctl ADD 失败, fd={}, error={}", fd, strerror(errno));
-        } else {
-            LOG_DEBUG() << std::format("epoll_ctl ADD 成功, fd={}, events={}", fd, eventItem);
         }
+    }
+
+    void addEventItem(const int fd, const bool readable, const bool writable) const {
+        uint32_t eventItem;
+        setEventItemReadWrite(eventItem, readable, writable);
+        addEventItem(fd, eventItem);
     }
 
     void updateEventItem(const int fd, const uint32_t eventItem) const {
@@ -51,24 +57,29 @@ public:
 
         if (::epoll_ctl(_epFd, EPOLL_CTL_MOD, fd, &epEvent) < 0) {
             LOG_ERROR() << std::format("epoll_ctl MOD 失败, fd={}, error={}", fd, strerror(errno));
-        } else {
-            LOG_DEBUG() << std::format("epoll_ctl MOD 成功, fd={}, events={}", fd, eventItem);
         }
     }
 
     void removeEventItem(const int fd) const {
         if (::epoll_ctl(_epFd, EPOLL_CTL_DEL, fd, nullptr) < 0) {
             LOG_ERROR() << std::format("epoll_ctl DEL 失败, fd={}, error={}", fd, strerror(errno));
-        } else {
-            LOG_DEBUG() << std::format("epoll_ctl DEL 成功, fd={}", fd);
         }
     }
 
-    int waitReadyEvents(epoll_event* revs, const int num, const int timeout) const {
+    static void setEventItemReadWrite(uint32_t& eventItem, const bool readable, const bool writable) {
+        eventItem = ET;
+        if (readable) {
+            eventItem = IN;
+        }
+        if (writable) {
+            eventItem = OUT;
+        }
+    }
+
+    int waitReadyEvents(epoll_event *revs, const int num, const int timeout) const {
         const int n = epoll_wait(_epFd, revs, num, timeout);
         if (n < 0) {
             if (errno == EINTR) {
-                LOG_DEBUG() << "epoll_wait 被信号中断";
                 return 0;
             }
             LOG_ERROR() << std::format("epoll_wait 失败, error={}", strerror(errno));
