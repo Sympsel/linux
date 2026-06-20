@@ -6,8 +6,6 @@ project(cmake_
 
 set(CMAKE_CXX_STANDARD 23)
 
-
-
 add_executable(main main.cpp)
 
 add_test(
