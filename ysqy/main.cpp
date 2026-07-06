@@ -30,7 +30,7 @@ public:
         }
     }
 
-    void release(int begin, int size) {
+    void release(const int begin, const int size) {
         if (_list == nullptr) {
             _list = new freeNode(begin, size, nullptr);
         } else {
@@ -43,10 +43,11 @@ public:
                 }
                 curr = curr->next;
             }
+            // todo 分区合并
         }
     }
 
-    void use(int size) {
+    void allocate(const int size) {
         if (_list == nullptr || _list->size < size) {
             std::println("没有足够空间");
             return;
