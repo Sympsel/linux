@@ -61,5 +61,5 @@ public:
 
     ~HttpProtocol() = default;
 private:
-    http_business_task_t
+    http_business_task_t _task;
 };
