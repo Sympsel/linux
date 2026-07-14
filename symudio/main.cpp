@@ -162,30 +162,3 @@ int main() {
 //     }
 //     return 0;
 // }
-
-// int main() {
-//     const int timerFd = timerfd_create(CLOCK_MONOTONIC, 0);
-//     if (timerFd < 0) {
-//         std::println("Error creating timerfd");
-//     } else {
-//         itimerspec itimer{};
-//         itimer.it_value.tv_sec = 1;
-//         itimer.it_value.tv_nsec = 0;
-//         itimer.it_interval.tv_sec = 2;
-//         itimer.it_interval.tv_nsec = 0;
-//
-//         timerfd_settime(timerFd, 0, &itimer, nullptr);
-//         while (true) {
-//             uint64_t times;
-//             const ssize_t ret = read(timerFd, &times, 8);
-//             if (ret < 0) {
-//                 std::println("出错");
-//                 return -1;
-//             }
-//             std::println("超时1次", times);
-//         }
-//     }
-//
-//     close(timerFd);
-//     return 0;
-// }
