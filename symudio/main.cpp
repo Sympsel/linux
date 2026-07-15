@@ -142,23 +142,3 @@ int main() {
 
     return 0;
 }
-
-// int main() {
-//     TimerWheel tw;
-//     Test *t = new Test();
-//     tw.registerTask(1, 5, [t] { delTest(t); });
-//     for (int i{}; i < 5; ++i) {
-//         sleep(1);
-//         tw.refreshTask(1);
-//         std::println("刷新了一下定时任务");
-//     }
-//
-//     tw.cancelTask(1);
-//
-//     while (true) {
-//         sleep(1);
-//         std::println("滴答");
-//         tw.run();
-//     }
-//     return 0;
-// }
