@@ -3,4 +3,9 @@ project(symudio)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(symudio main.cpp)
+add_executable(symudio main.cpp
+        entity/Any.hpp
+        utils/TimerWheel.hpp
+        entity/Buffer.hpp
+        utils/Log.hpp
+        entity/Socket.hpp)
