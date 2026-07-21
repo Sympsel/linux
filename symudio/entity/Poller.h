@@ -52,7 +52,7 @@ public:
     }
 
     // 开始监控，返回活跃连接
-    void poll(std::vector<Channel *>& active);
+    void poll(std::vector<Channel *>& actives);
 
 private:
     int _epFd;

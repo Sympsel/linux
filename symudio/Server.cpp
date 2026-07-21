@@ -1,6 +1,7 @@
 #include <print>
 #include <regex>
 
+#include "EventLoop.hpp"
 #include "entity/Any.hpp"
 
 class Test {
@@ -89,7 +90,12 @@ void test3() {
     listenSocket.close();
 }
 
+void test4() {
+    EventLoop loop;
+}
+
 int main() {
-    test3();
+    // test3();
+    test4();
     return 0;
 }

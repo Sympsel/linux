@@ -7,18 +7,23 @@ include_directories(utils entity)
 
 add_executable(symudio-server Server.cpp
         entity/Any.hpp
-        utils/TimerWheel.hpp
         entity/Buffer.hpp
         utils/Log.hpp
         entity/Socket.hpp
         entity/Poller.cpp
         entity/Poller.h
         entity/Channel.cpp
-        entity/Channel.h)
+        entity/Channel.h
+        entity/EventLoop.cpp
+        entity/EventLoop.h
+        entity/TimerWheel.h
+        entity/TimerWheel.cpp
+        entity/Connect.hpp
+)
 
 add_executable(symudio-client Client.cpp
         entity/Any.hpp
-        utils/TimerWheel.hpp
         entity/Buffer.hpp
         utils/Log.hpp
-        entity/Socket.hpp)
+        entity/Socket.hpp
+)

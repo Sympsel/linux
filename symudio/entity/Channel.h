@@ -89,6 +89,6 @@ private:
     EventCallback _writeCb;
     EventCallback _errorCb;
     EventCallback _closeCb;
-    // 任意事件触发回调
+    /* 任意事件触发回调，例如任意事件触发都可以刷新超时断连计时器 */
     EventCallback _anyEventCb;
 };

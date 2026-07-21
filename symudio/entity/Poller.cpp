@@ -1,6 +1,6 @@
 #include "Poller.h"
 
-void Poller::poll(std::vector<Channel *> &active) {
+void Poller::poll(std::vector<Channel *> &actives) {
     int nfds = epoll_wait(_epFd, _epEvents, sizeof _epEvents, -1);
     if (nfds < 0) {
         if (errno == EINTR) {
@@ -15,6 +15,6 @@ void Poller::poll(std::vector<Channel *> &active) {
             exit(EXIT_FAILURE);
         }
         _channels[i]->setREvent(_epEvents[i].events);
-        active.emplace_back(_channels[i]);
+        actives.emplace_back(_channels[i]);
     }
 }
