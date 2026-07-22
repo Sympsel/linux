@@ -85,6 +85,9 @@ public:
      * @brief 取出已使用的长度为 len 的数据并丢弃，若数据不足，有多少取多少
      */
     void retrieve(const size_t len) {
+        if (len == 0) {
+            return;
+        }
         if (len < getReadableSize()) {
             _readPos += len;
         } else {

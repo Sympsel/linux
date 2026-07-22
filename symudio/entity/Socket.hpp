@@ -98,6 +98,9 @@ public:
     ssize_t send(void *buf, size_t len, int flag = 0) {
         ssize_t ret = ::send(_sockFd, buf, len, flag);
         if (ret < 0) {
+            if (errno == EAGAIN || errno == EINTR) {
+                return 0;
+            }
             LOG_ERROR() << "Send Failed!";
             return -1;
         }

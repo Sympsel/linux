@@ -18,7 +18,7 @@ add_executable(symudio-server Server.cpp
         entity/EventLoop.h
         entity/TimerWheel.h
         entity/TimerWheel.cpp
-        entity/Connect.hpp
+        entity/Connection.hpp
 )
 
 add_executable(symudio-client Client.cpp

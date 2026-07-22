@@ -2,6 +2,7 @@
 
 #include "Poller.h"
 
+// 移除所有事件监控
 void Channel::remove() {
     return _poller->removeEvent(this);
 }
