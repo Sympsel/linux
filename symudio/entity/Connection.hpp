@@ -149,7 +149,7 @@ public:
     }
 
     bool isConnected() {
-        // return
+        return _status == Status::CONNECTED;
     }
 
     void setContext(const Any &context);
@@ -163,6 +163,7 @@ public:
 
     void enableReleaseInactive(uint32_t sec) {
         _releaseInactive = true;
+        //
     }
 
     void disableReleaseInactive() {
